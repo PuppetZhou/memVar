@@ -42,6 +42,8 @@ def main() -> None:
     while web_port == api_port:
         web_port = free_port()
     next_dist_dir = f".next-stack-{os.getpid()}-{web_port}"
+    tsconfig_path = WEBSITE_ROOT / "frontend" / "tsconfig.json"
+    original_tsconfig = tsconfig_path.read_bytes()
 
     environment = {
         **os.environ,
@@ -157,6 +159,8 @@ def main() -> None:
                     process.kill()
                     process.wait(timeout=5)
             shutil.rmtree(WEBSITE_ROOT / "frontend" / next_dist_dir, ignore_errors=True)
+            if tsconfig_path.read_bytes() != original_tsconfig:
+                tsconfig_path.write_bytes(original_tsconfig)
 
     print("same-origin local stack regression passed")
 

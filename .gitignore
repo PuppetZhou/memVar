@@ -26,6 +26,7 @@
 **/node_modules/
 **/.next/
 **/.next-*/
+/frontend/next-env.d.ts
 *.tsbuildinfo
 
 # Local runtime state and logs
