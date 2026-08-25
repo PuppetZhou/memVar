@@ -48,11 +48,12 @@ memVar 已经进入“冻结科学数据、继续优化呈现”的阶段。预�
 - 目标盘 staging 已包含 core/variant catalog、Sequence/Variant facts 与全量 gnomAD serving，共用路径为 `memvar-data/.staging/serve-v1.0.0-foundation`；它仍是候选目录，不是 `serving/serve-v1.0.0`。
 - View 的 active v1 数据已复制到 `memvar-data/.staging/source-v1.0.0/view`：76 个 Parquet 与 15 个既有说明/QC 文件，共 4,078,853,538 B；源/目标路径、字节、schema、行数与 row group 校验通过。
 - 差异表达重建输入（1,175 Parquet）、ThermoMPNN 最终结果（69 Parquet）和 AlphaFold v6 原始 tar 已进入 source staging 并通过相对路径、字节与格式验收；无网站消费者的本地 AlphaGenome 开发输出明确排除。
-- AlphaGenome 全量原始目录已从 `Newsmy1` 启动可续传只读复制，目标为 `memvar-data/.staging/source-v1.0.0/alphagenome/alphagenome_1mb_by_gene.partial`；复制完成和内容验收前不会改名为最终 staging 目录。
-- Sequence 首轮止卡优化已完成：残基 hover 留在局部 viewport Implementation，pointer move 按动画帧合并，Canvas TrackAdapter 与选择回调稳定化；生产 trace 和真实 HDD 预算仍待验证。
+- AlphaGenome 全量原始目录已从 `Newsmy1` 启动可续传只读复制，目标为 `memvar-data/.staging/source-v1.0.0/alphagenome/alphagenome_1mb_by_gene.partial`；后继服务会在复制退出后核对 46,285 个文件、2,764,008,820,308 B 和内容 checksum，通过后才在 source staging 内原子改名，再串行复制并校验 55,923,386,159 B serving 资产。两个 release 均不会由该服务写 `_READY`。
+- Sequence 首轮止卡优化已完成：残基 hover 留在局部 viewport Implementation，pointer move 按动画帧合并，Canvas TrackAdapter 与选择回调稳定化。Structure 已改用窄 `variant-site-density` Interface，不再请求完整 `overview?bins=1`；P00533 TestClient 粗测由 52,534 B / 54.7 ms 降为 5,213 B / 26.4 ms。生产 trace 和真实 HDD 预算仍待验证。
 - Protein Overview 已设置 10 个 lazy Module 边界：身份摘要立即呈现，其余 11 个密集/请求型子模块只在进入 600 px 预取区或被 hash/deep link 指向时挂载；首屏冷启动 fan-out 从 11 个密集 child 降为 0。
-- Variant Summary 已完成后端统计 Interface 与前端 summary-first 面板；Variant facts/effects/ClinVar/COSMIC/stability 也已拆为 source-scoped EvidenceAdapter，旧 combined detail Interface 已删除。
-- 完整 test release 上已通过 backend 104 项、ETL 21 项、frontend 93 项、TypeScript、production build 与 same-origin full-stack smoke；其余 serving 资产迁移、AlphaGenome 全量原始复制、真实 HDD 性能验收、原子签发与切换尚未完成。
+- Variant Summary 已完成后端统计 Interface 与前端 summary-first 面板；Variant facts/effects/ClinVar/COSMIC/stability 也已拆为 source-scoped EvidenceAdapter，旧 combined detail Interface 已删除。Variant 来源、稳定性方向、ClinVar 原始类别与 gnomAD ancestry 已集中到独立语义 token/Adapter；dbSNP 不再错误打开 gnomAD 分支。
+- 成功 JSON GET/HEAD 已采用同时绑定 data release、application release 与 URL 的 ETag 安全重验证；错误与无可靠应用身份时保持 `no-store`。响应公开 release ID 与只含规范化路由的 `Server-Timing`；条件请求仍在实际查询和路由验证后处理，因此当前只减少传输与前端解析，不宣称跳过数据库工作。
+- 完整 test release 上已通过 backend 110 项、ETL 21 项、frontend 94 项、TypeScript、production build 与 same-origin full-stack smoke；构建与独立全栈测试不再污染 tracked Next 类型文件。其余 serving 资产迁移、AlphaGenome 全量原始复制和 checksum、真实 HDD 性能验收、原子签发与切换尚未完成。
 
 ## 1. 范围与非目标
 
