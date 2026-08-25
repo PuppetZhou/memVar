@@ -123,7 +123,8 @@ test("the structure surface has mutually exclusive Sequence variant-density and 
   const panel = await component("structure-panel.tsx");
   const colors = await structureColors();
   const css = await globalStyles();
-  assert.match(panel, /sequence\/overview\?bins=1/);
+  assert.match(panel, /sequence\/variant-site-density/);
+  assert.doesNotMatch(panel, /sequence\/overview\?bins=1/);
   assert.match(panel, /variant_site_density/);
   assert.match(viewer, /type StructureColorMode = "sequence-variants" \| "plddt-confidence"/);
   assert.match(viewer, /useState<StructureColorMode>\("sequence-variants"\)/);

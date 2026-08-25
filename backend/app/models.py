@@ -333,6 +333,14 @@ class SequenceVariantSiteDensity(BaseModel):
     )
 
 
+class SequenceVariantSiteDensityResponse(BaseModel):
+    uniprot_accession: str
+    canonical_length: int
+    sequence_version: int | None = None
+    coordinate_basis: Literal["canonical_1_based_closed"] = "canonical_1_based_closed"
+    variant_site_density: SequenceVariantSiteDensity
+
+
 class SequenceOverviewPtmType(BaseModel):
     ptm_type: str
     count: int

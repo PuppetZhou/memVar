@@ -360,6 +360,14 @@ export type SequenceVariantSiteDensity = {
   clinvar_plp_semantics: "strict_clinvar_classification_presence_not_consensus";
 };
 
+export type SequenceVariantSiteDensityResponse = {
+  uniprot_accession: string;
+  canonical_length: number;
+  sequence_version: number | null;
+  coordinate_basis: "canonical_1_based_closed";
+  variant_site_density: SequenceVariantSiteDensity;
+};
+
 export type SequenceOverviewBin = {
   index: number;
   start: number;

@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Crosshair } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AlphaFoldStructuresResponse, SequenceOverviewResponse, SequenceVariantSiteDensity } from "../lib/api";
+import { AlphaFoldStructuresResponse, SequenceVariantSiteDensity, SequenceVariantSiteDensityResponse } from "../lib/api";
 import { getJson, resolveApiUrl } from "../lib/api-client";
 import type { SiteSelection } from "./sequence-explorer";
 
@@ -79,12 +79,11 @@ export function StructurePanel({
     return () => controller.abort();
   }, [accession]);
 
-  // Use the exact bounded sequence summary that powers the canonical residue
-  // map. The structure layer never recalculates or combines variant evidence.
+  // The structure layer reads only the canonical variant-density projection.
   useEffect(() => {
     const controller = new AbortController();
     setVariantDensity({ kind: "loading" });
-    getJson<SequenceOverviewResponse>(`/proteins/${encodeURIComponent(accession)}/sequence/overview?bins=1`, controller.signal)
+    getJson<SequenceVariantSiteDensityResponse>(`/proteins/${encodeURIComponent(accession)}/sequence/variant-site-density`, controller.signal)
       .then((data) => setVariantDensity({ kind: "ready", data: data.variant_site_density }))
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === "AbortError") return;

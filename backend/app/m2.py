@@ -39,6 +39,7 @@ from .models import (
     StabilitySubstitutionItem,
     StabilityTotals,
     SequenceVariantSiteDensity,
+    SequenceVariantSiteDensityResponse,
     SequenceTrackSummary,
     SequenceWindow,
     SiteResponse,
@@ -707,6 +708,37 @@ def overview_stability_bins(
     ], StabilityTotals(
         predicted_variants=int(totals[0] or 0), canonical_sites=int(totals[1] or 0),
         distinct_substitutions=int(totals[2] or 0),
+    )
+
+
+@router.get(
+    "/proteins/{acc}/sequence/variant-site-density",
+    response_model=SequenceVariantSiteDensityResponse,
+)
+def sequence_variant_site_density(
+    acc: str,
+    connection: duckdb.DuckDBPyConnection = Depends(get_connection),
+) -> SequenceVariantSiteDensityResponse:
+    overview = require_protein(connection, acc)
+    accession = str(overview["uniprot_accession"])
+    sequence = row_dict(
+        connection,
+        """
+        SELECT length, parent_canonical_sequence_version AS sequence_version
+        FROM protein_sequence
+        WHERE uniprot_accession = ? AND is_canonical = true
+        """,
+        [accession],
+    )
+    if sequence is None:
+        raise HTTPException(status_code=500, detail=f"Canonical sequence missing for: {accession}")
+    length = int(sequence["length"])
+    density, _ = overview_variant_site_density(connection, accession, length)
+    return SequenceVariantSiteDensityResponse(
+        uniprot_accession=accession,
+        canonical_length=length,
+        sequence_version=sequence["sequence_version"],
+        variant_site_density=density,
     )
 
 

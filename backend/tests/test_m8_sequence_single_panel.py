@@ -118,6 +118,39 @@ def test_egfr_overview_supplies_single_panel_data_with_count_conservation() -> N
     assert "ClinicalSignificance" not in response.text
 
 
+def test_variant_site_density_projection_matches_overview_without_unrelated_projection_reads(monkeypatch) -> None:
+    overview = client.get("/api/v1/proteins/P00533/sequence/overview")
+    assert overview.status_code == 200
+    expected = overview.json()
+
+    def unexpected_overview_read(*_args, **_kwargs):
+        raise AssertionError("variant density endpoint must not build the complete sequence overview")
+
+    for helper in (
+        "overview_feature_intervals",
+        "overview_secondary_structure_intervals",
+        "overview_pfam_intervals",
+        "overview_ptm_sites",
+        "overview_covalent_pairs",
+        "overview_density_bins",
+        "overview_stability_bins",
+    ):
+        monkeypatch.setattr(m2, helper, unexpected_overview_read)
+
+    response = client.get("/api/v1/proteins/P00533/sequence/variant-site-density")
+    assert response.status_code == 200
+    body = response.json()
+    assert set(body) == {
+        "uniprot_accession", "canonical_length", "sequence_version",
+        "coordinate_basis", "variant_site_density",
+    }
+    assert body["uniprot_accession"] == expected["uniprot_accession"]
+    assert body["canonical_length"] == expected["canonical_length"]
+    assert body["sequence_version"] == expected["sequence_version"]
+    assert body["coordinate_basis"] == expected["coordinate_basis"]
+    assert body["variant_site_density"] == expected["variant_site_density"]
+
+
 def test_long_and_empty_proteins_have_length_bounded_arrays() -> None:
     dense = client.get("/api/v1/proteins/Q8WXI7/sequence/overview")
     assert dense.status_code == 200
