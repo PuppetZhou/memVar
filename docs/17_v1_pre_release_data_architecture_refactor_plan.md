@@ -42,7 +42,7 @@ memVar 已经进入“冻结科学数据、继续优化呈现”的阶段。预�
 
 以下是可验证的当前进度，不代表最终发布完成：
 
-- `website` 已初始化为本地 `main` Git worktree，并连接空的 public 远端；根级忽略规则已阻止 generated 数据、依赖、构建产物、运行时文件和真实二进制数据进入 Git。首个 commit/push 仍等待本轮测试与 staged 审计完成。
+- `website` 已初始化为本地 `main` Git worktree，并将 code-only 根提交 `afb0bfc` 推送到 public 远端 `PuppetZhou/memVar`；提交前 staged 审计覆盖 223 个文件，根级忽略规则已阻止 generated 数据、依赖、构建产物、运行时文件和真实二进制数据进入 Git。
 - `ReleaseStore` 已覆盖 core、M2/M3/M4、DE、structure、AlphaGenome 与 anatomy 等全部运行时 Module；旧的细粒度数据路径 fallback 已删除，启动会校验 UUID、`RELEASE.json`、`_READY` 与全部必需资产。
 - 新 gnomAD Adapter 已离线处理全部 24,106,956 行，在目标盘 staging 生成 256 个稳定 hash bucket；HTTP/UI 使用 AF-only 合同，Exome、Genome、Joint 独立，AC/AN 等缺失字段明确为 unavailable。
 - 目标盘 staging 已包含 core/variant catalog、Sequence/Variant facts 与全量 gnomAD serving，共用路径为 `memvar-data/.staging/serve-v1.0.0-foundation`；它仍是候选目录，不是 `serving/serve-v1.0.0`。
@@ -131,8 +131,8 @@ memVar 已经进入“冻结科学数据、继续优化呈现”的阶段。预�
 
 ### 2.4 GitHub 与本地 Git 状态
 
-- [PuppetZhou/memVar](https://github.com/PuppetZhou/memVar) 已存在、为 public repository；远端仍为空，尚无首个 commit。
-- `/home/xuyzh/memVar/website` 已初始化为 `main` Git worktree，并配置该 GitHub 仓库为 `origin`；尚未 commit/push。
+- [PuppetZhou/memVar](https://github.com/PuppetZhou/memVar) 已存在、为 public repository；`main` 已包含冻结当前 v1 构建代码的根提交 `afb0bfc`。
+- `/home/xuyzh/memVar/website` 已初始化为 `main` Git worktree，并通过本机既有 PuppetZhou SSH 身份推送到 `origin/main`；本地 `main` 跟踪该远端分支。
 - `website` 根目录已建立项目级 `.gitignore`，当前会排除 `data/generated`、真实数据库/科学数据二进制、`node_modules`、`.next*`、`.runtime` 和测试缓存。
 - 排除 generated、依赖、构建缓存和运行时截图后，网站代码、文档与轻量配置约 5.7 MB，适合普通 Git。
 - 上层目录含 AlphaGenome、AlphaGenome Research、ThermoMPNN 等独立第三方 Git worktree；它们不得作为嵌套仓库整体加入 memVar。只提交 memVar 自己的调用代码和依赖声明。
@@ -948,7 +948,7 @@ production build、warm cache、并发 8：
 - [x] 目标盘确定保留 NTFS3，挂载稳定，UUID 已核验。
 - [ ] 2,764,008,820,308 B AlphaGenome 全量原始数据完整迁入 `source-v1.0.0` 并通过迁移校验。
 - [ ] source-v1.0.0 范围冻结，`AGENT.md` 保持不变。
-- [ ] GitHub 完成 code-only 首次提交，Git 历史中无真实数据或生成资产。
+- [x] GitHub 完成 code-only 首次提交，Git 历史中无真实数据或生成资产。
 - [x] gnomAD 24,106,956 行全量接入，旧在线试验流程删除。
 - [x] Variant Summary 计数 grain 与守恒测试通过。
 - [x] ReleaseStore 覆盖所有运行时 Module，目标盘缺失时 fail closed。
