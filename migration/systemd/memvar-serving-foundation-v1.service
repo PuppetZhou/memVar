@@ -1,0 +1,10 @@
+[Unit]
+Description=memVar serving v1.0 foundation staging copy
+
+[Service]
+Type=oneshot
+ExecStart=/home/xuyzh/miniconda3/bin/python /home/xuyzh/memVar/website/migration/stage_serving_assets_v1.py
+Nice=10
+IOSchedulingClass=idle
+StandardOutput=journal
+StandardError=journal
