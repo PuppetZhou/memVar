@@ -9,7 +9,7 @@ import { SiteSelection } from "./sequence-explorer";
 import { StatusMessage } from "./status-message";
 import { formatFieldLabel, formatSourceLabel, formatTermLabel } from "../lib/display-labels";
 import { clinicalClassification, clinicalClassificationTone } from "../lib/variant-classification";
-import { clinvarRecordUrl, normalizedSource, VARIANT_EVIDENCE_BRANCHES, VariantEvidenceBranch } from "../lib/variant-evidence";
+import { clinvarRecordUrl, gnomadAncestryTone, normalizedSource, stabilityTone, variantSourceTone, VARIANT_EVIDENCE_BRANCHES, type VariantEvidenceBranch, type VariantSourceTone } from "../lib/variant-evidence";
 import { columnsForPreset, toggleVariantColumn, VARIANT_OPTIONAL_COLUMNS, VariantOptionalColumn, VariantViewPreset, variantTableColumnCount } from "../lib/variant-table-view";
 import { SourceBadge } from "./ui/source-badge";
 import { SourceContext } from "./ui/source-context";
@@ -71,7 +71,7 @@ function StabilityValue({ prediction }: { prediction: StabilityPrediction | null
   if (!prediction) return <span className="stability-missing">— <small>Not predicted</small></span>;
   const clamped = Math.max(-3, Math.min(3, prediction.ddg));
   const width = Math.abs(clamped) / 3 * 50;
-  const className = prediction.ddg <= -0.5 ? "stabilizing" : prediction.ddg >= 0.5 ? "destabilizing" : "small-change";
+  const className = stabilityTone(prediction.direction);
   return <span className={`stability-value ${className}`} title={`${stabilityLabel(prediction)}; ${prediction.ddg.toFixed(4)} ${prediction.unit}`}>
     <span className="stability-number">{prediction.ddg >= 0 ? "+" : ""}{prediction.ddg.toFixed(2)} <small>{prediction.unit}</small></span>
     <span className="stability-mini-bar" aria-hidden="true"><i style={prediction.ddg < 0 ? { right: "50%", width: `${width}%` } : { left: "50%", width: `${width}%` }} /></span>
@@ -94,7 +94,7 @@ function PopulationBar({ group }: { group: PopulationFrequencyGroup }) {
   const title = group.allele_frequency === null
     ? `${group.label} (${group.ancestry_group.toUpperCase()}): AF unavailable`
     : `${group.label} (${group.ancestry_group.toUpperCase()}): AF ${populationAf(group.allele_frequency)}`;
-  return <li className="population-frequency-bar" data-population={group.ancestry_group} data-available={group.allele_frequency !== null} title={title}>
+  return <li className={`population-frequency-bar population-${gnomadAncestryTone(group.ancestry_group)}`} data-available={group.allele_frequency !== null} title={title}>
     <span className="population-frequency-label"><strong>{group.label}</strong><small>{group.ancestry_group.toUpperCase()}</small></span>
     <span className="population-frequency-rail" aria-hidden="true"><i style={{ width: `${width}%` }} /></span>
     <strong>{group.allele_frequency === null ? "—" : populationAf(group.allele_frequency)}</strong>
@@ -197,21 +197,21 @@ function VariantDetail({ accession, variantKey, branch, onBranchChange, onClose 
   </div>;
 }
 
-function EvidenceAction({ item, branch, active, controls, onOpen, children }: { item: VariantItem; branch: VariantEvidenceBranch; active: boolean; controls: string; onOpen: (branch: VariantEvidenceBranch, trigger: HTMLButtonElement) => void; children: React.ReactNode }) {
-  return <button type="button" className={`evidence-action source-${branch} ${active ? "is-active" : ""}`} aria-label={`Open ${branch} evidence for ${item.primary_effect.hgvsp ?? item.variant_key}`} aria-expanded={active} aria-controls={controls} onClick={(event) => onOpen(branch, event.currentTarget)}>{children}</button>;
+function EvidenceAction({ item, branch, tone, active, controls, onOpen, children }: { item: VariantItem; branch: VariantEvidenceBranch; tone: VariantSourceTone; active: boolean; controls: string; onOpen: (branch: VariantEvidenceBranch, trigger: HTMLButtonElement) => void; children: React.ReactNode }) {
+  return <button type="button" className={`evidence-action source-${tone} ${active ? "is-active" : ""}`} aria-label={`Open ${branch} evidence for ${item.primary_effect.hgvsp ?? item.variant_key}`} aria-expanded={active} aria-controls={controls} onClick={(event) => onOpen(branch, event.currentTarget)}>{children}</button>;
 }
 
 function VariantRow({ item, accession, openEvidence, visibleColumns, onOpen, onClose, onBranchChange }: { item: VariantItem; accession: string; openEvidence: OpenEvidence; visibleColumns: VariantOptionalColumn[]; onOpen: (branch: VariantEvidenceBranch, trigger: HTMLButtonElement) => void; onClose: () => void; onBranchChange: (branch: VariantEvidenceBranch) => void }) {
   const effect = item.primary_effect;
   const open = openEvidence?.variantKey === item.variant_key;
   const panelId = `variant-evidence-${item.variant_key.replaceAll(/[^a-zA-Z0-9_-]/g, "-")}`;
-  const sourceActions = item.source_badges.map((source) => ({ source, branch: normalizedSource(source) }));
+  const sourceActions = item.source_badges.map((source) => ({ source, branch: normalizedSource(source), tone: variantSourceTone(source) }));
   return <>
     <tr className={`variant-summary-row ${open ? "expanded" : ""}`}>
       <th scope="row" className="variant-field-identity"><button className="row-toggle" type="button" aria-expanded={open} aria-controls={panelId} aria-label={`${open ? "Close" : "Open"} all evidence for ${item.variant_key}`} onClick={(event) => open ? onClose() : onOpen("facts", event.currentTarget)}><PanelRightOpen aria-hidden="true" size={18} /><span><strong>{readable(effect.hgvsp)}</strong><small>{effect.effect_scope === "canonical" ? "Canonical protein effect" : "Isoform protein effect"}{effect.protein_start ? ` · position ${effect.protein_start}${effect.protein_end !== effect.protein_start ? `–${effect.protein_end}` : ""}` : " · unlocated"}</small><em>All evidence <ChevronRight aria-hidden="true" size={14} /></em></span></button></th>
       <td className="variant-field-protein"><strong>{formatTermLabel(effect.consequence)}</strong><code>{item.variant_key}</code><small>{item.genome_build} · {formatTermLabel(item.variant_class)}</small></td>
-      {visibleColumns.includes("evidence") && <td className="variant-field-source"><div className="source-actions">{sourceActions.length ? sourceActions.map(({ source, branch }) => branch === "other" ? <SourceBadge key={source}>{formatSourceLabel(source)}</SourceBadge> : <EvidenceAction key={source} item={item} branch={branch} controls={panelId} active={open && openEvidence?.branch === branch} onOpen={onOpen}>{branch === "population" ? <Users aria-hidden="true" size={15} /> : <Database aria-hidden="true" size={15} />}{formatSourceLabel(source)}</EvidenceAction>) : <SourceBadge>Source not supplied</SourceBadge>}</div><small>Each source opens its own evidence branch.</small></td>}
-      {visibleColumns.includes("predictions") && <td className="variant-field-prediction"><div className="variant-model-stack"><span><small>AlphaMissense · predicted</small><strong>{readable(item.am_class)}</strong>{item.am_pathogenicity !== null && <em>{readable(item.am_pathogenicity)}</em>}</span>{item.stability_prediction ? <EvidenceAction item={item} branch="stability" controls={panelId} active={open && openEvidence?.branch === "stability"} onOpen={onOpen}><Activity aria-hidden="true" size={16} /><span><small>Stability ΔΔG · predicted</small><StabilityValue prediction={item.stability_prediction} /></span></EvidenceAction> : <span><small>Stability ΔΔG · predicted</small><StabilityValue prediction={null} /></span>}</div></td>}
+      {visibleColumns.includes("evidence") && <td className="variant-field-source"><div className="source-actions">{sourceActions.length ? sourceActions.map(({ source, branch, tone }) => branch === "other" ? <SourceBadge key={source} tone={tone}>{formatSourceLabel(source)}</SourceBadge> : <EvidenceAction key={source} item={item} branch={branch} tone={tone} controls={panelId} active={open && openEvidence?.branch === branch} onOpen={onOpen}>{branch === "population" ? <Users aria-hidden="true" size={15} /> : <Database aria-hidden="true" size={15} />}{formatSourceLabel(source)}</EvidenceAction>) : <SourceBadge>Source not supplied</SourceBadge>}</div><small>Available source records open their own evidence branch.</small></td>}
+      {visibleColumns.includes("predictions") && <td className="variant-field-prediction"><div className="variant-model-stack"><span className="model-context source-prediction"><small>AlphaMissense · predicted</small><strong>{readable(item.am_class)}</strong>{item.am_pathogenicity !== null && <em>{readable(item.am_pathogenicity)}</em>}</span>{item.stability_prediction ? <EvidenceAction item={item} branch="stability" tone="stability" controls={panelId} active={open && openEvidence?.branch === "stability"} onOpen={onOpen}><Activity aria-hidden="true" size={16} /><span><small>Stability ΔΔG · predicted</small><StabilityValue prediction={item.stability_prediction} /></span></EvidenceAction> : <span className="model-context source-stability"><small>Stability ΔΔG · predicted</small><StabilityValue prediction={null} /></span>}</div></td>}
       {visibleColumns.includes("population") && <td className="variant-field-population"><dl className="variant-population-stack"><div><dt>gnomAD joint AF</dt><dd>{readable(item.joint_af)}</dd></div><div><dt>dbSNP</dt><dd>{readable(item.existing_variation)}</dd></div></dl></td>}
     </tr>
     {open && <tr className="detail-row"><td colSpan={variantTableColumnCount(visibleColumns)}><VariantDetail accession={accession} variantKey={item.variant_key} branch={openEvidence.branch} onBranchChange={onBranchChange} onClose={onClose} /></td></tr>}

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-import { clinvarRecordUrl, normalizedSource, VARIANT_EVIDENCE_BRANCHES } from "../lib/variant-evidence.ts";
+import { clinvarRecordUrl, gnomadAncestryTone, normalizedSource, stabilityTone, variantSourceTone, VARIANT_EVIDENCE_BRANCHES } from "../lib/variant-evidence.ts";
 import { columnsForPreset, toggleVariantColumn, VARIANT_OPTIONAL_COLUMNS, variantTableColumnCount } from "../lib/variant-table-view.ts";
 
 const component = () => readFile(new URL("../components/variant-table.tsx", import.meta.url), "utf8");
@@ -13,7 +13,34 @@ test("variant evidence branches stay source-specific and complete", () => {
   assert.equal(normalizedSource("ClinVar"), "clinvar");
   assert.equal(normalizedSource("Cosmic"), "cosmic");
   assert.equal(normalizedSource("gnomAD"), "population");
+  assert.equal(normalizedSource("dbSNP"), "other");
   assert.equal(normalizedSource("AlphaMissense"), "other");
+});
+
+test("variant colour adapters keep provenance, stability, clinical assertions, and ancestry distinct", async () => {
+  const [source, tokens, styles] = await Promise.all([
+    component(),
+    readFile(new URL("../app/styles/tokens.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/styles/m18-go-variant.css", import.meta.url), "utf8"),
+  ]);
+  assert.equal(variantSourceTone("ClinVar"), "clinvar");
+  assert.equal(variantSourceTone("gnomAD"), "gnomad");
+  assert.equal(variantSourceTone("dbSNP"), "dbsnp");
+  assert.equal(variantSourceTone("AlphaMissense"), "prediction");
+  assert.equal(stabilityTone("predicted_stabilizing"), "stabilizing");
+  assert.equal(stabilityTone("predicted_destabilizing"), "destabilizing");
+  assert.equal(stabilityTone("small_predicted_change"), "small-change");
+  assert.equal(gnomadAncestryTone("AFR"), "afr");
+  assert.equal(gnomadAncestryTone("unrecorded_group"), "remaining");
+  for (const token of ["source-clinvar", "source-gnomad", "source-cosmic", "source-dbsnp", "source-prediction", "stability-stabilizing", "stability-destabilizing", "clinvar-classification-pathogenic", "population-afr"]) {
+    assert.match(tokens, new RegExp(`--${token}:`));
+  }
+  assert.match(source, /variantSourceTone\(source\)/);
+  assert.match(source, /gnomadAncestryTone\(group\.ancestry_group\)/);
+  assert.match(source, /stabilityTone\(prediction\.direction\)/);
+  assert.match(styles, /\.evidence-action\.source-dbsnp/);
+  assert.match(styles, /\.population-frequency-bar\.population-afr/);
+  assert.doesNotMatch(styles, /data-population=/);
 });
 
 test("ClinVar links accept only a stored stable RCV accession", () => {
