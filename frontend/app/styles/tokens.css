@@ -1,0 +1,194 @@
+:root {
+  /* M18 interface palette. These semantic colours organise the interface;
+     source-specific scientific scales continue to use --palette-* below. */
+  --ui-ink-black: #001219;
+  /* UI framing extends the approved palette with its paired light surfaces.
+     These tokens do not encode source evidence or scientific predictions. */
+  --ui-oxford-navy: #293241;
+  --ui-cerulean: #3d5a80;
+  /* UI framing intentionally avoids a second green theme. Green remains a
+     reserved section identity for Anatomy and a scientific data colour. */
+  --ui-verdigris: #2a9d8f;
+  /* Legacy token name; its value is now a warm neutral surface rather than
+     another blue cast across generic controls. */
+  --ui-frosted-blue: #dad7cd;
+  --ui-honeydew: #f4f1e8;
+  --ui-burnt-peach: #f59c7c;
+  --ui-light-cyan: #e0fbfc;
+  --ui-charcoal-blue: #264653;
+  --palette-blue: #7b95c6;
+  --palette-cyan: #49c2d9;
+  --palette-sky: #a1d8e8;
+  --palette-green: #67a583;
+  --palette-leaf: #a2c986;
+  --palette-mint: #d0e2c0;
+  --palette-yellow: #fded95;
+  --palette-peach: #ffc1a6;
+  --palette-salmon: #f59c7c;
+  /* Legacy UI selectors use this name for warnings; keep it explicit rather
+     than falling through to an undefined custom property. */
+  --palette-orange: var(--palette-salmon);
+  --palette-coral: #f47254;
+  --palette-red: #c85e62;
+
+  --color-ink: var(--ui-ink-black);
+  --color-muted: #405566;
+  /* A cool slate canvas makes white evidence cards and coloured rails read
+     clearly, rather than washing the whole page in a pale blue tint. */
+  --color-canvas: #f2f0ea;
+  --color-surface: #ffffff;
+  --color-border: #d4cfc5;
+  --color-border-strong: #aaa398;
+  --color-primary: var(--ui-oxford-navy);
+  --color-primary-hover: var(--ui-charcoal-blue);
+  --color-accent: #e76f51;
+  --color-link: #005f73;
+  --color-teal: #2a9d8f;
+  --color-focus: #ee9b00;
+  /* Section identity tokens are UI navigation and framing roles, never
+     scientific encodings or source evidence colours. Each reading section has
+     its own accent and light surface, even where families are intentionally related. */
+  --section-foundation-50: #f7f5ef;
+  --section-foundation-100: #e3ddd1;
+  --section-foundation-400: #77878a;
+  --section-foundation-600: #264653;
+  --section-foundation-800: #001219;
+  --section-genetic-50: #fff4ef;
+  --section-genetic-100: #ffd2c2;
+  --section-genetic-400: #f59c7c;
+  --section-genetic-600: #e76f51;
+  --section-genetic-800: #9b2226;
+  --section-molecular-50: #fff9e8;
+  --section-molecular-100: #f7df9a;
+  --section-molecular-400: #e9c46a;
+  --section-molecular-600: #ee9b00;
+  --section-molecular-800: #8a4f00;
+  --section-network-50: #f7f5f1;
+  --section-network-100: #ded8cf;
+  --section-network-400: #9b8f7f;
+  --section-network-600: #6b6256;
+  --section-network-800: #293241;
+  --section-overview-50: #f7f5ef;
+  --section-overview-100: #e3ddd1;
+  --section-overview-400: #77878a;
+  --section-overview-600: #264653;
+  --section-overview-800: #001219;
+  --section-sequence-50: #effafa;
+  --section-sequence-100: #bfe7e1;
+  --section-sequence-400: #49c2d9;
+  --section-sequence-600: #0a9396;
+  --section-sequence-800: #005f73;
+  --section-structure-50: #fff9e8;
+  --section-structure-100: #f7df9a;
+  --section-structure-400: #e9c46a;
+  --section-structure-600: #ee9b00;
+  --section-structure-800: #8a4f00;
+  --section-variants-50: #fff4ef;
+  --section-variants-100: #ffd2c2;
+  --section-variants-400: #f59c7c;
+  --section-variants-600: #e76f51;
+  --section-variants-800: #9b2226;
+  --variant-summary-surface: color-mix(in srgb, var(--section-variants-50) 72%, white);
+  --variant-summary-border: color-mix(in srgb, var(--section-variants-600) 38%, var(--color-border));
+  --variant-summary-ink: var(--section-variants-800);
+  /* Anatomy is the only green section identity. Its greens do not encode a
+     numeric or clinical scale. */
+  --section-anatomy-50: #f4f7f1;
+  --section-anatomy-100: #d0e2c0;
+  --section-anatomy-400: #a2c986;
+  --section-anatomy-600: #588157;
+  --section-anatomy-800: #344e41;
+  --section-expression-50: #fdf4f5;
+  --section-expression-100: #f3c5c7;
+  --section-expression-400: #d98b91;
+  --section-expression-600: #c85e62;
+  --section-expression-800: #7a284f;
+  --section-qtl-50: #fff8ed;
+  --section-qtl-100: #f8d8a7;
+  --section-qtl-400: #f4a261;
+  --section-qtl-600: #ca6702;
+  --section-qtl-800: #7b3d00;
+  --section-alphagenome-50: #f2f7fa;
+  --section-alphagenome-100: #c8dce8;
+  --section-alphagenome-400: #7b95c6;
+  --section-alphagenome-600: #457b9d;
+  --section-alphagenome-800: #1d3557;
+  --section-interactions-50: #f7f5f1;
+  --section-interactions-100: #ded8cf;
+  --section-interactions-400: #9b8f7f;
+  --section-interactions-600: #6b6256;
+  --section-interactions-800: #293241;
+  --section-diseases-50: #fff3f0;
+  --section-diseases-100: #f4c0b5;
+  --section-diseases-400: #e76f51;
+  --section-diseases-600: #ae2012;
+  --section-diseases-800: #7f1713;
+  --section-foundation: var(--section-foundation-600);
+  --section-genetic: var(--section-genetic-600);
+  --section-molecular: var(--section-molecular-600);
+  --section-network: var(--section-network-600);
+  --source-clinvar: #3f51b5;
+  --source-cosmic: #6d4aa2;
+  --source-stability: #245f78;
+  --source-gnomad: #0369a1;
+  --population-afr: #0072b2;
+  --population-ami: #d55e00;
+  --population-amr: #009e73;
+  --population-asj: #b85c91;
+  --population-eas: #332288;
+  --population-fin: #117733;
+  --population-mid: #882255;
+  --population-nfe: #994455;
+  --population-sas: #997700;
+  --population-remaining: #4477aa;
+  --color-conflict: color-mix(in srgb, var(--palette-red) 74%, var(--color-ink));
+  --color-success: color-mix(in srgb, var(--palette-green) 68%, var(--color-ink));
+  --color-warning-bg: color-mix(in srgb, var(--palette-yellow) 42%, white);
+  --color-error-bg: color-mix(in srgb, var(--palette-red) 14%, white);
+  --color-on-data: #ffffff;
+  --color-data-1: var(--palette-blue);
+  --color-data-2: var(--palette-cyan);
+  --color-data-3: var(--palette-sky);
+  --color-data-4: var(--palette-green);
+  --color-data-5: var(--palette-leaf);
+  --color-data-6: var(--palette-mint);
+  --color-data-7: var(--palette-yellow);
+  --color-data-8: var(--palette-peach);
+  --color-data-9: var(--palette-salmon);
+  --color-data-10: var(--palette-coral);
+  --color-data-11: var(--palette-red);
+
+  --gradient-brand: linear-gradient(135deg, #293241 0%, #264653 58%, #e76f51 100%);
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --font-size-meta: 0.875rem;
+  --font-size-body: 1rem;
+  --font-size-emphasis: 1.0625rem;
+  --radius-control: 0.55rem;
+  --radius-card: 0.875rem;
+  --radius-pill: 999px;
+  --shadow-card: 0 1px 2px rgb(0 18 25 / 5%), 0 10px 28px rgb(29 53 87 / 7%);
+  --shadow-raised: 0 3px 8px rgb(0 18 25 / 8%), 0 18px 42px rgb(29 53 87 / 13%);
+  --source-context-bg: #fbfaf6;
+  --source-context-border: color-mix(in srgb, var(--palette-blue) 48%, var(--color-border));
+
+  /* Existing selectors consume these aliases while M6 is applied incrementally. */
+  --ink: var(--color-ink);
+  --muted: var(--color-muted);
+  --paper: var(--color-canvas);
+  --surface: var(--color-surface);
+  --line: var(--color-border);
+  --accent: var(--color-primary);
+  --accent-dark: var(--color-primary-hover);
+  --accent-soft: color-mix(in srgb, var(--ui-burnt-peach) 14%, white);
+  --warning-bg: var(--color-warning-bg);
+  --warning-border: var(--palette-salmon);
+  --error-bg: var(--color-error-bg);
+  --error-border: var(--palette-red);
+  --shadow: var(--shadow-card);
+}

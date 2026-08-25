@@ -1,0 +1,102 @@
+/*
+ * Section accents organize rails, icon tiles, borders, and active controls.
+ * Every reading section uses a distinct UI role; scientific chart/source
+ * colours remain local to their evidence components.
+ */
+.overview-section {
+  --section-50: var(--section-overview-50);
+  --section-100: var(--section-overview-100);
+  --section-400: var(--section-overview-400);
+  --section-600: var(--section-overview-600);
+  --section-800: var(--section-overview-800);
+  --section-accent: var(--section-600);
+  --section-soft: var(--section-50);
+  --section-border: color-mix(in srgb, var(--section-400) 44%, var(--color-border));
+  --section-deep: var(--section-800);
+}
+
+.identifiers-panel, .annotation-section, #overview { --section-50: var(--section-overview-50); --section-100: var(--section-overview-100); --section-400: var(--section-overview-400); --section-600: var(--section-overview-600); --section-800: var(--section-overview-800); }
+#sequence { --section-50: var(--section-sequence-50); --section-100: var(--section-sequence-100); --section-400: var(--section-sequence-400); --section-600: var(--section-sequence-600); --section-800: var(--section-sequence-800); }
+#structure { --section-50: var(--section-structure-50); --section-100: var(--section-structure-100); --section-400: var(--section-structure-400); --section-600: var(--section-structure-600); --section-800: var(--section-structure-800); }
+#variants { --section-50: var(--section-variants-50); --section-100: var(--section-variants-100); --section-400: var(--section-variants-400); --section-600: var(--section-variants-600); --section-800: var(--section-variants-800); }
+#anatomy { --section-50: var(--section-anatomy-50); --section-100: var(--section-anatomy-100); --section-400: var(--section-anatomy-400); --section-600: var(--section-anatomy-600); --section-800: var(--section-anatomy-800); }
+#expression { --section-50: var(--section-expression-50); --section-100: var(--section-expression-100); --section-400: var(--section-expression-400); --section-600: var(--section-expression-600); --section-800: var(--section-expression-800); }
+#qtl { --section-50: var(--section-qtl-50); --section-100: var(--section-qtl-100); --section-400: var(--section-qtl-400); --section-600: var(--section-qtl-600); --section-800: var(--section-qtl-800); }
+#alphagenome { --section-50: var(--section-alphagenome-50); --section-100: var(--section-alphagenome-100); --section-400: var(--section-alphagenome-400); --section-600: var(--section-alphagenome-600); --section-800: var(--section-alphagenome-800); }
+#interactions { --section-50: var(--section-interactions-50); --section-100: var(--section-interactions-100); --section-400: var(--section-interactions-400); --section-600: var(--section-interactions-600); --section-800: var(--section-interactions-800); }
+#diseases { --section-50: var(--section-diseases-50); --section-100: var(--section-diseases-100); --section-400: var(--section-diseases-400); --section-600: var(--section-diseases-600); --section-800: var(--section-diseases-800); }
+
+.overview-section > .section-heading {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--section-border);
+  border-top: 5px solid var(--section-accent);
+  border-left: 5px solid var(--section-accent);
+  border-radius: var(--radius-card);
+  /* Keep dense evidence headings on white. The saturated rails carry section
+     identity without turning every content block into a pale colour field. */
+  background: white;
+  padding: .82rem 1rem;
+  box-shadow: 0 4px 14px rgb(30 41 59 / 8%);
+}
+
+.overview-section > .section-heading .eyebrow { color: var(--section-deep); }
+.overview-section > .section-heading h2 { color: var(--color-ink); }
+.overview-section > .section-heading > p:last-child:not(.eyebrow) { color: var(--color-muted); }
+
+.lazy-protein-section { min-height: 24rem; }
+.lazy-protein-section-placeholder { display: grid; min-height: 24rem; place-content: center; gap: .3rem; border: 1px dashed var(--section-border); border-radius: var(--radius-card); background: var(--section-soft); padding: 1rem; color: var(--color-muted); text-align: center; }
+.lazy-protein-section-placeholder strong { color: var(--section-deep); font-size: 1rem; }
+.lazy-protein-section-placeholder span { font-size: .875rem; }
+
+#overview .info-card,
+.identifiers-panel .identifier-section,
+.annotation-section > .info-card,
+#sequence .sequence-panel,
+#structure .structure-panel-card,
+#variants .variant-browser,
+#expression .expression-panel,
+#expression .differential-expression,
+#qtl .qtl-summary-panel,
+#alphagenome .alphagenome-card,
+#interactions .interaction-summary-panel,
+#diseases .disease-source-card {
+  border-color: var(--section-border);
+  box-shadow: inset 0 3px 0 var(--section-accent), var(--shadow-card);
+}
+
+#overview .info-card h3,
+.identifiers-panel .identifier-section h3,
+.annotation-section > .info-card > h2,
+.annotation-section > .info-card > h3 { color: var(--section-deep); }
+
+.protein-section-nav a[href="#overview"] { --nav-accent: var(--section-overview-600); --nav-deep: var(--section-overview-800); }
+.protein-section-nav a[href="#sequence"] { --nav-accent: var(--section-sequence-600); --nav-deep: var(--section-sequence-800); }
+.protein-section-nav a[href="#structure"] { --nav-accent: var(--section-structure-600); --nav-deep: var(--section-structure-800); }
+.protein-section-nav a[href="#variants"] { --nav-accent: var(--section-variants-600); --nav-deep: var(--section-variants-800); }
+.protein-section-nav a[href="#anatomy"] { --nav-accent: var(--section-anatomy-600); --nav-deep: var(--section-anatomy-800); }
+.protein-section-nav a[href="#expression"] { --nav-accent: var(--section-expression-600); --nav-deep: var(--section-expression-800); }
+.protein-section-nav a[href="#qtl"] { --nav-accent: var(--section-qtl-600); --nav-deep: var(--section-qtl-800); }
+.protein-section-nav a[href="#alphagenome"] { --nav-accent: var(--section-alphagenome-600); --nav-deep: var(--section-alphagenome-800); }
+.protein-section-nav a[href="#interactions"] { --nav-accent: var(--section-interactions-600); --nav-deep: var(--section-interactions-800); }
+.protein-section-nav a[href="#diseases"] { --nav-accent: var(--section-diseases-600); --nav-deep: var(--section-diseases-800); }
+.protein-section-nav a:hover,
+.protein-section-nav a:focus-visible { background: color-mix(in srgb, var(--nav-accent) 12%, white); color: var(--section-network-800); }
+.protein-section-nav a.is-active { border-color: var(--nav-deep); background: var(--nav-deep); color: white; }
+
+.protein-section-nav-group { --group-accent: var(--section-foundation); --group-deep: var(--section-foundation-800); position: relative; border-top: 4px solid var(--group-accent); background: white; transition: background-color 160ms ease, box-shadow 160ms ease; }
+.protein-section-nav-group.group-genetic { --group-accent: var(--section-genetic); --group-deep: var(--section-genetic-800); }
+.protein-section-nav-group.group-molecular { --group-accent: var(--section-molecular); --group-deep: var(--section-molecular-800); }
+.protein-section-nav-group.group-network { --group-accent: var(--section-network); --group-deep: var(--section-network-800); }
+.protein-section-nav-group.is-group-active { background: color-mix(in srgb, var(--group-accent) 6%, white); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--group-accent) 28%, transparent); }
+.protein-section-nav-group > header { display: flex; align-items: center; gap: .5rem; margin-bottom: .42rem; }
+.protein-section-nav-group > header > span:last-child { display: grid; min-width: 0; }
+.protein-section-nav-group > header strong { color: color-mix(in srgb, var(--group-accent) 72%, var(--color-ink)); font-size: .8125rem; font-weight: 820; letter-spacing: .045em; line-height: 1.2; text-transform: uppercase; }
+.protein-section-nav-group > header small { overflow: hidden; color: var(--color-muted); font-size: .8125rem; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; }
+.protein-nav-group-icon { display: inline-grid; flex: none; width: 2rem; height: 2rem; place-items: center; border: 1px solid var(--group-deep); border-radius: .55rem; background: var(--group-deep); color: white; box-shadow: 0 2px 7px color-mix(in srgb, var(--group-deep) 24%, transparent); }
+.protein-section-nav-group a { --nav-accent: var(--group-accent); min-height: 2.5rem; transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease; }
+.protein-section-nav-group a:hover { transform: translateY(-1px); }
+
+@media (max-width: 620px) {
+  .overview-section > .section-heading { padding: .72rem .8rem; }
+}

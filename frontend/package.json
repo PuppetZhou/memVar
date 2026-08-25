@@ -1,0 +1,25 @@
+{
+  "name": "memvar-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test:navigator": "node --experimental-strip-types --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "echarts": "^6.1.0",
+    "lucide-react": "0.468.0",
+    "molstar": "^5.11.0",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "typescript": "latest"
+  }
+}

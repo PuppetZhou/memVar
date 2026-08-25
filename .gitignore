@@ -1,0 +1,55 @@
+# Generated and real data
+/data/generated/
+*.parquet
+*.duckdb
+*.h5
+*.hdf5
+*.pdb
+*.pdb.gz
+*.vcf
+*.vcf.gz
+*.bcf
+*.bam
+*.cram
+*.fastq
+*.fastq.gz
+*.fq
+*.fq.gz
+*.fasta
+*.fasta.gz
+*.fa
+*.fa.gz
+*.tar
+*.tar.gz
+
+# JavaScript build artifacts and dependencies
+**/node_modules/
+**/.next/
+**/.next-*/
+*.tsbuildinfo
+
+# Local runtime state and logs
+/.runtime/
+/logs/
+*.log
+
+# Python caches and virtual environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Local environment and secret files
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# IDE and operating-system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,96 @@
+/* M17 evidence hierarchy: backgrounds organize field roles only; they do not
+   encode clinical interpretation or evidence strength. */
+.variant-browser .variant-table { min-width: 1220px; font-size: .84rem; }
+.variant-browser .variant-table caption { padding: .75rem 1rem; color: var(--color-muted); font-size: .8125rem; text-align: left; caption-side: top; }
+.variant-browser .variant-table .variant-column-groups th { position: sticky; top: 0; z-index: 2; border-bottom: 1px solid var(--color-border); padding-block: .5rem; color: var(--color-ink); font-size: .8125rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.variant-browser .variant-table thead tr:not(.variant-column-groups) th { position: sticky; top: 2.35rem; z-index: 2; font-size: .8125rem; font-weight: 780; }
+.variant-browser .variant-table tbody th,
+.variant-browser .variant-table tbody td { border-bottom-color: color-mix(in srgb, var(--color-border) 82%, white); padding: .78rem .7rem; }
+.variant-browser .variant-table .variant-field-identity { background: color-mix(in srgb, var(--palette-sky) 11%, white); }
+.variant-browser .variant-table .variant-field-protein { background: color-mix(in srgb, var(--palette-cyan) 8%, white); }
+.variant-browser .variant-table .variant-field-source { background: color-mix(in srgb, var(--palette-yellow) 11%, white); }
+.variant-browser .variant-table .variant-field-prediction { background: color-mix(in srgb, var(--palette-peach) 12%, white); }
+.variant-browser .variant-table .variant-field-population { background: color-mix(in srgb, #2563eb 8%, white); }
+.variant-browser .variant-table .variant-field-identity { position: sticky; left: 0; box-shadow: 1px 0 0 color-mix(in srgb, var(--palette-blue) 24%, var(--color-border)); }
+.variant-browser .variant-table .variant-column-groups .variant-field-identity { z-index: 4; }
+.variant-browser .variant-table thead tr:not(.variant-column-groups) .variant-field-identity { z-index: 3; }
+.variant-browser .variant-table tbody .variant-field-identity { z-index: 1; }
+.variant-browser .variant-table tbody tr:hover > .variant-field-identity,
+.variant-browser .variant-table tbody tr:hover > .variant-field-protein,
+.variant-browser .variant-table tbody tr:hover > .variant-field-source,
+.variant-browser .variant-table tbody tr:hover > .variant-field-prediction,
+.variant-browser .variant-table tbody tr:hover > .variant-field-population { background: color-mix(in srgb, var(--palette-blue) 10%, white); }
+.variant-browser .variant-table small { font-size: .8125rem; line-height: 1.35; }
+.variant-browser .variant-table .source-badges span { font-size: .8125rem; }
+.covalent-pair-legend { gap: .48rem .9rem; border-top-style: solid; padding-top: .55rem; }
+.covalent-pair-legend li { align-items: center; color: #405259; font-size: .875rem; line-height: 1.2; }
+.covalent-pair-legend strong { color: var(--ink); }
+.covalent-pair-legend .covalent-type-summary { width: 100%; margin-bottom: .05rem; color: var(--ink); font-size: .9rem; line-height: 1; }
+.covalent-pair-legend .covalent-type-summary::before { width: .22rem; align-self: stretch; border-radius: 999px; background: #2a9d8f; content: ""; }
+.sequence-covalent-row .sequence-track-plot { min-height: 3.4rem; padding-block: .3rem; }
+.sequence-covalent-row .sequence-track-plot svg { display: block; min-height: 3.4rem; overflow: visible; }
+.sequence-covalent-row circle { stroke-width: 1.5px; filter: drop-shadow(0 1px 1px rgb(15 23 42 / 18%)); }
+.sequence-covalent-row .covalent-connector { fill: none; stroke-width: 2px; stroke-dasharray: none; stroke-linecap: round; opacity: .88; vector-effect: non-scaling-stroke; }
+.site-evidence-covalent .covalent-bond-type { margin: 0 0 .18rem; color: var(--accent-dark); font-size: .8125rem; font-weight: 800; letter-spacing: .025em; text-transform: uppercase; }
+.site-evidence-body h4 .covalent-section-type { display: inline-flex; margin-left: .45rem; border: 1px solid #78b8ae; border-radius: 999px; background: #edf8f5; padding: .16rem .48rem; color: #175f59; font-size: .8125rem; font-weight: 780; vertical-align: .1em; }
+.site-evidence-covalent article { border-color: #b9cbc8; border-left: 4px solid #2a9d8f; background: #fbfefd; padding: .72rem .78rem; font-size: .875rem; }
+
+/* The model remains the real local AlphaFold PDB. Mol* renders a molecular
+   surface with separately selectable sequence-variant and pLDDT colour modes;
+   it deliberately does not use a cartoon/ribbon view. */
+.structure-viewer-shell .structure-viewer-stage { border: .55rem solid white; outline-color: #8bb7bf; background: radial-gradient(circle at 50% 43%, #ffffff 0%, #f3f9fa 55%, #dfedf0 100%); box-shadow: inset 0 0 0 1px rgb(15 23 42 / 7%), inset 0 -4rem 8rem rgb(38 70 83 / 5%); }
+.structure-viewer-shell .structure-stage-caption { border-radius: .45rem; border-color: color-mix(in srgb, var(--palette-cyan) 35%, var(--color-border)); background: rgb(255 255 255 / 93%); padding: .58rem .75rem; }
+.structure-viewer-shell .structure-stage-caption strong { color: #173f54; font-size: .9rem; }
+.structure-viewer-shell .structure-stage-caption span { color: #405259; font-size: .875rem; }
+.structure-viewer-shell .structure-viewer-toolbar { background: linear-gradient(90deg, color-mix(in srgb, var(--palette-sky) 10%, white), white 64%); }
+.structure-viewer-shell .structure-viewer-actions .structure-action { display: inline-flex; align-items: center; gap: .38rem; font-size: .875rem; }
+.structure-viewer-shell .structure-viewer-actions .structure-action svg { flex: none; }
+.structure-viewer-shell .structure-representation-note { border-block-color: #b9ccd0; background: #eef6f7; }
+.structure-viewer-shell .structure-representation-note strong,
+.structure-viewer-shell .structure-representation-note span { font-size: .875rem; }
+.structure-viewer-shell .structure-viewer-footer { border-top-color: #b9ccd0; background: #f5fafb; }
+.structure-viewer-shell .structure-viewer-footer p,
+.structure-viewer-shell .structure-confidence-legend li { color: #405259; font-size: .875rem; }
+.structure-fragment-bar > label,
+.structure-fragment-facts dt,
+.structure-viewer-toolbar > div:first-child span { color: #405259; font-size: .875rem; }
+.structure-fragment-facts dd { font-size: .925rem; }
+
+.anatomy-map-notice { display: grid; gap: .1rem; margin-top: .7rem; border: 1px solid var(--section-border); border-left: 4px solid var(--section-accent); border-radius: .4rem; background: var(--section-soft); padding: .68rem .75rem; }
+.anatomy-map-notice strong { color: var(--section-deep); font-size: .9rem; }
+.anatomy-map-notice span { color: #405259; font-size: .875rem; line-height: 1.45; }
+.anatomy-map-help,
+.anatomy-attribution,
+.anatomy-layer-switch button,
+.anatomy-region-list button small,
+.anatomy-selection-heading > span,
+.anatomy-source-cards button small,
+.anatomy-source-cards button em { color: #405259; font-size: .875rem; }
+.anatomy-map-card,
+.anatomy-region-list,
+.anatomy-evidence { border-color: var(--section-border); box-shadow: 0 8px 22px color-mix(in srgb, var(--section-accent) 11%, transparent); }
+.anatomy-map-shell { border-color: var(--section-border); background: var(--section-50); }
+.anatomy-region-list { gap: .7rem; background: var(--color-surface); }
+.anatomy-system-group { display: grid; gap: .38rem; }
+.anatomy-system-group > header,
+.anatomy-selected-region { display: flex; align-items: center; min-width: 0; gap: .52rem; }
+.anatomy-system-group > header > span:last-child { display: grid; min-width: 0; gap: .02rem; }
+.anatomy-system-group > header strong { color: var(--section-deep); font-size: .8125rem; font-weight: 820; letter-spacing: .045em; line-height: 1.2; text-transform: uppercase; }
+.anatomy-system-group > header small { color: var(--color-muted); font-size: .8125rem; line-height: 1.25; }
+.anatomy-system-icon { display: inline-grid; flex: none; width: 1.85rem; height: 1.85rem; place-items: center; border: 1px solid color-mix(in srgb, var(--section-400) 52%, var(--color-border)); border-radius: .52rem; background: var(--section-100); color: var(--section-deep); }
+.anatomy-system-icon.is-selected { border-color: var(--section-deep); background: var(--section-deep); color: white; box-shadow: 0 2px 7px color-mix(in srgb, var(--section-deep) 30%, transparent); }
+.anatomy-system-icon svg { display: block; }
+.anatomy-system-group [role="list"] { display: grid; gap: .35rem; }
+.anatomy-region-list button { min-height: 4rem; border-color: var(--section-border); background: var(--color-surface); padding: .68rem .72rem; }
+.anatomy-region-list button > span { font-size: .925rem; font-weight: 720; }
+.anatomy-region-list button > strong { color: var(--section-deep); font-size: 1rem; }
+.anatomy-region-list button:hover { border-top-color: var(--section-400); border-right-color: var(--section-400); border-bottom-color: var(--section-400); background: var(--section-50); }
+.anatomy-region-list button[aria-pressed="true"] { border-top-color: var(--section-accent); border-right-color: var(--section-accent); border-bottom-color: var(--section-accent); background: var(--section-100); box-shadow: inset 3px 0 0 var(--section-accent); }
+.anatomy-source-cards button { border-color: #b9c9cc; padding: .82rem .88rem; }
+.anatomy-source-cards button > span { font-size: .9rem; font-weight: 750; }
+
+@media (max-width: 620px) {
+  .variant-browser .variant-table { font-size: .8125rem; }
+  .variant-browser .variant-table thead tr:not(.variant-column-groups) th { top: 2.35rem; }
+  .structure-viewer-shell .structure-viewer-actions .structure-action { font-size: .8125rem; }
+}

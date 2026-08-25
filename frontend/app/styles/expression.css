@@ -1,0 +1,466 @@
+.expression-panel { padding: var(--space-4, 16px); }
+.expression-overview-scroll { overflow-x: auto; border: 1px solid var(--color-border); border-radius: var(--radius-card); }
+.expression-overview-grid { display: grid; grid-template-columns: 132px repeat(var(--expression-columns), minmax(24px, 24px)); min-width: max-content; background: var(--color-surface); }
+.expression-corner, .expression-column-label { position: sticky; top: 0; z-index: 2; background: var(--color-canvas); color: var(--color-muted); font-size: 13px; }
+.expression-corner { left: 0; z-index: 4; padding: 8px; font-weight: 700; }
+.expression-column-label { height: 112px; border-left: 1px solid var(--color-border); padding: 6px 3px; writing-mode: vertical-rl; transform: rotate(180deg); overflow: hidden; text-overflow: ellipsis; }
+.expression-grid-row { display: contents; }
+.expression-row-label { position: sticky; left: 0; z-index: 3; display: grid; align-content: center; min-height: 32px; border-top: 1px solid var(--color-border); background: var(--color-surface); padding: 4px 8px; }
+.expression-row-label strong { color: var(--color-ink); font-size: 13px; }
+.expression-row-label span { color: var(--color-muted); font-size: 13px; font-weight: 600; }
+.expression-cell { position: relative; display: grid; place-items: center; min-height: 32px; border: 0; border-top: 1px solid var(--color-border); border-left: 1px solid var(--color-border); background: var(--color-surface); padding: 2px; }
+button.expression-cell { cursor: pointer; }
+button.expression-cell:hover, button.expression-cell:focus-visible { z-index: 6; outline: 3px solid var(--color-focus); outline-offset: -2px; }
+.expression-cell-strips { display: flex; width: 100%; height: 100%; min-height: 26px; gap: 1px; }
+.expression-cell-strips i { flex: 1 1 0; min-width: 2px; background: var(--expression-fill); }
+.expression-cell .is-null, .expression-legends .is-null { background: repeating-linear-gradient(135deg, var(--color-canvas) 0 4px, var(--color-border) 4px 7px); }
+.expression-cell .is-zero { background: var(--expression-fill); box-shadow: inset 0 0 0 1px var(--color-muted); }
+.expression-cell.no-records { color: var(--color-muted); background: var(--color-surface); }
+.expression-cell-tooltip { position: absolute; left: 50%; bottom: calc(100% + 7px); z-index: 20; display: none; width: 240px; border: 1px solid var(--color-border); border-radius: 10px; background: var(--color-ink); color: white; padding: 10px 12px; font-size: 13px; line-height: 1.4; text-align: left; transform: translateX(-50%); box-shadow: var(--shadow-raised); }
+.expression-cell-tooltip > strong, .expression-cell-tooltip > span, .expression-cell-tooltip > small { display: block; }
+.expression-cell-tooltip > strong { font-size: 13px; }
+.expression-cell-tooltip > span { margin-top: 4px; color: white; }
+.expression-cell-tooltip > small { margin-top: 5px; color: #dbe5ef; font-size: 13px; }
+.expression-cell:hover .expression-cell-tooltip, .expression-cell:focus-visible .expression-cell-tooltip { display: block; }
+.expression-cell-strips .ihc-not-detected, .ihc-legend .ihc-not-detected { background: var(--palette-yellow); }
+.expression-cell-strips .ihc-low, .ihc-legend .ihc-low { background: var(--palette-peach); }
+.expression-cell-strips .ihc-medium, .ihc-legend .ihc-medium { background: var(--palette-salmon); }
+.expression-cell-strips .ihc-high, .ihc-legend .ihc-high { background: var(--palette-red); }
+.expression-legends { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+.expression-legends > div { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 7px 10px; min-width: 0; border: 1px solid var(--color-border); border-radius: 9px; background: var(--color-canvas); padding: 9px 10px; }
+.expression-legends > div > strong { font-size: 13px; }
+.expression-legends > div > small { color: var(--color-muted); font-size: 13px; font-weight: 650; text-align: right; }
+.expression-gradient { display: inline-block; grid-column: 1 / -1; width: 100%; height: 8px; border: 1px solid var(--color-border); border-radius: 999px; }
+.ihc-legend { flex-wrap: wrap; }
+.expression-legends .ihc-legend { display: flex; grid-column: 1 / -1; gap: 4px; }
+.ihc-legend i { border-radius: 999px; padding: 2px 6px; color: var(--color-ink); font-style: normal; font-size: 13px; }
+.expression-scale-notes { margin-top: 10px; color: var(--color-muted); font-size: 13px; }
+.expression-scale-notes summary { color: var(--color-link); font-size: 13px; font-weight: 750; cursor: pointer; }
+.expression-scale-notes > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px 16px; margin-top: 8px; border-left: 3px solid var(--palette-sky); padding: 4px 0 4px 12px; }
+.expression-scale-notes p { display: grid; gap: 2px; margin: 0; }
+.expression-scale-notes p strong { color: var(--color-ink); }
+.expression-accessible-table { margin-top: 12px; font-size: 13px; }
+.expression-accessible-table summary { cursor: pointer; color: var(--color-link); font-weight: 700; }
+.expression-accessible-table table { width: 100%; min-width: 900px; border-collapse: collapse; margin-top: 8px; }
+.expression-accessible-table th, .expression-accessible-table td { border: 1px solid var(--color-border); padding: 6px 8px; text-align: left; }
+.expression-source-details { display: grid; gap: 10px; margin-top: 20px; }
+.expression-details-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; }
+.expression-details-heading h3, .expression-details-heading p { margin: 0; }
+.expression-details-heading h3 { font-size: 1.15rem; }
+.expression-details-heading > span { color: var(--color-muted); font-size: 13px; }
+.expression-modality-disclosure { border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-surface); overflow: hidden; }
+.expression-modality-disclosure .disclosure-trigger { width: 100%; justify-content: flex-start; border: 0; border-radius: 0; padding: 12px 14px; text-align: left; }
+.expression-disclosure-summary { display: grid; gap: 2px; }
+.expression-disclosure-summary strong { font-size: 14px; }
+.expression-disclosure-summary span { color: var(--color-muted); font-size: 13px; font-weight: 550; }
+.expression-disclosure-summary span b { color: var(--color-link); font-weight: 800; }
+.expression-modality-disclosure .disclosure-panel { padding: 0 14px 14px; }
+.expression-provenance { display: flex; flex-wrap: wrap; gap: 7px 18px; border-top: 1px solid var(--color-border); padding-top: 12px; color: var(--color-muted); font-size: 13px; }
+.expression-provenance span { display: inline-flex; gap: 5px; }
+.expression-provenance b { color: var(--color-ink); }
+.expression-detail-toolbar { display: flex; align-items: end; justify-content: space-between; gap: 16px; border-top: 1px solid var(--color-border); padding-top: 12px; }
+.expression-detail-toolbar label { display: grid; gap: 4px; color: var(--color-muted); font-size: 13px; font-weight: 700; }
+.expression-detail-toolbar select { min-height: 36px; border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-surface); padding: 4px 8px; }
+.expression-detail-toolbar p { max-width: 680px; margin: 0; color: var(--color-muted); font-size: 13px; }
+.expression-detail-groups { display: grid; gap: 10px; margin-top: 12px; }
+.expression-body-system { margin: 18px 0 6px; color: var(--color-ink); font-size: 14px; }
+.expression-detail-group { border: 1px solid var(--color-border); border-radius: 8px; overflow: hidden; scroll-margin: 96px; }
+.expression-detail-group:focus { outline: 3px solid var(--color-focus); outline-offset: 2px; }
+.expression-detail-group > header { display: flex; align-items: start; justify-content: space-between; gap: 12px; background: var(--color-canvas); padding: 9px 10px; }
+.expression-detail-group h4, .expression-detail-group p { margin: 0; }
+.expression-detail-group p { margin-top: 2px; color: var(--color-muted); font-size: 13px; }
+.expression-detail-group > header > strong { color: var(--color-link); font-size: 13px; white-space: nowrap; }
+.expression-detail-table { width: 100%; min-width: 800px; border-collapse: collapse; font-size: 13px; }
+.expression-detail-table th, .expression-detail-table td { border-top: 1px solid var(--color-border); padding: 6px 8px; text-align: left; }
+.expression-show-all { justify-self: start; margin-top: 12px; }
+.differential-expression { display: grid; gap: 14px; margin-top: 34px; border-top: 1px solid var(--color-border); padding-top: 24px; }
+.de-heading { display: flex; align-items: start; justify-content: space-between; gap: 16px; }
+.de-heading .eyebrow { margin-bottom: 4px; }
+.de-heading h3 { font-size: 1.25rem; }
+.de-heading h3 + p { margin: 4px 0 0; color: var(--color-muted); font-size: 13px; }
+.de-heading > span { flex: none; border: 1px solid color-mix(in srgb, var(--palette-blue) 55%, var(--color-border)); border-radius: var(--radius-pill); background: var(--accent-soft); padding: 6px 10px; color: var(--color-link); font-size: 13px; font-weight: 650; }
+.de-heading > span b { font-size: 14px; font-weight: 850; }
+.de-heading > span i { font-style: normal; }
+.de-method-notes { color: var(--color-muted); font-size: 13px; }
+.de-method-notes summary, .de-study-metadata summary { color: var(--color-link); font-size: 13px; font-weight: 750; cursor: pointer; }
+.de-method-notes p { margin: 7px 0 0; border-left: 3px solid var(--palette-sky); padding-left: 10px; }
+.differential-expression .status-message { max-width: none; margin-top: 0; }
+.de-retry-state { display: grid; gap: 8px; justify-items: start; }
+.de-dataset-list { display: grid; gap: 10px; }
+.de-dataset-card { overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-card); background: var(--color-surface); box-shadow: var(--shadow-card); }
+.de-dataset-card.is-open { border-color: color-mix(in srgb, var(--palette-blue) 58%, var(--color-border)); }
+.de-dataset-trigger { display: grid; grid-template-columns: minmax(150px, .75fr) minmax(180px, .8fr) minmax(300px, 1.45fr) auto; align-items: center; gap: 18px; width: 100%; border: 0; background: transparent; padding: 14px 16px; color: var(--color-ink); text-align: left; }
+.de-dataset-trigger:hover { background: color-mix(in srgb, var(--palette-sky) 12%, white); }
+.de-dataset-trigger[aria-expanded="true"] { background: color-mix(in srgb, var(--palette-sky) 20%, white); }
+.de-dataset-identity, .de-dataset-context { display: grid; min-width: 0; gap: 2px; }
+.de-dataset-identity > strong { color: var(--color-link); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
+.de-dataset-identity > span { display: -webkit-box; overflow: hidden; overflow-wrap: anywhere; font-size: 15px; font-weight: 760; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.de-dataset-context > span { display: grid; grid-template-columns: 60px minmax(0, 1fr); color: var(--color-muted); font-size: 13px; line-height: 1.35; }
+.de-dataset-context > span b { color: var(--color-ink); font-size: 13px; }
+.de-dataset-context > strong { margin-top: 4px; color: var(--color-link); font-size: 13px; }
+.de-dataset-featured { display: grid; min-width: 0; gap: 7px; border-left: 1px solid var(--color-border); padding-left: 14px; }
+.de-dataset-featured > span { color: var(--color-muted); font-size: 13px; line-height: 1.35; }
+.de-dataset-featured > span b { display: block; color: var(--color-ink); font-size: 13px; }
+.de-chevron { color: var(--color-link); font-size: 28px; line-height: 1; transition: transform var(--motion-hover) var(--ease-out); }
+.de-dataset-trigger[aria-expanded="true"] .de-chevron { transform: rotate(90deg); }
+.de-dataset-body { display: grid; gap: 12px; border-top: 1px solid var(--color-border); padding: 14px 16px 16px; }
+.de-study-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 16px; margin: 0; }
+.de-study-facts div { min-width: 0; }
+.de-study-facts dt { color: var(--color-muted); font-size: 13px; font-weight: 740; letter-spacing: .04em; text-transform: uppercase; }
+.de-study-facts dd { margin: 2px 0 0; overflow-wrap: anywhere; font-size: 13px; }
+.de-study-metadata[open] { border-bottom: 1px solid var(--color-border); padding-bottom: 10px; }
+.de-study-metadata .de-study-facts { margin-top: 10px; }
+.de-contrast-heading { display: flex; align-items: baseline; gap: 8px; margin: 0; font-size: 14px; }
+.de-contrast-heading span { color: var(--color-muted); font-size: 13px; font-weight: 500; }
+.de-contrast-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.de-contrast-list > article { min-width: 0; border: 1px solid var(--color-border); border-radius: var(--radius-control); background: var(--color-canvas); overflow: hidden; }
+.de-contrast-list > article:hover { border-color: var(--palette-cyan); }
+.de-contrast-list > article.is-active { border-color: var(--palette-blue); box-shadow: inset 3px 0 var(--palette-blue); background: color-mix(in srgb, var(--palette-sky) 23%, white); }
+.de-contrast-list article > button { display: grid; align-items: start; gap: 10px; width: 100%; border: 0; background: transparent; padding: 11px; color: var(--color-ink); text-align: left; }
+.de-contrast-list article > button > span:first-child { display: grid; min-width: 0; gap: 3px; }
+.de-contrast-list article > button strong { font-size: 13px; }
+.de-contrast-list article > button small { color: var(--color-muted); font-size: 13px; }
+.de-current-protein-statistics { display: grid; min-width: 0; gap: 5px; border-left: 3px solid var(--color-muted); padding-left: 8px; }
+.de-current-protein-statistics.is-up { border-color: #f47254; }
+.de-current-protein-statistics.is-down { border-color: #7b95c6; }
+.de-current-protein-statistics.is-mixed { border-color: var(--palette-yellow); }
+.de-current-protein-statistics > div { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--color-muted); font-size: 13px; font-weight: 750; }
+.de-current-protein-statistics dl { display: grid; gap: 4px; margin: 0; }
+.de-current-protein-statistics dl > div { display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr); gap: 8px; }
+.de-current-protein-statistics dt { overflow-wrap: anywhere; color: var(--color-muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
+.de-current-protein-statistics dd { display: flex; flex-wrap: wrap; gap: 3px 10px; margin: 0; color: var(--color-ink); font-size: 14px; font-variant-numeric: tabular-nums; font-weight: 780; }
+.de-current-protein-statistics.is-compact { gap: 3px; }
+.de-current-protein-statistics.is-compact dl > div { grid-template-columns: minmax(0, 105px) minmax(0, 1fr); }
+.de-current-protein-statistics.is-compact dd { font-size: 13px; }
+span.de-current-protein-statistics.is-compact { display: grid; min-width: 0; }
+.de-current-protein-statistics.is-compact .de-current-protein-statistics-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--color-muted); font-size: 13px; font-weight: 750; }
+.de-current-protein-statistics.is-compact .de-current-protein-statistics-rows { display: grid; gap: 4px; }
+.de-current-protein-statistics.is-compact .de-current-protein-statistics-row { display: grid; grid-template-columns: minmax(0, 105px) minmax(0, 1fr); gap: 8px; }
+.de-current-protein-statistics.is-compact .de-current-protein-statistics-ensembl { overflow-wrap: anywhere; color: var(--color-muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
+.de-current-protein-statistics.is-compact .de-current-protein-statistics-values { display: flex; flex-wrap: wrap; gap: 3px 10px; color: var(--color-ink); font-size: 13px; font-variant-numeric: tabular-nums; font-weight: 780; }
+.de-direction-badge { flex: none; border-radius: var(--radius-pill); padding: 4px 7px; background: var(--color-surface); color: var(--color-muted); font-size: 13px; font-weight: 780; }
+.de-direction-badge.is-up { background: color-mix(in srgb, var(--palette-red) 18%, white); color: #9f342e; }
+.de-direction-badge.is-down { background: color-mix(in srgb, var(--palette-blue) 20%, white); color: #375383; }
+.de-direction-badge.is-mixed { background: color-mix(in srgb, var(--palette-yellow) 38%, white); color: #78561b; }
+.de-target-results { border-top: 1px solid var(--color-border); padding: 8px 11px; color: var(--color-muted); font-size: 13px; }
+.de-target-results summary { color: var(--color-link); font-size: 13px; font-weight: 750; cursor: pointer; }
+.de-target-results.has-multiple summary { color: var(--color-conflict); }
+.de-target-results > div { display: grid; gap: 6px; margin-top: 8px; }
+.de-target-results dl { display: grid; grid-template-columns: 1.4fr repeat(3, minmax(64px, .7fr)); gap: 6px; margin: 0; border-top: 1px solid var(--color-border); padding-top: 6px; }
+.de-target-results dl > div { min-width: 0; }
+.de-target-results dt { font-size: 13px; }
+.de-target-results dd { margin: 2px 0 0; overflow-wrap: anywhere; color: var(--color-ink); font-size: 13px; font-variant-numeric: tabular-nums; font-weight: 700; }
+.de-protein-summary { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, .9fr); gap: 14px 18px; border: 1px solid color-mix(in srgb, var(--palette-blue) 45%, var(--color-border)); border-left: 4px solid var(--palette-blue); border-radius: var(--radius-card); background: color-mix(in srgb, var(--palette-sky) 12%, var(--color-surface)); padding: 15px 16px; }
+.de-protein-summary .eyebrow { margin: 0 0 4px; }
+.de-protein-summary h4 { margin: 0; font-size: 16px; line-height: 1.35; }
+.de-protein-summary p { margin: 7px 0 0; color: var(--color-muted); font-size: 13px; }
+.de-first-contrast { display: grid; align-content: start; gap: 4px; border: 1px solid var(--color-border); border-radius: var(--radius-control); background: var(--color-canvas); padding: 10px; }
+.de-first-contrast > span { color: var(--color-muted); font-size: 13px; font-weight: 750; }
+.de-first-contrast > span small { display: block; margin-top: 2px; font-weight: 500; }
+.de-first-contrast > strong { font-size: 14px; }
+.de-first-contrast > small { color: var(--color-muted); font-size: 13px; }
+.de-qualifying-scope { grid-column: 1 / -1; border-top: 1px solid var(--color-border); padding-top: 9px; }
+.de-volcano-shell { min-width: 0; border: 1px solid color-mix(in srgb, var(--palette-blue) 55%, var(--color-border)); border-radius: var(--radius-card); background: var(--color-surface); padding: 14px; box-shadow: var(--shadow-card); }
+.volcano-region { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 320px); gap: 12px 16px; min-width: 0; }
+.volcano-summary { display: grid; grid-column: 1 / -1; gap: 2px; border-bottom: 1px solid var(--color-border); padding-bottom: 10px; }
+.volcano-summary strong { font-size: 14px; }
+.volcano-summary span { font-size: 13px; }
+.volcano-summary small { color: var(--color-muted); font-size: 13px; }
+.volcano-legend { display: flex; grid-column: 1 / -1; flex-wrap: wrap; gap: 6px 14px; color: var(--color-muted); font-size: 13px; }
+.volcano-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.volcano-legend i { display: inline-block; width: 9px; height: 9px; border: 1px solid #334155; background: white; }
+.volcano-legend .legend-other { border-color: #cbd5e1; border-radius: 50%; background: #cbd5e1; }
+.volcano-legend .legend-up { background: #f47254; transform: rotate(45deg); }
+.volcano-legend .legend-down { background: #7b95c6; transform: rotate(45deg); }
+.volcano-legend .legend-neutral { transform: rotate(45deg); }
+.volcano-legend .legend-target { background: #fded95; clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 92%,50% 70%,21% 92%,32% 57%,2% 35%,39% 35%); }
+.volcano-chart { width: 100%; min-width: 0; height: 520px; border: 1px solid var(--color-border); border-radius: var(--radius-control); background: white; }
+.volcano-chart:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 3px; }
+.volcano-chart-error { display: grid; align-content: center; justify-items: start; gap: 6px; min-height: 300px; border: 1px solid var(--error-border); border-radius: var(--radius-control); background: var(--error-bg); padding: 16px; }
+.volcano-chart-error span { color: var(--color-conflict); font-size: 13px; }
+.volcano-current-protein { display: grid; grid-column: 1 / -1; gap: 8px; border: 1px solid #334155; border-left: 4px solid #0f172a; border-radius: var(--radius-control); background: #fffbeb; padding: 10px 12px; }
+.volcano-current-protein.is-up { border-left-color: #f47254; }
+.volcano-current-protein.is-down { border-left-color: #7b95c6; }
+.volcano-current-protein.is-mixed { border-left-color: var(--palette-yellow); }
+.volcano-current-protein > div { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.volcano-current-protein > div strong { font-size: 14px; }
+.volcano-current-protein p { margin: 0; color: var(--color-muted); font-size: 13px; }
+.volcano-current-protein dl { display: grid; gap: 5px; margin: 0; }
+.volcano-current-protein dl > div { display: grid; grid-template-columns: minmax(130px, .55fr) minmax(0, 1.45fr); gap: 8px; }
+.volcano-current-protein dt { overflow-wrap: anywhere; color: var(--color-muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
+.volcano-current-protein dd { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 0; color: var(--color-ink); font-size: 14px; font-variant-numeric: tabular-nums; font-weight: 780; }
+.volcano-readout { align-self: start; border: 1px solid var(--color-border); border-top: 3px solid var(--palette-cyan); border-radius: var(--radius-control); background: var(--color-canvas); padding: 12px; }
+.volcano-readout.is-empty { display: grid; gap: 4px; color: var(--color-muted); font-size: 13px; }
+.volcano-readout > div:first-child { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.volcano-readout > div:first-child > span { color: var(--color-muted); font-size: 13px; font-weight: 720; text-transform: uppercase; }
+.volcano-readout dl { display: grid; gap: 7px; margin: 10px 0 0; }
+.volcano-readout dl > div { display: grid; grid-template-columns: minmax(110px, .8fr) minmax(0, 1.2fr); gap: 8px; border-top: 1px solid var(--color-border); padding-top: 5px; }
+.volcano-readout dt { color: var(--color-muted); font-size: 13px; }
+.volcano-readout dd { margin: 0; overflow-wrap: anywhere; font-size: 14px; font-variant-numeric: tabular-nums; font-weight: 750; }
+.volcano-clear-pin { grid-column: 2; justify-self: start; }
+.keyboard-hint { margin-left: 4px; border: 1px solid var(--color-border); border-radius: 3px; background: var(--color-canvas); padding: 1px 4px; font-size: 13px; }
+.membrane-gene-browser { grid-column: 1 / -1; border-top: 1px solid var(--color-border); padding-top: 10px; }
+.membrane-gene-browser summary { color: var(--color-link); font-size: 13px; font-weight: 750; cursor: pointer; }
+.membrane-gene-browser .table-scroll { margin: 8px 0 0; }
+.membrane-gene-browser table { width: 100%; min-width: 680px; border-collapse: collapse; font-size: 13px; }
+.membrane-gene-browser th, .membrane-gene-browser td { border: 1px solid var(--color-border); padding: 6px 8px; text-align: left; }
+.membrane-gene-browser thead th { background: var(--color-canvas); color: var(--color-muted); }
+.membrane-gene-browser tbody th button { display: grid; border: 0; background: transparent; padding: 0; color: var(--color-link); text-align: left; font-weight: 750; }
+.membrane-gene-browser tbody th button span { color: var(--color-conflict); font-size: 13px; text-transform: uppercase; }
+.membrane-gene-browser .pagination { padding-top: 8px; }
+@media (max-width: 768px) {
+  .expression-overview-grid { grid-template-columns: 105px repeat(var(--expression-columns), minmax(22px, 22px)); }
+  .expression-detail-toolbar { align-items: stretch; flex-direction: column; }
+  .de-heading { align-items: start; flex-direction: column; }
+  .de-dataset-trigger { grid-template-columns: minmax(0, 1fr) auto; }
+  .de-dataset-context, .de-dataset-featured { grid-column: 1; }
+  .de-dataset-featured { border-top: 1px solid var(--color-border); border-left: 0; padding: 9px 0 0; }
+  .de-chevron { grid-column: 2; grid-row: 1 / span 3; }
+  .de-study-facts, .de-contrast-list, .de-protein-summary { grid-template-columns: 1fr; }
+  .expression-legends, .expression-scale-notes > div { grid-template-columns: 1fr 1fr; }
+  .expression-details-heading { align-items: start; flex-direction: column; gap: 4px; }
+  .de-volcano-shell { margin-inline: -4px; padding: 10px; }
+  .volcano-region { grid-template-columns: 1fr; }
+  .volcano-summary, .volcano-legend, .volcano-current-protein, .membrane-gene-browser, .volcano-clear-pin { grid-column: 1; }
+  .volcano-chart { height: 440px; }
+}
+@media (max-width: 520px) {
+  .expression-legends, .expression-scale-notes > div { grid-template-columns: 1fr; }
+  .de-target-results dl { grid-template-columns: 1fr 1fr; }
+  .de-current-protein-statistics dl > div, .volcano-current-protein dl > div { grid-template-columns: 1fr; gap: 2px; }
+  .de-current-protein-statistics.is-compact dl > div, .de-current-protein-statistics.is-compact .de-current-protein-statistics-row { grid-template-columns: 1fr; }
+}
+
+/* M17: provenance and differential-expression reading hierarchy */
+.expression-source-context { margin-top: 12px; }
+.differential-expression { gap: 18px; margin-top: 40px; padding-top: 28px; }
+.de-heading h3 { font-size: clamp(1.5rem, 2.2vw, 1.85rem); letter-spacing: -.025em; }
+.de-heading h3 + p { max-width: 720px; font-size: var(--font-size-body); line-height: 1.55; }
+.de-heading > span { padding: 7px 11px; font-size: var(--font-size-meta); }
+.de-heading > span b { font-size: var(--font-size-emphasis); }
+.de-method-notes, .de-method-notes summary, .de-study-metadata summary { font-size: var(--font-size-meta); }
+.de-method-notes { border: 1px solid color-mix(in srgb, var(--palette-yellow) 58%, var(--color-border)); border-radius: var(--radius-control); background: var(--color-warning-bg); padding: .7rem .8rem; }
+.de-method-notes p { font-size: var(--font-size-meta); line-height: 1.5; }
+.de-dataset-list { gap: 14px; }
+.de-dataset-card { border-color: color-mix(in srgb, var(--palette-blue) 30%, var(--color-border)); }
+.de-dataset-trigger { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; padding: 18px 20px; }
+.de-dataset-trigger-heading { display: flex; align-items: start; justify-content: space-between; gap: 16px; min-width: 0; }
+.de-dataset-identity { gap: 4px; }
+.de-dataset-identity > strong { font-size: var(--font-size-meta); }
+.de-dataset-identity > span { font-size: 1.05rem; line-height: 1.35; }
+.de-chevron { flex: none; margin-top: .1rem; color: var(--color-link); transition: transform var(--motion-hover) var(--ease-out); }
+.de-dataset-trigger[aria-expanded="true"] .de-chevron { transform: rotate(90deg); }
+.de-dataset-context { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; border-block: 1px solid var(--color-border); padding-block: 11px; }
+.de-dataset-context > span, .de-dataset-context > strong { display: grid; min-width: 0; gap: 3px; padding-right: 10px; }
+.de-dataset-context > span + span, .de-dataset-context > strong { border-left: 1px solid var(--color-border); padding-left: 12px; }
+.de-dataset-context > span b { color: var(--color-muted); font-size: var(--font-size-meta); letter-spacing: .04em; text-transform: uppercase; }
+.de-dataset-context > span > span { color: var(--color-ink); font-size: var(--font-size-body); font-weight: 650; line-height: 1.45; }
+.de-dataset-context > strong { align-content: center; color: var(--color-link); font-size: var(--font-size-body); line-height: 1.42; }
+.de-dataset-featured { display: grid; grid-template-columns: minmax(220px, .8fr) minmax(0, 1.2fr); gap: 18px; border-left: 0; padding: 0; }
+.de-featured-contrast { display: grid; align-content: start; gap: 4px; min-width: 0; border: 1px solid var(--color-border); border-radius: var(--radius-control); background: var(--color-canvas); padding: 10px 12px; }
+.de-featured-contrast b { color: var(--color-muted); font-size: var(--font-size-meta); letter-spacing: .04em; text-transform: uppercase; }
+.de-featured-contrast > span { font-size: var(--font-size-emphasis); font-weight: 780; line-height: 1.35; }
+.de-featured-contrast small { color: var(--color-muted); font-size: var(--font-size-meta); line-height: 1.45; }
+.de-dataset-body { gap: 15px; padding: 18px 20px 20px; }
+.de-study-facts dt { font-size: var(--font-size-meta); }
+.de-study-facts dd { font-size: var(--font-size-body); line-height: 1.45; }
+.de-contrast-heading { font-size: var(--font-size-emphasis); }
+.de-contrast-heading span { font-size: var(--font-size-meta); }
+.de-contrast-list { gap: 12px; }
+.de-contrast-list article > button { gap: 12px; padding: 14px; }
+.de-contrast-list article > button strong { font-size: var(--font-size-emphasis); }
+.de-contrast-list article > button small { font-size: var(--font-size-meta); line-height: 1.45; }
+.de-current-protein-statistics { gap: 8px; border-left-width: 4px; border-radius: 0 var(--radius-control) var(--radius-control) 0; background: color-mix(in srgb, var(--palette-sky) 10%, white); padding: 10px 12px; }
+.de-current-protein-statistics > div, .de-current-protein-statistics.is-compact .de-current-protein-statistics-heading { color: var(--color-ink); font-size: var(--font-size-body); }
+.de-current-protein-statistics dl, .de-current-protein-statistics.is-compact .de-current-protein-statistics-rows { gap: 8px; }
+.de-current-protein-statistics dl > div, .de-current-protein-statistics.is-compact .de-current-protein-statistics-row { display: grid; grid-template-columns: minmax(130px, .55fr) minmax(0, 1.45fr); gap: 10px; border-top: 1px solid color-mix(in srgb, var(--palette-blue) 21%, var(--color-border)); padding-top: 8px; }
+.de-current-protein-statistics dl > div:first-child, .de-current-protein-statistics.is-compact .de-current-protein-statistics-row:first-child { border-top: 0; padding-top: 0; }
+.de-current-protein-statistics dt, .de-current-protein-statistics.is-compact .de-current-protein-statistics-ensembl { color: var(--color-muted); font-size: var(--font-size-meta); }
+.de-current-protein-statistics dd, .de-current-protein-statistics.is-compact .de-current-protein-statistics-values { display: block; font-size: inherit; }
+.de-metric-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; min-width: 0; font-variant-numeric: tabular-nums; }
+.de-metric-tiles > span { display: grid; min-width: 0; gap: 2px; border: 1px solid color-mix(in srgb, var(--palette-blue) 24%, var(--color-border)); border-radius: 6px; background: white; padding: 6px 7px; }
+.de-metric-tiles small { color: var(--color-muted); font-size: var(--font-size-meta); font-weight: 700; line-height: 1.25; }
+.de-metric-tiles strong { overflow-wrap: anywhere; color: var(--color-ink); font-size: var(--font-size-body); line-height: 1.25; }
+.de-direction-badge { padding: 4px 8px; font-size: var(--font-size-meta); }
+.de-target-results { font-size: var(--font-size-meta); }
+.de-target-results summary { font-size: var(--font-size-meta); }
+.de-target-results dl { grid-template-columns: minmax(120px, .55fr) minmax(0, 1.45fr); gap: 10px; padding-top: 8px; }
+.de-target-results dt { color: var(--color-muted); font-size: var(--font-size-meta); }
+.de-target-results dd { font-size: var(--font-size-body); }
+.de-protein-summary { gap: 18px; padding: 18px 20px; }
+.de-protein-summary h4 { font-size: 1.08rem; line-height: 1.45; }
+.de-protein-summary p, .de-first-contrast > span, .de-first-contrast > small { font-size: var(--font-size-meta); }
+.de-first-contrast > strong { font-size: var(--font-size-emphasis); }
+.volcano-summary strong { font-size: var(--font-size-emphasis); }
+.volcano-summary span { font-size: var(--font-size-body); }
+.volcano-summary small, .volcano-legend { font-size: var(--font-size-meta); }
+.volcano-current-protein { gap: 10px; padding: 12px 14px; }
+.volcano-current-protein > div strong { font-size: var(--font-size-emphasis); }
+.volcano-current-protein p { font-size: var(--font-size-body); }
+.volcano-current-protein dl > div { grid-template-columns: minmax(130px, .5fr) minmax(0, 1.5fr); gap: 10px; }
+.volcano-current-protein dt { font-size: var(--font-size-meta); }
+.volcano-current-protein dd { display: block; font-size: var(--font-size-body); }
+.volcano-readout.is-empty, .volcano-readout dt { font-size: var(--font-size-meta); }
+.volcano-readout > div:first-child > span { font-size: var(--font-size-meta); }
+.volcano-readout dd { font-size: var(--font-size-body); }
+.volcano-chart-error span { font-size: var(--font-size-meta); }
+.volcano-chart-error .quiet-button, .de-retry-state .quiet-button { display: inline-flex; align-items: center; gap: .38rem; }
+
+@media (max-width: 1024px) {
+  .de-dataset-context { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .de-dataset-context > strong { grid-column: 1 / -1; border-top: 1px solid var(--color-border); border-left: 0; padding: 10px 0 0; }
+  .de-dataset-featured { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .de-dataset-trigger { padding: 15px; }
+  .de-dataset-context { grid-template-columns: 1fr; gap: 0; }
+  .de-dataset-context > span, .de-dataset-context > strong, .de-dataset-context > span + span { border-left: 0; border-top: 1px solid var(--color-border); padding: 9px 0 0; margin-top: 9px; }
+  .de-dataset-context > span:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+  .de-dataset-body { padding: 15px; }
+  .de-current-protein-statistics dl > div, .de-current-protein-statistics.is-compact .de-current-protein-statistics-row, .de-target-results dl, .volcano-current-protein dl > div { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .de-metric-tiles { grid-template-columns: 1fr; }
+}
+
+/* M18: GEN dataset fields use normal document flow. Long tissue and disease
+   values wrap inside bounded modules instead of competing in one text row. */
+.expression-panel { padding: clamp(18px, 2.2vw, 26px); }
+.expression-overview-scroll { border-color: var(--color-border-strong); box-shadow: inset 0 1px 0 rgb(29 53 87 / 4%); }
+.expression-legends { gap: 12px; margin-top: 16px; }
+.expression-legends > div { border-color: var(--color-border); background: white; padding: 11px 12px; }
+.expression-details-heading h3 { color: var(--ui-oxford-navy); font-size: 1.35rem; }
+.expression-details-heading > span { color: var(--color-muted); font-size: var(--font-size-meta); }
+.expression-modality-disclosure { border-color: var(--color-border-strong); box-shadow: 0 2px 10px rgb(29 53 87 / 4%); }
+
+.differential-expression {
+  gap: 22px;
+  margin-top: 52px;
+  border-top: 2px solid var(--color-border-strong);
+  padding-top: 36px;
+}
+.de-heading { gap: 24px; }
+.de-heading h3 { color: var(--ui-oxford-navy); font-size: clamp(1.75rem, 2.7vw, 2.2rem); line-height: 1.18; }
+.de-heading h3 + p { margin-top: 7px; color: var(--color-muted); font-size: var(--font-size-body); }
+.de-heading > span { border-color: var(--ui-cerulean); background: color-mix(in srgb, var(--ui-frosted-blue) 24%, white); color: var(--ui-oxford-navy); padding: 9px 13px; }
+.de-method-notes { border-color: color-mix(in srgb, #e9c46a 66%, var(--color-border)); background: color-mix(in srgb, #f1faee 50%, white); padding: .85rem 1rem; }
+
+.de-protein-summary {
+  grid-template-columns: minmax(0, 1.05fr) minmax(340px, .95fr);
+  gap: 22px;
+  border-color: color-mix(in srgb, var(--ui-cerulean) 52%, var(--color-border));
+  border-left-color: var(--ui-cerulean);
+  background: color-mix(in srgb, var(--ui-frosted-blue) 15%, white);
+  padding: 22px 24px;
+}
+.de-protein-summary h4 { color: var(--color-ink); font-size: 1.15rem; line-height: 1.5; }
+.de-protein-summary p { color: var(--color-muted); font-size: var(--font-size-meta); }
+.de-first-contrast { border-color: var(--color-border-strong); background: white; padding: 13px 14px; }
+.de-first-contrast > strong { color: var(--ui-oxford-navy); font-size: 1.05rem; line-height: 1.42; }
+
+.de-dataset-list { gap: 18px; }
+.de-dataset-card { border-color: var(--color-border-strong); box-shadow: var(--shadow-card); }
+.de-dataset-card.is-open { border-color: var(--ui-cerulean); box-shadow: 0 2px 6px rgb(29 53 87 / 6%), 0 14px 34px rgb(29 53 87 / 9%); }
+.de-dataset-trigger { gap: 18px; padding: 22px 24px; }
+.de-dataset-trigger:hover { background: color-mix(in srgb, var(--ui-frosted-blue) 13%, white); }
+.de-dataset-trigger[aria-expanded="true"] { background: color-mix(in srgb, var(--ui-frosted-blue) 20%, white); }
+.de-dataset-identity > strong { color: var(--color-link); font-size: var(--font-size-meta); }
+.de-dataset-identity > span { color: var(--ui-oxford-navy); font-size: 1.16rem; font-weight: 800; line-height: 1.4; }
+
+.de-dataset-context {
+  display: grid;
+  grid-template-columns: minmax(180px, .8fr) minmax(0, 1.45fr) minmax(190px, .75fr);
+  gap: 12px;
+  border: 0;
+  padding: 0;
+}
+.de-dataset-context > .de-dataset-context-field,
+.de-dataset-context > .de-dataset-count {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  min-width: 0;
+  gap: 6px;
+  margin: 0;
+  border: 1px solid var(--color-border);
+  border-left: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: white;
+  padding: 12px 14px;
+}
+.de-dataset-context > .de-dataset-context-field b,
+.de-dataset-context > .de-dataset-count > b {
+  color: var(--color-muted);
+  font-size: var(--font-size-meta);
+  font-weight: 780;
+  letter-spacing: .055em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+.de-dataset-context > .de-dataset-context-field > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--color-ink);
+  font-size: var(--font-size-body);
+  font-weight: 710;
+  line-height: 1.55;
+  white-space: normal;
+}
+.de-dataset-context > .de-dataset-context-field.is-disease {
+  border-color: color-mix(in srgb, var(--ui-cerulean) 43%, var(--color-border));
+  background: color-mix(in srgb, var(--ui-frosted-blue) 11%, white);
+}
+.de-dataset-context > .de-dataset-count {
+  border-color: color-mix(in srgb, var(--ui-verdigris) 44%, var(--color-border));
+  background: color-mix(in srgb, var(--ui-honeydew) 58%, white);
+}
+.de-dataset-count > span { color: #284a4c; font-size: var(--font-size-meta); font-weight: 680; line-height: 1.45; }
+.de-dataset-count > span strong { display: block; color: var(--ui-oxford-navy); font-size: 1.65rem; font-variant-numeric: tabular-nums; line-height: 1.1; }
+
+.de-dataset-featured { grid-template-columns: minmax(250px, .8fr) minmax(0, 1.2fr); gap: 16px; }
+.de-featured-contrast { border-color: var(--color-border); background: white; padding: 13px 14px; }
+.de-featured-contrast > span { color: var(--ui-oxford-navy); font-size: 1.05rem; }
+.de-current-protein-statistics {
+  border-left-color: var(--ui-cerulean);
+  background: color-mix(in srgb, var(--ui-frosted-blue) 14%, white);
+  padding: 12px 14px;
+}
+.de-current-protein-statistics.is-up { border-left-color: #e76f51; }
+.de-current-protein-statistics.is-down { border-left-color: var(--ui-cerulean); }
+.de-current-protein-statistics.is-mixed { border-left-color: #e9c46a; }
+.de-current-protein-statistics dl > div,
+.de-current-protein-statistics.is-compact .de-current-protein-statistics-row { grid-template-columns: minmax(138px, .5fr) minmax(0, 1.5fr); }
+.de-metric-tiles { gap: 8px; }
+.de-metric-tiles > span { border-color: var(--color-border); padding: 8px 9px; }
+.de-metric-tiles small { color: var(--color-muted); font-size: var(--font-size-meta); }
+.de-metric-tiles strong { color: var(--ui-oxford-navy); font-size: 1rem; }
+.de-dataset-body { gap: 18px; border-top-color: var(--color-border-strong); padding: 22px 24px 24px; }
+.de-contrast-list { gap: 14px; }
+.de-contrast-list > article { border-color: var(--color-border); background: white; }
+.de-contrast-list > article.is-active { border-color: var(--ui-cerulean); background: color-mix(in srgb, var(--ui-frosted-blue) 13%, white); box-shadow: inset 4px 0 var(--ui-cerulean); }
+.de-contrast-list article > button { padding: 16px; }
+.de-contrast-list article > button strong { color: var(--ui-oxford-navy); font-size: 1.05rem; }
+.de-contrast-list article > button small { color: var(--color-muted); font-size: var(--font-size-meta); }
+.de-volcano-shell { border-color: var(--color-border-strong); padding: 20px; }
+.volcano-readout { border-color: var(--color-border-strong); border-top-color: var(--ui-verdigris); background: white; }
+
+@media (max-width: 1024px) {
+  .de-protein-summary { grid-template-columns: 1fr; }
+  .de-dataset-context { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .de-dataset-context > .de-dataset-count { grid-column: 1 / -1; }
+  .de-dataset-featured { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .differential-expression { margin-top: 42px; padding-top: 30px; }
+  .de-dataset-trigger, .de-dataset-body { padding-inline: 17px; }
+  .de-dataset-context { grid-template-columns: minmax(0, 1fr); }
+  .de-dataset-context > .de-dataset-count { grid-column: auto; }
+  .de-current-protein-statistics dl > div,
+  .de-current-protein-statistics.is-compact .de-current-protein-statistics-row { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 520px) {
+  .de-protein-summary { padding: 17px; }
+  .de-metric-tiles { grid-template-columns: 1fr; }
+}

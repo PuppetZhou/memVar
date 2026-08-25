@@ -1,0 +1,34 @@
+{
+  "upstream": {
+    "name": "Health Icons",
+    "repository": "https://github.com/resolvetosavelives/healthicons",
+    "commit": "36887b268d2cb61f8d91622ad459bdf07910c2b0",
+    "commitDate": "2026-07-28",
+    "sourceRoot": "https://github.com/resolvetosavelives/healthicons/tree/36887b268d2cb61f8d91622ad459bdf07910c2b0/public/icons/svg",
+    "iconLicenseNote": "The upstream README describes Health Icons as CC0/public-domain icons; this manifest records source attribution for the controlled subset."
+  },
+  "assets": [
+    { "style": "outline", "originalName": "neurology", "upstreamPath": "outline-24px/body/neurology.svg", "localPath": "/assets/healthicons/outline/neurology.svg" },
+    { "style": "filled", "originalName": "neurology", "upstreamPath": "filled-24px/body/neurology.svg", "localPath": "/assets/healthicons/filled/neurology.svg" },
+    { "style": "outline", "originalName": "heart-organ", "upstreamPath": "outline-24px/body/heart-organ.svg", "localPath": "/assets/healthicons/outline/heart-organ.svg" },
+    { "style": "filled", "originalName": "heart-organ", "upstreamPath": "filled-24px/body/heart-organ.svg", "localPath": "/assets/healthicons/filled/heart-organ.svg" },
+    { "style": "outline", "originalName": "lungs", "upstreamPath": "outline-24px/body/lungs.svg", "localPath": "/assets/healthicons/outline/lungs.svg" },
+    { "style": "filled", "originalName": "lungs", "upstreamPath": "filled-24px/body/lungs.svg", "localPath": "/assets/healthicons/filled/lungs.svg" },
+    { "style": "outline", "originalName": "liver", "upstreamPath": "outline-24px/body/liver.svg", "localPath": "/assets/healthicons/outline/liver.svg" },
+    { "style": "filled", "originalName": "liver", "upstreamPath": "filled-24px/body/liver.svg", "localPath": "/assets/healthicons/filled/liver.svg" },
+    { "style": "outline", "originalName": "kidneys", "upstreamPath": "outline-24px/body/kidneys.svg", "localPath": "/assets/healthicons/outline/kidneys.svg" },
+    { "style": "filled", "originalName": "kidneys", "upstreamPath": "filled-24px/body/kidneys.svg", "localPath": "/assets/healthicons/filled/kidneys.svg" },
+    { "style": "outline", "originalName": "thyroid", "upstreamPath": "outline-24px/body/thyroid.svg", "localPath": "/assets/healthicons/outline/thyroid.svg" },
+    { "style": "filled", "originalName": "thyroid", "upstreamPath": "filled-24px/body/thyroid.svg", "localPath": "/assets/healthicons/filled/thyroid.svg" },
+    { "style": "outline", "originalName": "female-reproductive_system", "upstreamPath": "outline-24px/body/female-reproductive_system.svg", "localPath": "/assets/healthicons/outline/female-reproductive_system.svg" },
+    { "style": "filled", "originalName": "female-reproductive_system", "upstreamPath": "filled-24px/body/female-reproductive_system.svg", "localPath": "/assets/healthicons/filled/female-reproductive_system.svg" },
+    { "style": "outline", "originalName": "testicles", "upstreamPath": "outline-24px/body/testicles.svg", "localPath": "/assets/healthicons/outline/testicles.svg" },
+    { "style": "filled", "originalName": "testicles", "upstreamPath": "filled-24px/body/testicles.svg", "localPath": "/assets/healthicons/filled/testicles.svg" },
+    { "style": "outline", "originalName": "blood-cells", "upstreamPath": "outline-24px/body/blood-cells.svg", "localPath": "/assets/healthicons/outline/blood-cells.svg" },
+    { "style": "filled", "originalName": "blood-cells", "upstreamPath": "filled-24px/body/blood-cells.svg", "localPath": "/assets/healthicons/filled/blood-cells.svg" },
+    { "style": "outline", "originalName": "skeleton", "upstreamPath": "outline-24px/body/skeleton.svg", "localPath": "/assets/healthicons/outline/skeleton.svg" },
+    { "style": "filled", "originalName": "skeleton", "upstreamPath": "filled-24px/body/skeleton.svg", "localPath": "/assets/healthicons/filled/skeleton.svg" },
+    { "style": "outline", "originalName": "tissue", "upstreamPath": "outline-24px/body/tissue.svg", "localPath": "/assets/healthicons/outline/tissue.svg" },
+    { "style": "filled", "originalName": "tissue", "upstreamPath": "filled-24px/body/tissue.svg", "localPath": "/assets/healthicons/filled/tissue.svg" }
+  ]
+}

@@ -1,0 +1,125 @@
+/* Dense evidence sections have intentionally separate visual vocabularies.
+   These are interface/navigation colours, not a cross-source evidence score. */
+
+/* Expression: four independent source scales stay separate. The surrounding
+   interface uses the section's pink identity; source rails below retain their
+   own colours and are not a combined expression scale. */
+#expression {
+  --expression-rna: #67a583;
+  --expression-ms: #f59c7c;
+  --expression-ihc: #c85e62;
+  --expression-paxdb: #7b95c6;
+}
+#expression .expression-overview-scroll { border-color: #e7b6cf; background: #ffffff; }
+#expression .expression-overview-grid { background: #fff8fb; }
+#expression .expression-corner, #expression .expression-column-label { background: #fff0f6; color: #7a294f; }
+#expression .expression-row-label { background: #ffffff; }
+#expression .expression-row-label strong, #expression .expression-legends > div > strong, #expression .expression-disclosure-summary strong, #expression .expression-scale-notes p strong { display: inline-flex; align-items: center; gap: .38rem; }
+#expression .expression-row-label.modality-hpa_rna { border-left: 4px solid var(--expression-rna); }
+#expression .expression-row-label.modality-hpa_ms { border-left: 4px solid var(--expression-ms); }
+#expression .expression-row-label.modality-hpa_ihc { border-left: 4px solid var(--expression-ihc); }
+#expression .expression-row-label.modality-paxdb { border-left: 4px solid var(--expression-paxdb); }
+#expression .expression-modality-icon { flex: none; }
+#expression .expression-modality-icon.modality-hpa_rna { color: var(--expression-rna); }
+#expression .expression-modality-icon.modality-hpa_ms { color: var(--expression-ms); }
+#expression .expression-modality-icon.modality-hpa_ihc { color: var(--expression-ihc); }
+#expression .expression-modality-icon.modality-paxdb { color: var(--expression-paxdb); }
+#expression .expression-cell { background: #ffffff; }
+#expression .expression-cell .is-null { background: repeating-linear-gradient(135deg, #f5f7f8 0 4px, #b6c0c7 4px 7px); }
+#expression .expression-cell .is-zero { box-shadow: inset 0 0 0 2px #64748b; }
+#expression .expression-cell.no-records { background: #f1f5f9; color: #64748b; }
+#expression .expression-cell-tooltip { border-color: #334155; background: #1e293b; }
+#expression .expression-legends > div { border-top-width: 3px; background: #ffffff; }
+#expression .expression-legends > div.modality-hpa_rna { border-top-color: var(--expression-rna); }
+#expression .expression-legends > div.modality-hpa_ms { border-top-color: var(--expression-ms); }
+#expression .expression-legends > div.modality-hpa_ihc { border-top-color: var(--expression-ihc); }
+#expression .expression-legends > div.modality-paxdb { border-top-color: var(--expression-paxdb); }
+#expression .expression-scale-key { display: flex; grid-column: 1 / -1; justify-content: space-between; gap: .4rem; color: #536273; font-size: .8125rem; line-height: 1.3; }
+#expression .expression-scale-key b:last-child { text-align: right; }
+#expression .expression-cell-strips .ihc-not-detected, #expression .ihc-legend .ihc-not-detected { background: #d8d4c8; }
+#expression .expression-cell-strips .ihc-low, #expression .ihc-legend .ihc-low { background: #efc45d; }
+#expression .expression-cell-strips .ihc-medium, #expression .ihc-legend .ihc-medium { background: #d86b4a; }
+#expression .expression-cell-strips .ihc-high, #expression .ihc-legend .ihc-high { background: var(--expression-ihc); color: white; }
+#expression .expression-scale-notes > div { border-left-color: var(--section-expression-600); }
+#expression .expression-details-heading h3, #expression .de-heading h3 { color: var(--section-expression-800); }
+#expression .expression-modality-disclosure { border-left: 4px solid #64748b; box-shadow: none; }
+#expression .expression-modality-disclosure.modality-hpa_rna { border-left-color: var(--expression-rna); }
+#expression .expression-modality-disclosure.modality-hpa_ms { border-left-color: var(--expression-ms); }
+#expression .expression-modality-disclosure.modality-hpa_ihc { border-left-color: var(--expression-ihc); }
+#expression .expression-modality-disclosure.modality-paxdb { border-left-color: var(--expression-paxdb); }
+#expression .expression-detail-group > header { background: #fff5f9; }
+#expression .expression-detail-group > header > strong { color: var(--section-expression-800); }
+
+/* GEN uses muted terracotta/mulberry inside Expression rather than pale blue. */
+#expression .differential-expression { border-top-color: #bd7c57; }
+#expression .de-heading > span { border-color: #b66543; background: #fff1e8; color: #7b3d2a; }
+#expression .de-dataset-card, #expression .de-volcano-shell { border-color: #d9b29a; }
+#expression .de-dataset-card.is-open { border-color: #b66543; }
+#expression .de-dataset-trigger:hover, #expression .de-dataset-trigger[aria-expanded="true"] { background: #fff4ed; }
+#expression .de-current-protein-statistics { border-left-color: #a24d68; background: #fdf4f7; }
+#expression .de-metric-tiles > span { border-color: #d8b7c1; }
+#expression .de-contrast-list > article:hover { border-color: #b66543; }
+#expression .de-contrast-list > article.is-active { border-color: #a24d68; box-shadow: inset 3px 0 #a24d68; background: #fdf1f5; }
+#expression .de-current-protein-statistics.is-down { border-color: #7a284f; }
+#expression .de-direction-badge.is-down { background: #f0dfeb; color: #65203f; }
+#expression .de-protein-summary { border-color: #d9b29a; border-left-color: #b66543; background: #fff8f2; }
+#expression .de-first-contrast > strong { color: #7a284f; }
+#expression .volcano-legend .legend-down { background: #7a284f; }
+
+/* QTL: orange-red UI framing makes this evidence family distinct from the
+   blue foundation and green molecular sections. It is not an effect scale. */
+#qtl, .qtl-detail-page { --qtl-plum: #c85e62; --qtl-magenta: #f47254; --qtl-amber: #fded95; --qtl-border: #ffc1a6; }
+#qtl .qtl-summary-panel, .qtl-detail-page .qtl-browser { border-color: var(--qtl-border); }
+#qtl .source-tabs, .qtl-detail-page .source-tabs { background: #fff5ef; }
+#qtl .source-tabs button[aria-pressed="true"], .qtl-detail-page .source-tabs button[aria-pressed="true"] { border-bottom-color: var(--qtl-plum); background: #fffdfb; color: #8d3d4a; }
+#qtl .semantics-banner, .qtl-detail-page .semantics-banner { border-left-color: var(--qtl-plum); background: #fff8f3; }
+#qtl .type-tabs button, .qtl-detail-page .type-tabs button { border-color: #f59c7c; color: #9a464d; }
+#qtl .type-tabs button[aria-pressed="true"], .qtl-detail-page .type-tabs button[aria-pressed="true"] { border-color: var(--section-qtl-800); background: var(--section-qtl-800); color: white; }
+#qtl .qtl-legend, .qtl-detail-page .qtl-legend { border-color: #ffd9c8; color: #76504f; }
+#qtl .legend-qtl { background: linear-gradient(90deg, #fff8ef, #ffc1a6 46%, #c85e62 100%); }
+#qtl .qtl-cell { border-color: #f6b5a3; background: color-mix(in srgb, #f47254 calc(13% + var(--cell-intensity) * 73%), #fffaf5); }
+#qtl .qtl-cell:hover { border-color: var(--qtl-plum); box-shadow: inset 0 0 0 2px #fff4d4, 0 3px 10px rgb(200 94 98 / 14%); }
+#qtl .qtl-cell strong { color: #923e49; }
+#qtl .qtl-required-state { border-left-color: var(--qtl-amber); background: #fffbed; }
+.qtl-detail-page .qtl-browser { border-top: 4px solid var(--qtl-plum); }
+.qtl-detail-page .qtl-filters label { color: #76504f; }
+.qtl-detail-page .qtl-filters input, .qtl-detail-page .qtl-filters select { border-color: #f3ad98; }
+.qtl-detail-page .qtl-table thead th { background: #fff1e9; color: #923e49; }
+.qtl-detail-page .qtl-table tbody tr:hover { background: #fff8f4; }
+.qtl-detail-page .qtl-source-detail { border-left-color: var(--qtl-plum); background: #fff8f4; }
+.qtl-detail-page .primary-button { border-color: var(--section-qtl-800); background: var(--section-qtl-800); }
+.qtl-detail-page .primary-button:hover { border-color: #78350f; background: #78350f; }
+
+/* Interaction: slate/steel framing is intentionally separate from category
+   colours and patterns below, which remain source semantics. */
+#interactions, .interaction-detail-page { --interaction-olive: #526b7a; --interaction-coral: #356f94; --interaction-border: #cbd5e1; }
+#interactions .interaction-summary-panel, .interaction-detail-page .interaction-browser { border-color: var(--interaction-border); }
+#interactions .source-tabs, .interaction-detail-page .source-tabs { background: #f1f5f9; }
+#interactions .source-tabs button[aria-pressed="true"], .interaction-detail-page .source-tabs button[aria-pressed="true"] { border-bottom-color: var(--interaction-coral); background: #ffffff; color: #334155; }
+#interactions .interaction-caveat, .interaction-detail-page .interaction-caveat { border-left-color: var(--interaction-olive); background: #f8fafc; }
+#interactions .interaction-bar-scale { background: #e2e8f0; }
+#interactions .interaction-context-bars a:hover { background: #f8fafc; box-shadow: inset 3px 0 var(--interaction-olive); }
+#interactions .interaction-summary-card { border-color: #cbd5e1; background: #ffffff; }
+#interactions .interaction-summary-card:hover { border-color: var(--interaction-coral); background: #f8fafc; }
+#interactions .interaction-summary-card dl div { border-left-color: var(--interaction-olive); }
+#interactions .interaction-context-disclosure .disclosure-trigger { color: #334155; }
+#interactions .category-physical, .interaction-detail-page .category-physical { background: #5d6f2a; }
+#interactions .category-genetic, .interaction-detail-page .category-genetic { background: repeating-linear-gradient(135deg, #cf9a2e 0 4px, #f4d78d 4px 7px); }
+#interactions .category-positive, .interaction-detail-page .category-positive { background: #3d8a65; }
+#interactions .category-negative, .interaction-detail-page .category-negative { background: repeating-linear-gradient(45deg, #b94e3a 0 4px, #f3b493 4px 7px); }
+#interactions .category-other, .interaction-detail-page .category-other { background: #856c8c; }
+.interaction-detail-page .interaction-browser { border-top: 4px solid var(--interaction-olive); }
+.interaction-detail-page .interaction-filters label { color: #475569; }
+.interaction-detail-page .interaction-filters select { border-color: #94a3b8; }
+.interaction-detail-page .interaction-table thead th { background: #f1f5f9; color: #334155; }
+.interaction-detail-page .interaction-table tbody tr:hover { background: #f8fafc; }
+.interaction-detail-page .interaction-detail { border-left-color: var(--interaction-coral); background: #f8fafc; }
+.interaction-detail-page .primary-button { border-color: var(--interaction-coral); background: var(--interaction-coral); }
+.interaction-detail-page .primary-button:hover { border-color: var(--section-interactions-800); background: var(--section-interactions-800); }
+
+/* Disease rows use the disease section's rose rail. Conflict styling remains
+   independently red so it is never mistaken for a generic theme state. */
+#diseases .disease-row { border-left-color: var(--section-diseases-600); background: color-mix(in srgb, var(--section-diseases-600) 6%, white); }
+#diseases .disease-row.conflict { border-left-color: var(--palette-red); background: var(--color-error-bg); }
+
+@media (max-width: 520px) { #expression .expression-scale-key { font-size: .8125rem; } }

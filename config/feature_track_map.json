@@ -1,0 +1,10 @@
+{
+  "category": {
+    "membrane_topology": "topology",
+    "domain_region": "domain_region",
+    "secondary_structure": "secondary_structure",
+    "functional_site": "functional_site",
+    "ptm": "ptm"
+  },
+  "default": "other"
+}

@@ -1,0 +1,36 @@
+:root {
+  --motion-fast: 110ms;
+  --motion-hover: 160ms;
+  --motion-disclosure: 240ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+button, a, summary, [role="button"] {
+  transition-property: color, background-color, border-color, box-shadow, transform, opacity;
+  transition-duration: var(--motion-hover);
+  transition-timing-function: var(--ease-out);
+}
+
+button:active:not(:disabled), [role="button"]:active {
+  transform: translateY(1px) scale(0.98);
+  transition-duration: var(--motion-fast);
+}
+
+.disclosure-panel[data-open="true"] {
+  animation: disclosure-in var(--motion-disclosure) var(--ease-out) both;
+}
+
+@keyframes disclosure-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}

@@ -1,0 +1,69 @@
+/* Cross-view navigation only. Terracotta marks interaction state and never carries
+   a biological, clinical, confidence, or effect meaning. */
+.structure-crosslink-status {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: .7rem;
+  border-bottom: 1px solid #e3aa94;
+  background: linear-gradient(90deg, #fff1eb, #fffaf7 72%);
+  padding: .72rem 1rem;
+  color: #7b3d2a;
+  font-size: .875rem;
+}
+
+.structure-crosslink-status > svg { color: #c6533c; }
+.structure-crosslink-status span { min-width: 0; }
+.structure-crosslink-status strong { color: #5e2a1f; }
+.structure-crosslink-status.is-uncovered {
+  border-bottom-color: color-mix(in srgb, var(--palette-orange) 45%, var(--color-border));
+  background: var(--color-warning-bg);
+  color: var(--color-conflict);
+}
+.structure-crosslink-status.is-uncovered > svg { color: var(--palette-orange); }
+
+.structure-selection-bar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: .7rem;
+  border-bottom: 1px solid var(--color-border);
+  border-left: 4px solid #aeb9c6;
+  background: #f7f9fb;
+  padding: .65rem 1rem .65rem .8rem;
+}
+
+.structure-selection-bar > svg { color: #607080; }
+.structure-selection-bar > div:first-of-type { display: grid; gap: .05rem; min-width: 0; }
+.structure-selection-bar strong { color: var(--color-ink); font-size: .9rem; }
+.structure-selection-bar span { color: var(--color-muted); font-size: .8125rem; }
+.structure-selection-bar.is-selected {
+  border-bottom-color: #e3aa94;
+  border-left-color: #e76f51;
+  background: linear-gradient(90deg, #fff1eb, #fffaf7 70%, white);
+}
+.structure-selection-bar.is-selected > svg { color: #c6533c; }
+.structure-selection-bar.is-unmapped {
+  border-left-color: var(--palette-orange);
+  background: var(--color-warning-bg);
+}
+.structure-selection-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .4rem; }
+.structure-selection-actions .structure-action { display: inline-flex; align-items: center; gap: .35rem; min-height: 2.5rem; }
+
+.structure-viewer-shell:fullscreen {
+  grid-template-rows: auto auto auto auto minmax(0, 1fr) auto;
+}
+
+@media (max-width: 720px) {
+  .structure-crosslink-status,
+  .structure-selection-bar { grid-template-columns: auto minmax(0, 1fr); align-items: start; }
+  .structure-crosslink-status > button,
+  .structure-selection-actions { grid-column: 1 / -1; width: 100%; }
+  .structure-selection-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .structure-selection-actions button { justify-content: center; width: 100%; }
+}
+
+@media (prefers-contrast: more) {
+  .structure-crosslink-status,
+  .structure-selection-bar { border-color: currentColor; }
+}
