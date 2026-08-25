@@ -58,6 +58,18 @@ PY
   || fail "MEMVAR_DATA_ROOT must name the exact serving release root"
 [[ -n "${MEMVAR_DATA_UUID:-}" ]] \
   || fail "MEMVAR_DATA_UUID must name the data mount UUID"
+if [[ -z "${MEMVAR_APP_RELEASE:-}" ]]; then
+  app_git_head="$(git -C "$website_dir" rev-parse --verify HEAD 2>/dev/null || true)"
+  if [[ -n "$app_git_head" ]]; then
+    if [[ -z "$(git -C "$website_dir" status --porcelain --untracked-files=all 2>/dev/null)" ]]; then
+      MEMVAR_APP_RELEASE="$app_git_head"
+    else
+      app_identity_nonce="$(date +%s%N)-$$"
+      MEMVAR_APP_RELEASE="${app_git_head}-dirty-${app_identity_nonce}"
+    fi
+  fi
+fi
+[[ -z "${MEMVAR_APP_RELEASE:-}" ]] || export MEMVAR_APP_RELEASE
 PYTHONPATH="$backend_dir${PYTHONPATH:+:$PYTHONPATH}" python - <<'PY' \
   || fail "configured serving release is unavailable or incomplete"
 from app.release_store import release_store

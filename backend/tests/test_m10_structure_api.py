@@ -5,7 +5,7 @@ import duckdb
 from fastapi.testclient import TestClient
 import pytest
 
-from app import structure
+from app import main, structure
 from app.main import app
 
 
@@ -13,7 +13,8 @@ client = TestClient(app)
 P00533_DOWNLOAD = "/api/v1/proteins/P00533/structures/1/pdb"
 
 
-def test_p00533_structure_list_and_lowercase_accession_are_canonical() -> None:
+def test_p00533_structure_list_and_lowercase_accession_are_canonical(monkeypatch) -> None:
+    monkeypatch.setattr(main, "application_release", lambda: "test-app-release")
     response = client.get("/api/v1/proteins/P00533/structures")
     lowercase = client.get("/api/v1/proteins/p00533/structures")
     assert response.status_code == lowercase.status_code == 200
@@ -40,7 +41,7 @@ def test_p00533_structure_list_and_lowercase_accession_are_canonical() -> None:
             }
         ],
     }
-    assert response.headers["cache-control"] == "no-store"
+    assert response.headers["cache-control"] == "public, max-age=0, must-revalidate"
 
 
 def test_q8wxi7_fragments_are_complete_and_sorted_numerically() -> None:

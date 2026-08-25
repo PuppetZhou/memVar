@@ -5,10 +5,12 @@ from __future__ import annotations
 import base64
 import binascii
 import json
+from time import perf_counter
 from typing import Literal
 
 import duckdb
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
+from fastapi.responses import Response
 
 from .models import (
     AnnotationResponse,
@@ -34,6 +36,15 @@ from .models import (
     SubcellularLocation,
 )
 from .store import get_connection, require_protein, row_dict
+from .release_store import release_store
+from .http_policy import (
+    NO_STORE_CACHE_CONTROL,
+    REVALIDATE_CACHE_CONTROL,
+    application_release,
+    if_none_match_matches,
+    normalized_route,
+    release_etag,
+)
 from .de import router as de_router
 from .m2 import router as m2_router
 from .m3 import router as m3_router
@@ -303,16 +314,57 @@ def annotation_items(
 def create_app() -> FastAPI:
     app = FastAPI(title="memVar API", version="0.4.0")
     @app.middleware("http")
-    async def disable_api_response_caching(request: Request, call_next):
-        """Avoid stale browser data after a local generated-data rebuild."""
+    async def release_aware_api_response_policy(request: Request, call_next):
+        started = perf_counter()
         response = await call_next(request)
+        if not request.url.path.startswith("/api/"):
+            return response
+
+        duration_ms = (perf_counter() - started) * 1000
+        route = normalized_route(request)
+        response.headers["Server-Timing"] = (
+            f'app;dur={duration_ms:.1f};desc="{route}"'
+        )
         is_structure_asset = (
             request.url.path.startswith("/api/v1/proteins/")
             and "/structures/" in request.url.path
             and request.url.path.endswith("/pdb")
         )
-        if request.url.path.startswith("/api/") and not is_structure_asset:
-            response.headers["Cache-Control"] = "no-store"
+        release_id = release_store().release_id
+        response.headers["X-MemVar-Release"] = release_id
+        if not 200 <= response.status_code < 300:
+            response.headers["Cache-Control"] = NO_STORE_CACHE_CONTROL
+            return response
+
+        if is_structure_asset:
+            return response
+
+        is_revalidatable_json = (
+            request.method in {"GET", "HEAD"}
+            and response.headers.get("content-type", "").startswith("application/json")
+        )
+        if not is_revalidatable_json:
+            response.headers["Cache-Control"] = NO_STORE_CACHE_CONTROL
+            return response
+
+        app_release = application_release()
+        if app_release is None:
+            response.headers["Cache-Control"] = NO_STORE_CACHE_CONTROL
+            return response
+
+        etag = release_etag(release_id, app_release, request)
+        response.headers["Cache-Control"] = REVALIDATE_CACHE_CONTROL
+        response.headers["ETag"] = etag
+        if if_none_match_matches(request.headers.get("if-none-match"), etag):
+            return Response(
+                status_code=304,
+                headers={
+                    "Cache-Control": REVALIDATE_CACHE_CONTROL,
+                    "ETag": etag,
+                    "Server-Timing": response.headers["Server-Timing"],
+                    "X-MemVar-Release": release_id,
+                },
+            )
         return response
     app.include_router(m2_router)
     app.include_router(m3_router)

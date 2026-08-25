@@ -2,6 +2,7 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
+from app import main
 from app.main import app
 
 
@@ -9,10 +10,13 @@ client = TestClient(app)
 GENERATED = Path(__file__).resolve().parents[2] / "data" / "generated"
 
 
-def test_api_explicitly_disables_browser_caching_for_local_rebuilds() -> None:
+def test_api_successes_are_release_aware_revalidatable_and_errors_are_not_stored(monkeypatch) -> None:
+    monkeypatch.setattr(main, "application_release", lambda: "test-app-release")
     success = client.get("/api/v1/search", params={"q": "P00533"})
     assert success.status_code == 200
-    assert success.headers["cache-control"] == "no-store"
+    assert success.headers["cache-control"] == "public, max-age=0, must-revalidate"
+    assert success.headers["etag"]
+    assert success.headers["x-memvar-release"]
 
     missing = client.get("/api/v1/proteins/NOT_A_PROTEIN")
     assert missing.status_code == 404
