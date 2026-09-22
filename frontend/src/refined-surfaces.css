@@ -66,33 +66,33 @@ body{background:var(--canvas);color:var(--foreground)}
 
 /* Medical portal shell: deliberately scoped outside scientific data and viewers.
    Do not override shared palette tokens, table cells, tracks, residues or Mol*. */
-body{background:#f3f6f8}
+body{background:#e8f4f7}
 .site-header{background:#fff;border-bottom:1px solid #e1e8ed;box-shadow:0 2px 12px #17384c04}
 .site-header nav a,.section-nav a{font-family:Figtree,Inter,sans-serif;font-weight:600}
 .section-nav{background:#fff;border-color:#e1e8ed;box-shadow:0 4px 12px #17384c04}
 .section-nav a[class*="nav-"].active{background:#eaf4fa;color:#075985;box-shadow:inset 0 -2px 0 #087ba6}
 .section-nav a[class*="nav-"].active svg{color:#087ba6}
 .report>.panel,.report>.cx-panel,#overview .ov-identity,#overview .ov-section{
- background:#fff;border:1px solid #dfe7ec;border-radius:12px;box-shadow:0 3px 14px #17384c05;
+ background:#fff;border:1px solid #c9e3eb;border-radius:12px;box-shadow:0 3px 14px #17384c05;
 }
 .ov-identity-heading h1,.section-heading h2,.cx-heading h2,#overview .ov-section>header h2,
 .home-container h1,.home-container h2,.search-page>h1,.dialog-heading h2{
  font-family:Figtree,Inter,sans-serif;font-weight:650;letter-spacing:-.025em;color:#193545;
 }
-#overview .ov-section>header{background:#fff;padding-top:20px;padding-bottom:16px}
+#overview .ov-section>header{background:linear-gradient(105deg,#e5f4f8,#f3fafc);padding-top:20px;padding-bottom:16px}
 #overview .ov-section-action{border-radius:0 0 12px 12px;padding-bottom:16px}
 .section-heading,.cx-heading{border-bottom-color:#e8eef2}
 #overview .ov-section>header .ov-icon,#overview .ov-identity-icon,
 .panel>.section-heading .heading-icon,#sequence>.section-heading .viewer-icon,
-#structure>.section-heading .viewer-icon,.cx-panel>.cx-heading .cx-heading-icon{background:#edf6fa;color:#08769b;border-radius:9px}
+#structure>.section-heading .viewer-icon,.cx-panel>.cx-heading .cx-heading-icon{background:#d6edf5;color:#08769b;border-radius:9px}
 #overview .ov-identity .ov-identity-fields{background:transparent;gap:12px}
-#overview .ov-identity .ov-identity-fields>div{border:0;background:#f5f8fa;border-radius:8px;padding:12px 14px}
-#membrane-association .mov-compact-sources>button{background:#f5f8fa;border-radius:8px}
-#membrane-association .mov-compact-sources>button:hover{background:#ebf3f7}
+#overview .ov-identity .ov-identity-fields>div{border:0;background:#eaf5f8;border-radius:8px;padding:12px 14px}
+#membrane-association .mov-compact-sources>button{background:#eaf5f8;border-radius:8px}
+#membrane-association .mov-compact-sources>button:hover{background:#dceff5}
 #overview #membrane-association .membrane-details-button{color:#075985;font-weight:650}
 /* Only external toolbars and filters get new controls; scientific widgets inherit nothing here. */
 #sequence .composite-source-controls,#sequence .viewer-search,#structure>.toolbar,
-#variants .vc-catalog .vc-filter-group{background:#f6f9fb;border-color:#dce6ec;border-radius:9px}
+#variants .vc-catalog .vc-filter-group{background:#edf7fa;border-color:#dce6ec;border-radius:9px}
 :is(#sequence .viewer-search,#sequence .composite-source-controls,#structure>.toolbar,.vc-filter-group) :is(input:not([type=checkbox]),select){
  background:#fff;border:1px solid #c9d8e2;border-radius:7px;min-height:36px;box-shadow:0 1px 2px #15354b04;
 }
@@ -126,20 +126,20 @@ body{background:#f3f6f8}
 #overview .ov-section-action>.ov-browse:hover{text-decoration:underline}
 #overview .ov-section-action>.ov-browse:focus-visible{outline:2px solid #087ba6;outline-offset:3px;border-radius:4px}
 #overview .ov-source-launchers{gap:16px}
-#overview .ov-source-launchers>button{background:#f5f8fa;border:0;border-radius:8px;padding:16px 18px;box-shadow:none}
-#overview .ov-source-launchers>button:hover{background:#eaf3f8}
+#overview .ov-source-launchers>button{background:#eaf5f8;border:0;border-radius:8px;padding:16px 18px;box-shadow:none}
+#overview .ov-source-launchers>button:hover{background:#dceff5}
 #overview .ov-source-launchers>button small{margin-top:5px;line-height:1.5}
 :is(#expression,#qtl,#interactions) .cx-metrics{gap:14px}
-:is(#expression,#qtl,#interactions) .cx-metrics .cx-metric{border-color:transparent;background:#f5f8fa;border-radius:9px;box-shadow:none}
-:is(#expression,#qtl,#interactions) .cx-metrics .cx-metric.is-selected{background:#edf5fa;border-color:#8baec4;box-shadow:inset 0 2px 0 #608ba5}
-:is(#expression,#qtl,#interactions) .cx-metrics .cx-metric:hover{background:#edf3f7;border-color:#b7cbd8}
+:is(#expression,#qtl,#interactions) .cx-metrics .cx-metric{border-color:transparent;background:#eaf5f8;border-radius:9px;box-shadow:none}
+:is(#expression,#qtl,#interactions) .cx-metrics .cx-metric.is-selected{background:#d8eef5;border-color:#69aabc;box-shadow:inset 0 2px 0 #608ba5}
+:is(#expression,#qtl,#interactions) .cx-metrics .cx-metric:hover{background:#e1f1f6;border-color:#b7cbd8}
 :is(#expression,#qtl,#interactions) .cx-metrics .cx-metric-top{padding-bottom:0}
 #diseases .cx-disease-sources{gap:14px}
-#diseases .cx-disease-sources .cx-disease-card:not(.is-selected){border-color:transparent;background:#f5f8fa}
+#diseases .cx-disease-sources .cx-disease-card:not(.is-selected){border-color:transparent;background:#eaf5f8}
 #diseases .cx-disease-sources .cx-disease-card:hover{border-color:#b7cbd8}
 /* Unified controls for source filters, including filters inside details. */
 :where(#expression,#qtl,#interactions,#diseases,.dialog-body) .toolbar{
- padding:14px 16px;gap:12px 18px;background:#f5f8fa;border:0;border-radius:9px;margin-bottom:18px;
+ padding:14px 16px;gap:12px 18px;background:#eaf5f8;border:0;border-radius:9px;margin-bottom:18px;
 }
 :where(#expression,#qtl,#interactions,#diseases,.dialog-body) .toolbar .filter{display:flex;flex-direction:column;gap:6px;min-width:140px;max-width:100%}
 :where(#expression,#qtl,#interactions,#diseases,.dialog-body) .toolbar .filter>span{font-size:12px;font-weight:600;color:#526878}
@@ -152,7 +152,7 @@ body{background:#f3f6f8}
 :where(#expression,#qtl,#interactions,#diseases,.dialog-body) .toolbar button[data-variant=outline]:hover{background:#edf5f9;border-color:#91b7cc}
 /* One frame per dialog; the header stays outside the body scroll area. */
 [data-slot=dialog-content]:has(>.dialog-heading){background:#fff;border:1px solid #d6e1e8;border-radius:12px;box-shadow:0 20px 70px #15364c26;overflow:hidden}
-[data-slot=dialog-content]>.dialog-heading{padding:18px 24px;background:#f7fafc;border-bottom:1px solid #e1e9ef;gap:16px}
+[data-slot=dialog-content]>.dialog-heading{padding:18px 24px;background:#e4f3f8;border-bottom:1px solid #e1e9ef;gap:16px}
 [data-slot=dialog-content]>.dialog-heading h2{font-family:Figtree,Inter,sans-serif;font-size:20px;font-weight:650;line-height:1.4;letter-spacing:-.02em;color:#193545;margin:0;min-width:0}
 [data-slot=dialog-content]>.dialog-heading button{flex:none;width:36px;height:36px;border-radius:8px;color:#416175;background:transparent;box-shadow:none}
 [data-slot=dialog-content]>.dialog-heading button:hover{background:#e7eff4}
@@ -163,3 +163,11 @@ body{background:#f3f6f8}
  [data-slot=dialog-content]>.dialog-body{padding:16px}
  [data-slot=dialog-content]>.dialog-heading h2{font-size:18px}
 }
+
+/* Cyan-blue is restricted to presentation surfaces, not scientific palettes. */
+#overview .ov-identity.panel{background:linear-gradient(110deg,#e1f2f7,#f4fafc)}
+#overview .ov-identity .ov-identity-fields>div:nth-child(n){background:#ffffffc9}
+#membrane-association .mov-compact-sources>button{background:#e4f2f7}
+.section-nav{background:#f5fbfd;border-color:#cee5ed}
+.section-nav a[class*="nav-"].active{background:#d7edf6;box-shadow:inset 0 -2px 0 #087ba6}
+.panel>.section-heading,.cx-panel>.cx-heading{background:linear-gradient(105deg,#e7f5f9,#f5fbfd);border-radius:9px;padding:14px 16px}
