@@ -52,3 +52,9 @@
 已获用户授权继续优化：统一概览三级标题 Figtree、底部文字操作的高度/焦点、来源入口与来源卡片的轻背景，保留选中边界及科学类别颜色。Expression/QTL/Interactions/Diseases 与详情内来源工具栏统一标签间距、36px 下拉框和轻边框按钮。共享详情弹窗统一标题栏、36px 关闭按钮、内容留白及独立滚动。仅修改限定容器的 CSS，不修改科研数据/轨道/结构着色。
 
 验证：构建通过；localhost:8000 P00533 在 1230×837 与 1470×950 无横向溢出。膜详情打开/关闭正常，关闭后焦点返回触发按钮；QTL GTEx→QTLbase 下拉切换及 URL 状态更新成功。抽查变异单元格和序列容器/标签字体颜色一致。无应用 console error；WebGL ReadPixels 性能 warning 同前。截图 /tmp/memvar-portal-dialog.png、/tmp/memvar-portal-filters.png。Browser 实例列表仍为空，继续使用此前允许的 Playwright 后备。尚未逐一验收所有详情或移动端。
+
+## 用户指定五色试版（2026-09-23）
+
+上一轮青蓝背景已依用户要求回退。新试版采用用户指定 punch-red #e63946、honeydew #f1faee、frosted-blue #a8dadc、cerulean #457b9d、oxford-navy #1d3557。仅建立独立外围 token：蜜露白与白色混合为页面和工具栏底色，雾蓝与白色混合作边框，钢蓝用于选中/焦点，藏青用于外部标题。红色登记备用，不套用科学状态。内容卡片仍为白底；未更改原有共享科学颜色变量、数据单元格、序列或结构色阶。
+
+验证：TypeScript/Vite 构建通过；P00533 在 1230×837 与 1470×950 无横向溢出；膜详情打开/Escape关闭正常；表格单元格与序列容器/标签的前景、背景、字体抽查与原基线一致。无应用 console error。截图 /tmp/memvar-honeydew.png。内置 Browser 返回空实例，继续使用已授权 Playwright 后备；未做移动端或全量数据状态验收。
