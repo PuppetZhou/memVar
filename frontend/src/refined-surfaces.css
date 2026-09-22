@@ -63,3 +63,56 @@ body{background:var(--canvas);color:var(--foreground)}
 :is(#expression,#qtl,#interactions) .cx-metrics .cx-metric.is-selected{background:#eaf0f4;border-color:#8fa5b6}
 #overview .fc-panel-heading h4{color:#365f65}
 .ve-population .ve-frequency-legend>i{background:linear-gradient(90deg,hsl(211 24% 47%),hsl(211 24% 27%))}
+
+/* Medical portal shell: deliberately scoped outside scientific data and viewers.
+   Do not override shared palette tokens, table cells, tracks, residues or Mol*. */
+body{background:#f3f6f8}
+.site-header{background:#fff;border-bottom:1px solid #e1e8ed;box-shadow:0 2px 12px #17384c04}
+.site-header nav a,.section-nav a{font-family:Figtree,Inter,sans-serif;font-weight:600}
+.section-nav{background:#fff;border-color:#e1e8ed;box-shadow:0 4px 12px #17384c04}
+.section-nav a[class*="nav-"].active{background:#eaf4fa;color:#075985;box-shadow:inset 0 -2px 0 #087ba6}
+.section-nav a[class*="nav-"].active svg{color:#087ba6}
+.report>.panel,.report>.cx-panel,#overview .ov-identity,#overview .ov-section{
+ background:#fff;border:1px solid #dfe7ec;border-radius:12px;box-shadow:0 3px 14px #17384c05;
+}
+.ov-identity-heading h1,.section-heading h2,.cx-heading h2,#overview .ov-section>header h2,
+.home-container h1,.home-container h2,.search-page>h1,.dialog-heading h2{
+ font-family:Figtree,Inter,sans-serif;font-weight:650;letter-spacing:-.025em;color:#193545;
+}
+#overview .ov-section>header{background:#fff;padding-top:20px;padding-bottom:16px}
+#overview .ov-section-action{border-radius:0 0 12px 12px;padding-bottom:16px}
+.section-heading,.cx-heading{border-bottom-color:#e8eef2}
+#overview .ov-section>header .ov-icon,#overview .ov-identity-icon,
+.panel>.section-heading .heading-icon,#sequence>.section-heading .viewer-icon,
+#structure>.section-heading .viewer-icon,.cx-panel>.cx-heading .cx-heading-icon{background:#edf6fa;color:#08769b;border-radius:9px}
+#overview .ov-identity .ov-identity-fields{background:transparent;gap:12px}
+#overview .ov-identity .ov-identity-fields>div{border:0;background:#f5f8fa;border-radius:8px;padding:12px 14px}
+#membrane-association .mov-compact-sources>button{background:#f5f8fa;border-radius:8px}
+#membrane-association .mov-compact-sources>button:hover{background:#ebf3f7}
+#overview #membrane-association .membrane-details-button{color:#075985;font-weight:650}
+/* Only external toolbars and filters get new controls; scientific widgets inherit nothing here. */
+#sequence .composite-source-controls,#sequence .viewer-search,#structure>.toolbar,
+#variants .vc-catalog .vc-filter-group{background:#f6f9fb;border-color:#dce6ec;border-radius:9px}
+:is(.site-header,#sequence .viewer-search,#sequence .composite-source-controls,#structure>.toolbar,.vc-filter-group) :is(input:not([type=checkbox]),select){
+ background:#fff;border:1px solid #c9d8e2;border-radius:7px;min-height:36px;box-shadow:0 1px 2px #15354b04;
+}
+:is(.site-header,#sequence .viewer-search,#sequence .composite-source-controls,#structure>.toolbar,.vc-filter-group) :is(input,select):focus-visible{
+ outline:2px solid #087ba6;outline-offset:2px;
+}
+:is(#sequence .viewer-search,#sequence .composite-source-controls,#structure>.toolbar,.vc-filter-group) button[data-slot=button]{
+ border-radius:7px;min-height:34px;font-weight:600;transition:background-color .15s,border-color .15s,box-shadow .15s;
+}
+:is(#sequence .viewer-search,#sequence .composite-source-controls,#structure>.toolbar,.vc-filter-group) button[data-variant=outline]{
+ background:#fff;border-color:#c9d8e2;color:#28516a;box-shadow:0 1px 3px #17384c08;
+}
+:is(#sequence .viewer-search,#sequence .composite-source-controls,#structure>.toolbar,.vc-filter-group) button[data-variant=outline]:hover{
+ background:#edf5f9;border-color:#91b7cc;
+}
+#sequence .annotation-source-trigger{border-radius:7px;background:#fff;border-color:#c9d8e2}
+#sequence .annotation-source-trigger strong{color:#075985}
+#diseases .cx-disease-sources .cx-disease-card{background:#f8fafb;border-color:#dfe7ec;border-radius:10px}
+@media(prefers-reduced-motion:reduce){
+ :is(#sequence .viewer-search,#sequence .composite-source-controls,#structure>.toolbar,.vc-filter-group) button[data-slot=button]{transition:none}
+}
+/* Header search already has one outer field boundary. */
+.site-header input:not([type=checkbox]){border:0;background:transparent;box-shadow:none}

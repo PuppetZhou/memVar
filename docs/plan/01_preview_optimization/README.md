@@ -2,6 +2,10 @@
 
 更新：2026-09-22。[问题与研究](../../research/01_preview_optimization/README.md) · [执行记录](../../record/01_preview_optimization/README.md) · [基线及适用规则](../README.md)。
 
+## Medical 风格研究（2026-09-23）
+
+已按用户要求安装项目级 UI UX Pro Max 技能并核对医疗配色、字体与在线范例。用户随后授权温和实施：只调整标题/导航字体、外围背景卡片与控件；表格内容、序列及结构内部的字体和颜色保持基线。第一版已构建并在本地核对。保留已确认科研组件与交互，候选设计和安装验证见[Medical Portal 审查](../../research/01_preview_optimization/medical_portal_design_review.md)。
+
 ## 当前本地优化（2026-09-22）
 
 用户已关闭 ngrok，当前在 localhost:8000 继续优化，不自动恢复公网。最新一轮试行低饱和度表面与灰蓝操作色，减少膜特征及疾病模块装饰线，反应式统一排版，变异列表改为滚动追加。ACMG/ClinGen 频率证据须按疾病/基因规则及人群质量判定，本轮仅优化频率数值色阶和依据说明，不自动分配 BA1/BS1/PM2。具体实施与验证见现有 UI 记录。

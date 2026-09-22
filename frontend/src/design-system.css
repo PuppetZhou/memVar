@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;650;700;750&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@500;600;650;700&family=Inter:wght@400;450;500;550;600;650;700;750&display=swap');
 /* Tailwind utilities coexist with legacy scientific viewers; no global Preflight reset. */
 @layer theme, base, legacy, components, utilities;
 @import "tailwindcss/theme.css" layer(theme);
