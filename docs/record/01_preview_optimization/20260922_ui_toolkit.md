@@ -371,3 +371,8 @@ CATVariant首页可读取，并结合既有本地视觉审查；VarCards2读取4
 ## 恢复公网预览
 
 2026-09-22 18:36 HKT，用户授权使用 screen 后台启动 ngrok 并公布。独立会话 memvar-ngrok 转发 http://127.0.0.1:8000，入口 https://renewably-ashy-undiluted.ngrok-free.dev 。启动时继承的HTTP代理触发ERR_NGROK_9009，已仅为ngrok进程清除代理环境变量后成功连接，未修改全局代理或凭据。公网首页及Q12809 overview API均返回200，首页确认当前index-DPNrjsTz.js版本。核查从本机经公网域名发起，不代表所有外部网络均已验收。日志保存在忽略的.runtime/ngrok.log；screen后台运行不等同于开机自启。
+
+
+## 20:59 运行检查与恢复
+
+2026-09-22 20:58 HKT检查发现screen中的ngrok仍在运行，PostgreSQL端口55432监听正常，但网站8000无监听，公网首页及接口均502。当前退出原因未确定，旧/tmp日志不能证明本次退出原因。20:58:53以用户级systemd临时服务memvar-web-preview.service恢复网站，Restart=always、RestartSec=3，脱离工具终端生命周期；ngrok仍由原screen会话管理。20:59复核本地及公网首页、Q12809/P00533 overview、Q12809 sequence、QTL summary、structures全部200且JSON可解析，首页JS/CSS可获取；本地响应约0.03–0.35秒，公网约0.55–1.26秒。服务active/running，NRestarts=0。该验证从服务器经公网地址发起，不代表所有外部网络；临时服务未配置开机启动。
