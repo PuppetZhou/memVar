@@ -1,0 +1,254 @@
+[
+  {
+    "id": "uniprot",
+    "name": "UniProt",
+    "group": "Identity & function",
+    "url": "https://www.uniprot.org/"
+  },
+  {
+    "id": "hgnc",
+    "name": "HGNC",
+    "group": "Identity & function",
+    "url": "https://www.genenames.org/"
+  },
+  {
+    "id": "ensembl",
+    "name": "Ensembl / VEP",
+    "group": "Identity & function",
+    "url": "https://www.ensembl.org/info/docs/tools/vep/index.html"
+  },
+  {
+    "id": "go",
+    "name": "Gene Ontology",
+    "group": "Identity & function",
+    "url": "https://geneontology.org/"
+  },
+  {
+    "id": "reactome",
+    "name": "Reactome",
+    "group": "Identity & function",
+    "url": "https://reactome.org/"
+  },
+  {
+    "id": "rhea",
+    "name": "Rhea",
+    "group": "Identity & function",
+    "url": "https://www.rhea-db.org/"
+  },
+  {
+    "id": "gtopdb",
+    "name": "Guide to PHARMACOLOGY",
+    "group": "Identity & function",
+    "url": "https://www.guidetopharmacology.org/"
+  },
+  {
+    "id": "deeptmhmm2",
+    "name": "DeepTMHMM2",
+    "group": "Membrane & sequence",
+    "url": "https://github.com/fteufel/DeepTMHMM2"
+  },
+  {
+    "id": "topdb",
+    "name": "TOPDB",
+    "group": "Membrane & sequence",
+    "url": "https://topdb.unitmp.org/"
+  },
+  {
+    "id": "htp",
+    "name": "HTP",
+    "group": "Membrane & sequence",
+    "url": "https://htp.unitmp.org/"
+  },
+  {
+    "id": "tmalphafold",
+    "name": "TmAlphaFold",
+    "group": "Membrane & sequence",
+    "url": "https://tmalphafold.ttk.hu/"
+  },
+  {
+    "id": "pdbtm",
+    "name": "PDBTM",
+    "group": "Membrane & sequence",
+    "url": "https://pdbtm.unitmp.org/"
+  },
+  {
+    "id": "alphafold",
+    "name": "AlphaFold Protein Structure Database",
+    "group": "Membrane & sequence",
+    "url": "https://alphafold.ebi.ac.uk/"
+  },
+  {
+    "id": "opm",
+    "name": "OPM",
+    "group": "Membrane & sequence",
+    "url": "https://opm.phar.umich.edu/"
+  },
+  {
+    "id": "mplid",
+    "name": "MPLID",
+    "group": "Membrane & sequence",
+    "url": "https://github.com/omagebright/MPLID"
+  },
+  {
+    "id": "biodolphin",
+    "name": "BioDolphin",
+    "group": "Membrane & sequence",
+    "url": "https://www.nature.com/articles/s42004-024-01384-z"
+  },
+  {
+    "id": "pfam",
+    "name": "Pfam / InterPro",
+    "group": "Membrane & sequence",
+    "url": "https://www.ebi.ac.uk/interpro/entry/pfam/"
+  },
+  {
+    "id": "dbptm",
+    "name": "dbPTM",
+    "group": "Membrane & sequence",
+    "url": "https://biomics.lab.nycu.edu.tw/dbPTM/"
+  },
+  {
+    "id": "glygen",
+    "name": "GlyGen",
+    "group": "Membrane & sequence",
+    "url": "https://glygen.org/"
+  },
+  {
+    "id": "proteomescout",
+    "name": "ProteomeScout",
+    "group": "Membrane & sequence",
+    "url": "https://proteomescout.research.virginia.edu/"
+  },
+  {
+    "id": "pesto",
+    "name": "PeSTo",
+    "group": "Membrane & sequence",
+    "url": "https://github.com/LBM-EPFL/PeSTo"
+  },
+  {
+    "id": "sppider",
+    "name": "SPPIDER-seq",
+    "group": "Membrane & sequence",
+    "url": "https://huggingface.co/aporollo-lab/SPPIDER-seq"
+  },
+  {
+    "id": "clinvar",
+    "name": "ClinVar",
+    "group": "Variants & clinical evidence",
+    "url": "https://www.ncbi.nlm.nih.gov/clinvar/"
+  },
+  {
+    "id": "cosmic",
+    "name": "COSMIC",
+    "group": "Variants & clinical evidence",
+    "url": "https://cancer.sanger.ac.uk/cosmic"
+  },
+  {
+    "id": "gnomad",
+    "name": "gnomAD",
+    "group": "Variants & clinical evidence",
+    "url": "https://gnomad.broadinstitute.org/"
+  },
+  {
+    "id": "dbnsfp",
+    "name": "dbNSFP",
+    "group": "Variants & clinical evidence",
+    "url": "https://www.dbnsfp.org/"
+  },
+  {
+    "id": "alphagenome",
+    "name": "AlphaGenome",
+    "group": "Expression & regulation",
+    "url": "https://www.alphagenomedocs.com/"
+  },
+  {
+    "id": "hpa",
+    "name": "Human Protein Atlas",
+    "group": "Expression & regulation",
+    "url": "https://www.proteinatlas.org/"
+  },
+  {
+    "id": "gtex",
+    "name": "GTEx",
+    "group": "Expression & regulation",
+    "url": "https://gtexportal.org/home/"
+  },
+  {
+    "id": "eqtlgen",
+    "name": "eQTLGen",
+    "group": "Expression & regulation",
+    "url": "https://www.eqtlgen.org/cis-eqtls.html"
+  },
+  {
+    "id": "qtlbase",
+    "name": "QTLbase",
+    "group": "Expression & regulation",
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9825467/"
+  },
+  {
+    "id": "biogrid",
+    "name": "BioGRID",
+    "group": "Interactions & disease context",
+    "url": "https://thebiogrid.org/"
+  },
+  {
+    "id": "intact",
+    "name": "IntAct",
+    "group": "Interactions & disease context",
+    "url": "https://www.ebi.ac.uk/intact/"
+  },
+  {
+    "id": "clingen",
+    "name": "ClinGen",
+    "group": "Interactions & disease context",
+    "url": "https://clinicalgenome.org/"
+  },
+  {
+    "id": "gencc",
+    "name": "GenCC",
+    "group": "Interactions & disease context",
+    "url": "https://thegencc.org/"
+  },
+  {
+    "id": "hpo",
+    "name": "Human Phenotype Ontology",
+    "group": "Interactions & disease context",
+    "url": "https://hpo.jax.org/"
+  },
+  {
+    "id": "omim",
+    "name": "OMIM",
+    "group": "Interactions & disease context",
+    "url": "https://omim.org/"
+  },
+  {
+    "id": "ptmd2",
+    "name": "PTMD2",
+    "group": "Interactions & disease context",
+    "url": "https://ptmd.biocuckoo.cn/"
+  },
+  {
+    "id": "dbsnp",
+    "name": "dbSNP",
+    "group": "Variants & clinical evidence",
+    "url": "https://www.ncbi.nlm.nih.gov/snp/"
+  },
+  {
+    "id": "thermompnn",
+    "name": "ThermoMPNN",
+    "group": "Variants & clinical evidence",
+    "url": "https://github.com/Kuhlman-Lab/ThermoMPNN"
+  },
+  {
+    "id": "mondo",
+    "name": "MONDO",
+    "group": "Interactions & disease context",
+    "url": "https://monarch-initiative.github.io/mondo/"
+  },
+  {
+    "id": "medgen",
+    "name": "MedGen",
+    "group": "Interactions & disease context",
+    "url": "https://www.ncbi.nlm.nih.gov/medgen/"
+  }
+]

@@ -1,0 +1,87 @@
+identity:
+  path: modules/foundation/data/cleaned/uniprot/2026_03
+  version: '2026_03'
+  layer: cleaned
+protein_gene:
+  path: modules/foundation/data/curated/protein_gene.parquet
+  version: 20260913_hgnc_links
+  layer: curated
+gene_ensembl:
+  path: modules/foundation/data/curated/gene_ensembl.parquet
+  version: 20260913_hgnc_links
+  layer: curated
+uniprot_pages:
+  path: modules/foundation/data/raw/uniprot/2026_03/pages
+  version: '2026_03'
+  layer: raw_selected_comments
+uniprot_features:
+  path: modules/Site-Region/data/curated/20260915_uniprot_features_02
+  version: '2026_03'
+  layer: curated
+go:
+  path: modules/Function/data/curated/GO/20260915_go_build_02
+  version: '2026-07-26'
+  layer: curated
+go_slim:
+  path: modules/Function/data/raw/GO/2026-07-26/subsets/goslim_generic.tsv
+  version: '2026-07-26'
+  layer: raw_subset_dictionary
+go_slim_mapping:
+  path: modules/Function/data/curated/GO/20260921_go_slim_01/go_slim_mapping.parquet
+  version: 20260921_go_slim_01
+  layer: curated
+membrane_labels:
+  path: modules/membrane/data/curated/20260922_membrane_classification_01/protein_membrane_label.parquet
+  version: 20260922_membrane_classification_01
+  layer: curated
+membrane_classification:
+  path: modules/membrane/data/curated/20260922_membrane_classification_01/protein_membrane_classification.parquet
+  version: 20260922_membrane_classification_01
+  layer: curated
+reactome:
+  path: modules/Function/data/curated/Reactome/20260915_reactome_97_01
+  version: '97'
+  layer: curated
+rhea:
+  path: modules/Function/data/curated/Rhea/20260915_molecular_02
+  version: '142'
+  layer: curated
+gtopdb:
+  path: modules/Function/data/curated/GtoPdb/20260915_molecular_02
+  version: '2026.2'
+  layer: curated
+hpa:
+  path: modules/expression/data/curated/20260914_hpa_full_01/hpa/subcellular_location.parquet
+  version: snapshot:20260914_hpa_full_01
+  layer: curated
+membrane:
+  path: modules/membrane/data/curated/20260916_membrane_sources_02
+  version: 20260916_membrane_sources_02
+  layer: curated
+membrane_source:
+  path: modules/membrane/data/cleaned/20260916_membrane_sources_02
+  version: 20260916_membrane_sources_02
+  layer: cleaned_source_coordinates
+site_mapping:
+  path: modules/membrane/data/cleaned/20260920_site_mapping_01
+  version: 20260920_site_mapping_01
+  layer: cleaned_validated_mapping_and_prediction
+ptm:
+  path: modules/Site-Region/data/curated/20260915_ptm_native_02
+  version: 20260915_ptm_native_02
+  layer: curated
+conservation:
+  path: modules/Site-Region/data/curated/20260916_jsd_uniref2026_02_01
+  version: 20260916_jsd_uniref2026_02_01
+  layer: curated
+pfam:
+  path: modules/Site-Region/data/curated/20260921_pfam_canonical_01
+  version: 20260921_pfam_canonical_01
+  layer: curated
+  release: '38.2'
+
+variant_frequency:
+  path: modules/variant/data/curated/20260921_local_frequency_01
+  version: 20260921_local_frequency_01
+  layer: curated
+  status: imported_to_web_variant

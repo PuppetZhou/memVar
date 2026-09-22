@@ -1,0 +1,240 @@
+.cx-panel{--cx-accent:#438263;--cx-dark:#295a46;--cx-tint:#f2f8f4;--cx-line:#dbe9df;margin:24px 0;background:#fff;border:1px solid var(--cx-line);border-radius:8px;box-shadow:0 2px 5px #1a385b05;padding:22px 24px;scroll-margin-top:78px}.cx-amber{--cx-accent:#b28a4c;--cx-dark:#846026;--cx-tint:#fcf8f0;--cx-line:#ece2d0}.cx-teal{--cx-accent:#43968d;--cx-dark:#246b65;--cx-tint:#f0f8f6;--cx-line:#d7e9e4}.cx-rose{--cx-accent:#b46680;--cx-dark:#91425d;--cx-tint:#fcf4f7;--cx-line:#eedde5}.cx-heading{display:flex;align-items:center;gap:12px;padding:0 0 20px}.cx-heading-icon{width:39px;height:39px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex:none;background:var(--cx-tint);color:var(--cx-accent);border:1px solid var(--cx-line)}.cx-heading h2{font-size:20px;color:var(--cx-dark);letter-spacing:-.3px}.cx-heading p{font-size:12px;color:#7d8b9d;margin:3px 0 0}.cx-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:12px}.cx-metric{--cx-source:var(--cx-accent);background:var(--cx-tint);border:1px solid var(--cx-line);border-radius:7px;padding:16px;text-align:left;color:#475a71;transition:border-color .15s,background .15s;min-width:0}.cx-metric:hover{border-color:var(--cx-source);background:#fff}.cx-metric.is-selected{box-shadow:inset 0 0 0 1px var(--cx-source)}.cx-metric-top{display:flex;align-items:center;gap:8px}.cx-source-dot{width:8px;height:8px;background:var(--cx-source);border-radius:50%;flex:none}.cx-metric-top strong{font-size:13px;font-weight:600;color:var(--cx-dark)}.cx-metric-top>svg{margin-left:auto;color:#93a2b0;flex:none}.cx-metric-value{margin-top:16px;display:flex;align-items:baseline;gap:9px;font-size:27px;font-weight:650;line-height:1.3;letter-spacing:-.5px;color:var(--cx-source);flex-wrap:wrap}.cx-metric-value>span{font-size:10px;font-weight:400;color:#8795a4;letter-spacing:0;max-width:160px}.cx-metric-secondary{font-size:10px;color:#8a97a6;margin-top:6px}.cx-summary-section{margin-top:22px}.cx-chart-title{display:flex;align-items:baseline;justify-content:space-between;gap:15px;margin-bottom:13px}.cx-chart-title h3{margin:0;color:#546980;font-size:12px;font-weight:600}.cx-chart-title>span{font-size:9px;color:#8e9cab;white-space:nowrap}.cx-dataset-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.cx-dataset{background:#fafcfd;border:1px solid #e5ebf0;border-radius:5px;display:flex;align-items:center;gap:9px;padding:11px 12px;text-align:left;min-width:0}.cx-dataset:hover{border-color:var(--cx-accent);background:var(--cx-tint)}.cx-dataset>div{flex:1;min-width:0}.cx-dataset strong{font-size:11px;font-weight:550;color:#567084;display:block}.cx-dataset small{font-size:9px;color:#8c9ba8;display:block;margin-top:3px}.cx-dataset>svg{color:#92a6b4;flex:none}.cx-dataset .badge{font-size:9px;padding:3px 6px}.cx-hint{display:flex;align-items:center;gap:6px;font-size:11px;color:#7b8ea1;background:#f8fafc;border:1px dashed #e2e9f1;border-radius:5px;padding:12px 14px;margin:17px 0 0}.cx-scope{font-size:10px;color:#8a98a6;line-height:1.7;margin:15px 0 0;padding-top:12px;border-top:1px solid #eaf0f4}.cx-more{display:inline-flex;background:none;border:0;padding:0;font-size:10px;color:var(--cx-dark);margin-top:10px;text-decoration:underline}.cx-summary-columns{display:grid;grid-template-columns:.85fr 1.15fr;gap:24px;margin-top:23px}.cx-chart{min-width:0}.cx-bar-list{display:flex;flex-direction:column;gap:8px}.cx-bar-row{display:grid;grid-template-columns:minmax(100px,1fr) minmax(50px,1.05fr) 58px 12px;gap:10px;align-items:center;border:0;background:transparent;padding:5px 0;text-align:left;min-width:0}.cx-bar-row:hover{background:var(--cx-tint)}.cx-bar-label{font-size:11px;color:#5a7184;overflow-wrap:anywhere}.cx-bar-track{height:7px;background:#edf2f5;border-radius:4px;overflow:hidden}.cx-bar-track>span{display:block;height:100%;border-radius:4px;min-width:0}.cx-bar-row strong{font-size:11px;font-weight:550;text-align:right;color:#5c778d}.cx-bar-row>svg{color:#9baab7}.cx-tissue-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.cx-tissue-grid>button{background:var(--cx-tint);border:1px solid var(--cx-line);border-radius:4px;padding:8px 9px;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;min-width:0}.cx-tissue-grid span{font-size:10px;color:#8a7659;overflow-wrap:anywhere}.cx-tissue-grid strong{font-size:10px;font-weight:600;color:#a68451;flex:none}.cx-record-area{margin-top:22px;padding-top:19px;border-top:1px solid var(--cx-line)}.cx-record-heading{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:13px}.cx-record-heading>div>span{font-size:9px;color:#94a0ac}.cx-record-heading h3{margin:3px 0 0;font-size:13px;color:var(--cx-dark)}.cx-back{display:flex;align-items:center;gap:6px;background:none;border:0;padding:0;color:#7d8fa0;font-size:10px;white-space:nowrap}.cx-record-area .toolbar{padding:11px 13px}.cx-ppi-summary{display:grid;grid-template-columns:.8fr 1.4fr;gap:30px}.cx-ppi-summary .cx-metrics{grid-template-columns:1fr 1fr}.cx-ppi-summary .cx-metric{padding:16px 13px}.cx-ppi-summary .cx-metric-value{font-size:25px;display:block}.cx-ppi-summary .cx-metric-value>span{display:block;margin-top:5px}.cx-chart-note{font-size:10px;color:#8c9ba9;line-height:1.8;margin:15px 0 0}.cx-disease-sources{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}.cx-disease-card{--cx-source:var(--cx-accent);text-align:left;background:#fff;border:1px solid #e6e8ef;border-radius:7px;padding:18px 16px;box-shadow:inset 0 3px 0 var(--cx-source);min-width:0}.cx-disease-card:hover{background:var(--cx-tint);border-color:var(--cx-source)}.cx-disease-card.is-selected{border-color:var(--cx-source);background:var(--cx-tint)}.cx-disease-source-title{display:flex;align-items:center;gap:7px}.cx-disease-source-title strong{font-size:14px;color:var(--cx-source)}.cx-disease-source-title>svg{margin-left:auto;color:#a9aeba;flex:none}.cx-disease-card>p{font-size:10px;line-height:1.6;color:#8a93a2;margin:10px 0 16px;min-height:32px}.cx-disease-count{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}.cx-disease-count strong{font-size:25px;font-weight:600;color:var(--cx-source);letter-spacing:-.5px}.cx-disease-count span{font-size:9px;color:#8d99a7;max-width:150px}.cx-disease-card.is-empty,.cx-metric.is-empty{filter:grayscale(1);opacity:.55;box-shadow:none}.cx-panel .data-table .field-grid{grid-template-columns:1fr;min-width:160px}
+@media(max-width:1050px){.cx-dataset-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.cx-disease-sources{grid-template-columns:repeat(2,minmax(0,1fr))}.cx-ppi-summary{grid-template-columns:1fr;gap:20px}.cx-ppi-summary .cx-metrics{grid-template-columns:1fr 1fr}.cx-metric-value{font-size:24px}.cx-summary-columns{gap:18px}}
+@media(max-width:650px){.cx-panel{padding:17px 14px;margin:18px 0}.cx-heading{align-items:flex-start;padding-bottom:17px;gap:10px}.cx-heading-icon{height:32px;width:32px}.cx-heading-icon svg{height:18px;width:18px}.cx-heading h2{font-size:18px}.cx-heading p{font-size:10px}.cx-metrics{grid-template-columns:1fr 1fr;gap:9px}.cx-metric{padding:12px}.cx-metric-top{gap:5px}.cx-metric-top strong{font-size:11px}.cx-metric-top>svg{width:12px}.cx-metric-value{font-size:23px;gap:3px;display:block;margin-top:10px}.cx-metric-value>span{display:block;font-size:9px;margin-top:4px}.cx-dataset-grid{grid-template-columns:1fr}.cx-chart-title{gap:9px}.cx-chart-title h3{font-size:11px}.cx-chart-title>span{white-space:normal;font-size:8px;text-align:right;max-width:140px}.cx-summary-columns{grid-template-columns:1fr;gap:20px}.cx-bar-row{grid-template-columns:minmax(110px,1fr) minmax(55px,.8fr) 48px 10px;gap:7px}.cx-bar-label{font-size:10px}.cx-bar-row strong{font-size:10px}.cx-bar-track{height:6px}.cx-disease-sources{gap:9px}.cx-disease-card{padding:14px 12px}.cx-disease-source-title strong{font-size:12px}.cx-disease-card>p{font-size:9px;margin-bottom:12px;min-height:29px}.cx-disease-count strong{font-size:23px}.cx-record-heading{align-items:flex-start}.cx-record-heading h3{font-size:12px}.cx-back{font-size:9px}.cx-hint{font-size:10px;align-items:flex-start;padding:10px}.cx-scope{font-size:9px}.cx-ppi-summary .cx-metric-value{font-size:24px}.cx-chart-note{font-size:9px}.cx-tissue-grid>button{padding:8px}.cx-tissue-grid span{font-size:9px}.cx-tissue-grid strong{font-size:9px}}
+.cx-source-strip{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:13px}.cx-source-strip>span{font-size:10px;color:#8b98a6;margin-right:3px}.cx-source-strip>button{display:flex;align-items:center;gap:9px;border:1px solid #e1e9ee;background:#fff;border-radius:4px;padding:6px 9px}.cx-source-strip>button:hover{background:var(--cx-tint);border-color:var(--cx-accent)}.cx-source-strip strong{font-size:10px;color:#547968;font-weight:600}.cx-source-strip button>span{font-size:9px;color:#8b9aab}.cx-scope>p{margin:0}.cx-scope .details{margin-top:6px;border-top:0}.cx-scope .details>summary{font-size:9px;padding:5px 0;color:#92a0ae}.cx-scope .details-content{padding:0}.cx-scope .details-content>p{font-size:9px;margin:3px 0;line-height:1.65}.cx-disease-identifiers{font-size:9px;color:#96a1ae;margin-top:5px}
+.cx-disease-detail-groups{display:flex;flex-direction:column;gap:17px;margin:12px 0 22px}.cx-disease-detail-groups>section{border:1px solid #e5e8ef;border-left:3px solid var(--cx-source);border-radius:5px;padding:15px 17px}.cx-disease-detail-groups>section>h3{margin:0 0 13px;font-size:14px;color:var(--cx-source)}.cx-disease-detail-groups .annotation{padding:6px 0 13px}.cx-disease-detail-groups .annotation:last-child{padding-bottom:0}
+.cx-empty-summary{font-size:11px;color:#94a1af;line-height:1.7;margin:10px 0;grid-column:1/-1}
+.cx-dataset.is-selected{background:var(--cx-tint);border-color:var(--cx-accent);box-shadow:inset 0 0 0 1px var(--cx-accent)}.cx-context-browser{margin-top:23px;padding:18px;border:1px solid var(--cx-line);border-radius:7px;background:#fbfdfc}.cx-context-heading{display:flex;justify-content:space-between;align-items:center;gap:18px}.cx-context-heading h3{font-size:14px;margin:0;color:var(--cx-dark)}.cx-context-heading p{font-size:11px;margin:5px 0 0;color:#788d81}.cx-context-search{display:flex;flex-direction:column;gap:5px;min-width:220px}.cx-context-search>span{font-size:10px;color:#6e8375}.cx-context-search input{width:100%;border:1px solid #dce6df;border-radius:5px;padding:8px 10px;background:#fff;color:#364e41;font:inherit;font-size:11px}.cx-context-search input:focus{outline:2px solid #bad4c3;outline-offset:1px}.cx-context-count{font-size:10px;color:#849388;margin:13px 0}.cx-context-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.cx-context-grid>button{padding:11px 12px;background:#fff;border:1px solid #e0e8e2;border-radius:5px;text-align:left;min-width:0}.cx-context-grid>button:hover,.cx-context-grid>button.is-selected{border-color:var(--cx-accent);background:var(--cx-tint)}.cx-context-grid strong{display:block;color:#4e6959;font-size:11px;line-height:1.5;overflow-wrap:anywhere;font-weight:550}.cx-context-grid>button>div{display:flex;align-items:center;gap:7px;margin-top:7px;flex-wrap:wrap;color:#91a096}.cx-context-grid>button span{font-size:10px;color:#6c8676}.cx-context-grid>button small{font-size:9px}.cx-context-grid svg{margin-left:auto;flex:none}.cx-context-pagination{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-top:13px}.cx-context-pagination>p{font-size:9px;color:#91a094;max-width:420px;line-height:1.65;margin:0}.cx-context-pagination>div{display:flex;gap:7px;flex:none}.cx-context-pagination .button{font-size:10px;padding:6px 9px}.cx-record-context{font-size:11px;color:#7a8c81;margin:4px 0 15px}@media(max-width:1000px){.cx-context-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.cx-context-pagination{flex-wrap:wrap}.cx-context-pagination>p{max-width:none}}@media(max-width:650px){.cx-context-browser{padding:13px}.cx-context-heading{align-items:flex-start;flex-direction:column;gap:12px}.cx-context-search{min-width:0;width:100%}.cx-context-grid{grid-template-columns:1fr 1fr;gap:6px}.cx-context-grid>button{padding:9px}.cx-context-grid strong{font-size:10px}.cx-context-grid>button small{font-size:8px}.cx-context-grid>button span{font-size:9px}.cx-context-pagination>div{width:100%;justify-content:space-between}.cx-context-count{font-size:9px}}
+/* Source counts, context classes and anatomy are separate visual layers. */
+.cx-panel{--cx-accent:#129e99;--cx-dark:#22636a;--cx-tint:#f0faf9;--cx-line:#d6ecea}.cx-amber{--cx-accent:#c68a37;--cx-dark:#7f5f31;--cx-tint:#fff9ef;--cx-line:#efdfc8}.cx-teal{--cx-accent:#139cab;--cx-dark:#225d72;--cx-tint:#eff9fb;--cx-line:#d4e8ed}.cx-rose{--cx-accent:#c96198;--cx-dark:#854a76;--cx-tint:#fdf4fa;--cx-line:#eed9e9}.cx-chart-title h3{font-size:13px}.cx-chart-title>span{font-size:10px}.cx-bar-label{font-size:11px}.cx-bar-static{grid-template-columns:minmax(150px,1.5fr) minmax(80px,1fr) 58px;cursor:default}.cx-bar-static:hover{background:transparent}.cx-metric-static{cursor:default}.cx-metric-static:hover{border-color:var(--cx-line);background:var(--cx-tint)}.cx-eyebrow{display:block;font-size:10px;letter-spacing:1.1px;text-transform:uppercase;color:var(--cx-accent);font-weight:650;margin-bottom:7px}
+.cx-expression-distribution{background:linear-gradient(125deg,#f7fafc,#fcfaff);border:1px solid #e1e8ef;border-radius:9px;padding:20px}.cx-distribution-intro h3{font-size:19px;letter-spacing:-.3px;color:#375270;margin:0}.cx-distribution-intro>p{font-size:12px;line-height:1.7;max-width:750px;color:#71869a;margin:8px 0 17px}.cx-expression-classes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.cx-expression-class{border:1px solid #e2e7ef;border-radius:7px;padding:15px 14px;background:#fff;text-align:left;min-width:0;border-top:3px solid var(--class-color)}.cx-expression-class:hover,.cx-expression-class.is-selected{border-color:var(--class-color);box-shadow:0 2px 8px #29405908}.cx-class-heading{display:flex;align-items:center;gap:7px;color:var(--class-color)}.cx-class-heading strong{font-size:12px;font-weight:650;flex:1}.cx-expression-class>p{font-size:10px;color:#8b98a6;line-height:1.6;margin:10px 0 13px;min-height:32px}.cx-expression-class dl{margin:0;display:flex;gap:14px;justify-content:space-between}.cx-expression-class dt{font-size:9px;color:#8a98a7;margin-bottom:4px}.cx-expression-class dd{font-size:21px;letter-spacing:-.4px;line-height:1.35;color:var(--class-color);margin:0;font-weight:600}.cx-expression-class dl>div:last-child dd{font-size:18px;color:#65798e}.cx-class-bar{height:5px;border-radius:4px;background:#f0f3f7;margin-top:14px;overflow:hidden}.cx-class-bar i{height:100%;display:block;background:var(--class-color);border-radius:4px}.cx-distribution-note{font-size:10px;color:#8c9bab;line-height:1.6;margin:14px 0 0}
+.cx-body-browser{margin-top:23px;border:1px solid #e3e7f0;border-radius:9px;background:linear-gradient(120deg,#fcfbff,#fff 55%);padding:20px}.cx-body-intro h3{font-size:17px;color:#4c536f;margin:0}.cx-body-intro>p{font-size:11px;line-height:1.6;color:#8a91a5;margin:7px 0 17px}.cx-body-intro .cx-eyebrow{color:#8e76c3}.cx-body-layout{display:grid;grid-template-columns:210px minmax(0,1fr);gap:27px;align-items:start}.cx-human-panel{display:flex;flex-direction:column;align-items:center;position:static}.cx-human{width:200px;height:347px;overflow:visible}.cx-body-point{cursor:pointer;outline:none}.cx-body-point:hover circle:first-of-type,.cx-body-point:focus-visible circle:first-of-type{r:15;fill-opacity:.28}.cx-body-point:focus-visible circle:last-of-type{stroke:#253657;stroke-width:3}.cx-body-caption{font-size:9px;letter-spacing:.2px;color:#a0a5b7;margin-top:4px}.cx-region-buttons{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 14px}.cx-region-buttons button{display:flex;align-items:center;gap:5px;border:1px solid #e4e6f0;border-radius:15px;padding:5px 8px;background:white;font-size:9px;color:#8290a4}.cx-region-buttons button.is-selected{background:#eeebfa;color:#755baf;border-color:#c8bde4}.cx-region-buttons button:hover{border-color:#c0b5dc}.cx-region-buttons button i{width:6px;height:6px;border-radius:50%;flex:none}.cx-region-buttons button>span{font-size:8px;color:#a0aabc}.cx-tissue-search{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}.cx-tissue-search label{border:1px solid #e2e7ed;background:white;border-radius:5px;display:flex;align-items:center;gap:6px;padding:7px 9px;color:#a1aabc;flex:1;max-width:320px}.cx-tissue-search input{background:transparent;border:0;outline:0;font:inherit;font-size:11px;min-width:0;width:100%;color:#536176}.cx-tissue-search>span{font-size:9px;color:#a4adbc;white-space:nowrap}.cx-tissue-browser .cx-bar-row{grid-template-columns:minmax(155px,1.5fr) minmax(70px,1fr) 52px 12px;gap:9px}.cx-tissue-browser .cx-bar-label{font-size:10px;line-height:1.55;overflow-wrap:anywhere}.cx-tissue-browser .cx-bar-track{height:8px}.cx-tissue-browser .cx-bar-row strong{font-size:10px}.cx-body-note{font-size:10px;color:#939db0;line-height:1.6;border-top:1px solid #edf0f5;padding-top:13px;margin:16px 0 0}.cx-qtl-types{display:flex;gap:7px;flex-wrap:wrap;margin:17px 0 0;align-items:center}.cx-qtl-types h3{font-size:11px;color:#8a7d66;margin:0 8px 0 0}.cx-qtl-types>button{border:1px solid #e9dfcf;background:#fffaf1;border-radius:5px;display:flex;align-items:center;gap:8px;padding:7px 9px;font-size:10px;color:#ac874d}.cx-qtl-types>button>span{font-size:9px;color:#a79c8b}.cx-qtl-types>p{font-size:10px;color:#a79c8b}
+.cx-disease-sources{grid-template-columns:repeat(auto-fit,minmax(165px,1fr))}.cx-disease-card.is-selected{box-shadow:inset 0 0 0 1px var(--cx-source);border-color:var(--cx-source)}.cx-ptmd-card{background:#fcf4fa}.cx-ptmd-warning{font-size:11px;line-height:1.7;color:#94618b;background:#faf3fa;border:1px solid #eedcef;border-radius:5px;padding:10px 12px;margin:0 0 17px}.cx-ptmd-totals{display:flex;gap:19px;flex-wrap:wrap;margin-bottom:17px}.cx-ptmd-totals>span{font-size:10px;color:#947b96}.cx-ptmd-totals strong{color:#aa529e;font-size:19px;margin-right:4px}.cx-ptmd-context{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:3px 0 17px}.cx-ptmd-context>strong{font-size:17px;color:#6b4f72}.cx-ptmd-context>span:last-child{font-size:11px;color:#987d9e}.cx-ptmd-references{display:flex;gap:12px;flex-wrap:wrap}.cx-ptmd-references>div{border:1px solid #eaddec;border-radius:5px;padding:9px 11px}.cx-ptmd-references small{display:block;font-size:10px;color:#a18aa4;margin-top:4px}
+@media(max-width:1100px){.cx-expression-classes{grid-template-columns:repeat(2,minmax(0,1fr))}.cx-expression-class>p{min-height:0}.cx-body-layout{grid-template-columns:175px minmax(0,1fr);gap:15px}.cx-human{width:175px;height:310px}.cx-tissue-browser .cx-bar-row{grid-template-columns:minmax(130px,1.4fr) minmax(50px,1fr) 42px 10px;gap:6px}.cx-disease-sources{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.cx-expression-distribution,.cx-body-browser{padding:14px}.cx-distribution-intro h3{font-size:16px}.cx-distribution-intro>p{font-size:11px}.cx-expression-classes{gap:8px}.cx-expression-class{padding:11px}.cx-class-heading{gap:5px}.cx-class-heading strong{font-size:11px}.cx-class-heading>svg{width:14px}.cx-class-heading>svg:last-child{width:11px}.cx-expression-class dl{gap:9px}.cx-expression-class dd{font-size:20px}.cx-expression-class dt{font-size:8px}.cx-expression-class dl>div:last-child dd{font-size:17px}.cx-distribution-note{font-size:9px}.cx-body-layout{grid-template-columns:1fr;gap:16px}.cx-human-panel{position:static}.cx-human{width:158px;height:270px}.cx-body-intro h3{font-size:15px}.cx-body-intro>p{font-size:10px}.cx-tissue-browser .cx-bar-row{grid-template-columns:minmax(120px,1.3fr) minmax(50px,1fr) 42px 10px}.cx-region-buttons button{font-size:9px;padding:5px 7px}.cx-body-note{font-size:9px}.cx-qtl-types h3{flex-basis:100%;margin-bottom:3px}.cx-disease-sources{grid-template-columns:repeat(2,minmax(0,1fr))}.cx-ptmd-card{grid-column:1/-1}.cx-ptmd-card>p{min-height:0}.cx-ptmd-warning{font-size:10px}.cx-ptmd-totals{gap:10px 17px}.cx-ptmd-totals strong{font-size:17px}.cx-bar-static{grid-template-columns:minmax(120px,1.3fr) minmax(55px,1fr) 42px}}
+/* Readable research labels across desktop and narrow layouts. */
+.cx-heading p,.cx-body-intro>p,.cx-distribution-intro>p{font-size:13px;line-height:1.65;color:#697d91}
+.cx-chart-title h3,.cx-class-heading strong,.cx-context-grid strong,.cx-dataset strong{font-size:13px;line-height:1.5}
+.cx-chart-title>span,.cx-chart-note,.cx-body-caption,.cx-body-note,.cx-distribution-note,.cx-eyebrow{font-size:11px;line-height:1.65;color:#78889c}
+.cx-body-note,.cx-distribution-note{font-size:12px}
+.cx-bar-label,.cx-tissue-browser .cx-bar-label{font-size:13px;line-height:1.55}
+.cx-bar-row strong,.cx-tissue-browser .cx-bar-row strong{font-size:12px}
+.cx-region-buttons button,.cx-tissue-search input,.cx-context-search input{font-size:12px;line-height:1.5}
+.cx-region-buttons button{padding:6px 9px;color:#687a91}
+.cx-region-buttons button>span,.cx-tissue-search>span,.cx-context-search>span,.cx-context-count{font-size:11px;color:#8391a4}
+.cx-tissue-search label,.cx-tissue-browser,.cx-context-heading>div,.cx-class-heading strong{min-width:0}
+.cx-tissue-search label{max-width:none}
+.cx-expression-class>p{font-size:12px;line-height:1.65;color:#7e8da0}
+.cx-expression-class dt{font-size:11px;line-height:1.45;color:#7e8da0}
+.cx-expression-class dl>div{min-width:0}
+.cx-class-heading{align-items:flex-start}
+.cx-class-heading>svg{flex:none;margin-top:2px}
+.cx-dataset small,.cx-dataset .badge,.cx-context-grid>button span,.cx-context-grid>button small{font-size:11px;line-height:1.5}
+.cx-context-pagination>p,.cx-context-pagination .button,.cx-metric-value>span,.cx-metric-secondary,.cx-metric-top strong{font-size:12px;line-height:1.5}
+.cx-source-strip>span,.cx-source-strip button>span,.cx-source-strip strong,.cx-record-context{font-size:11px;line-height:1.6}
+.cx-disease-card>p,.cx-disease-count span,.cx-disease-identifiers,.cx-qtl-types h3,.cx-qtl-types>button,.cx-qtl-types>button>span{font-size:11px;line-height:1.6}
+.cx-scope,.cx-scope .details>summary,.cx-scope .details-content>p,.cx-hint,.cx-empty-summary,.cx-more{font-size:11px;line-height:1.65}
+@media(max-width:700px){
+ .cx-heading p,.cx-body-intro>p,.cx-distribution-intro>p{font-size:12px}
+ .cx-body-layout,.cx-tissue-browser,.cx-body-browser,.cx-context-browser{min-width:0}
+ .cx-tissue-browser .cx-bar-row{grid-template-columns:minmax(0,1.4fr) minmax(42px,.65fr) 45px 10px;gap:7px}
+ .cx-bar-label,.cx-tissue-browser .cx-bar-label{font-size:12px;overflow-wrap:anywhere}
+ .cx-bar-row strong,.cx-tissue-browser .cx-bar-row strong{font-size:12px}
+ .cx-region-buttons button{font-size:12px;max-width:100%}
+ .cx-tissue-search{gap:8px;flex-wrap:wrap}
+ .cx-tissue-search label{flex:1 1 180px}
+ .cx-tissue-search>span{font-size:11px}
+ .cx-expression-class{padding:12px 10px}
+ .cx-class-heading strong{font-size:13px}
+ .cx-expression-class>p{font-size:11px}
+ .cx-expression-class dl{gap:8px;flex-wrap:wrap}
+ .cx-expression-class dt{font-size:11px}
+ .cx-body-caption,.cx-body-note,.cx-distribution-note{font-size:11px}
+ .cx-context-grid strong,.cx-dataset strong{font-size:12px}
+ .cx-context-grid>button small{font-size:11px}
+ .cx-context-pagination>div{flex-wrap:wrap;gap:8px}
+ .cx-chart-title{flex-wrap:wrap;gap:4px 10px}
+ .cx-chart-title>span{max-width:none;font-size:11px;text-align:left}
+ .cx-bar-static{grid-template-columns:minmax(0,1.4fr) minmax(42px,.8fr) 45px}
+}
+
+/* CATVariant-style hierarchy: neutral surfaces, color on sources, counts and marks. */
+:is(#expression,#qtl,#diseases).cx-panel{border-color:#dce3ed;background:#fff;box-shadow:0 2px 8px #172b4d06}
+:is(#expression,#qtl,#diseases) :is(.cx-metric,.cx-expression-distribution,.cx-context-browser,.cx-body-browser,.cx-assay-overview){background:#fff;border-color:#dce3ed}
+:is(#expression,#qtl,#diseases) :is(.cx-heading h2,.cx-distribution-intro h3,.cx-body-intro h3,.cx-assay-overview h3,.cx-context-heading h3,.cx-chart-title h3,.cx-record-heading h3){color:#1e293b}
+:is(#expression,#qtl,#diseases) :is(.cx-heading p,.cx-distribution-intro>p,.cx-body-intro>p,.cx-expression-class>p,.cx-disease-card>p,.cx-context-heading p,.cx-dataset small,.cx-disease-count span,.cx-disease-identifiers,.cx-record-context,.cx-record-heading>div>span,.cx-back){color:#526177}
+:is(#expression,#qtl,#diseases) :is(.cx-metric-top strong,.cx-dataset strong,.cx-context-grid strong,.cx-bar-label){color:#28364b;font-weight:600}
+:is(#expression,#qtl,#diseases) :is(.cx-dataset,.cx-context-grid>button,.cx-disease-card,.cx-ptmd-card,.cx-qtl-types>button){background:#fff;border-color:#dce3ed}
+:is(#expression,#qtl,#diseases) :is(.cx-metric:hover,.cx-dataset:hover,.cx-context-grid>button:hover,.cx-disease-card:hover,.cx-qtl-types>button:hover){background:#f8fafc;border-color:#a8b8cf}
+:is(#expression,#qtl,#diseases) :is(.cx-dataset.is-selected,.cx-context-grid>button.is-selected,.cx-disease-card.is-selected,.cx-expression-class.is-selected){background:#f5f8ff;border-color:#91ade0;box-shadow:inset 0 0 0 1px #91ade0}
+:is(#expression,#qtl,#diseases) .cx-context-grid>button span{color:#2563eb;font-weight:650}
+:is(#expression,#qtl,#diseases) .cx-context-grid>button small{color:#526177}
+:is(#expression,#qtl,#diseases) .cx-bar-row strong{color:#334155;font-weight:700;font-variant-numeric:tabular-nums}
+:is(#expression,#qtl,#diseases) .cx-bar-track{background:#e9edf4}
+:is(#expression,#qtl,#diseases) .cx-record-area>.toolbar{background:#f8fafc;border-color:#e2e8f0}
+:is(#expression,#qtl,#diseases) .table-wrap{border-color:#dce3ed;border-radius:10px}
+:is(#expression,#qtl,#diseases) .data-table thead th{background:#f8fafc;color:#4b5568;border-bottom:1px solid #dce3ed}
+:is(#expression,#qtl,#diseases) .data-table tbody tr{background:#fff}
+:is(#expression,#qtl,#diseases) .data-table tbody tr:nth-child(even){background:#f5f6fa}
+:is(#expression,#qtl,#diseases) .data-table tbody tr:hover,
+:is(#expression,#qtl,#diseases) .data-table tbody tr:focus-within{background:#eef5ff}
+:is(#expression,#qtl,#diseases) .data-table td{color:#334155;border-bottom-color:#e5e9f0;vertical-align:top}
+:is(#expression,#qtl,#diseases) .data-table :is(strong,.mono){color:#1e293b}
+:is(#expression,#qtl,#diseases) .data-table :is(.text-button,.external-link){color:#245dd8}
+:is(#expression,#qtl,#diseases) .data-table td small{color:#596a80}
+:is(#expression,#qtl,#diseases) .cx-evidence-tag{--tag-color:#2563eb;display:inline-flex;align-items:center;width:fit-content;max-width:100%;padding:4px 8px;border:1px solid color-mix(in srgb,var(--tag-color) 27%,#fff);border-radius:6px;background:color-mix(in srgb,var(--tag-color) 5%,#fff);color:var(--tag-color);font-size:12px;font-weight:600;line-height:1.5;overflow-wrap:anywhere}
+:is(#expression,#qtl,#diseases) .cx-measured-value{color:#245dd8;font-weight:700;font-variant-numeric:tabular-nums}
+#expression .cx-source-strip>button{padding:5px 8px 5px 5px;border-color:#dce3ed}
+#expression .cx-source-strip button>span:not(.cx-evidence-tag){color:#526177}
+#qtl .cx-qtl-types>button{gap:8px;padding:5px 8px 5px 5px}
+#qtl .cx-qtl-types>button>span:not(.cx-evidence-tag){color:#526177}
+#diseases .cx-ptmd-warning{background:#f8fafc;border-color:#dce3ed;border-left:3px solid #b54a93;color:#526177}
+#diseases .cx-disease-detail-groups>section{background:#fff;border-color:#dce3ed;border-left-color:var(--cx-source);border-radius:9px}
+#diseases .cx-disease-detail-groups>section>h3{display:inline-flex;padding:5px 9px;border:1px solid color-mix(in srgb,var(--cx-source) 30%,#fff);border-radius:6px;font-size:13px}
+#diseases .cx-disease-detail-groups .annotation{padding:14px;border-radius:6px;border-top:0}
+#diseases .cx-disease-detail-groups .annotation:nth-of-type(even){background:#f5f6fa}
+:is(#expression,#qtl,#diseases) .evidence-dialog{background:#fff}
+:is(#expression,#qtl,#diseases) .dialog-heading{background:#fff;border-bottom-color:#dce3ed}
+:is(#expression,#qtl,#diseases) .dialog-body>h3{color:#1e293b;border-top:1px solid #e2e8f0;padding-top:18px;margin-top:24px}
+:is(#expression,#qtl,#diseases) .dialog-body .details>summary{color:#334155;background:#f8fafc;padding:12px;border-radius:6px}
+:is(#expression,#qtl,#diseases) .dialog-body .details-content{padding:14px 12px;background:#fff}
+:is(#expression,#qtl,#diseases) .cx-facts{gap:16px 20px}
+:is(#expression,#qtl,#diseases) .cx-facts dt{color:#64748b;font-size:12px;margin-bottom:7px}
+:is(#expression,#qtl,#diseases) .cx-facts dd{color:#1e293b;font-size:14px;line-height:1.6}
+:is(#expression,#qtl,#diseases) :is(button,a):focus-visible{outline:2px solid #2563eb;outline-offset:3px}
+@media(max-width:650px){
+ :is(#expression,#qtl,#diseases) .cx-evidence-tag{font-size:11px;padding:3px 6px}
+ :is(#expression,#qtl,#diseases) .cx-facts{gap:14px}
+ #diseases .cx-disease-detail-groups>section{padding:12px}
+ #diseases .cx-disease-detail-groups .annotation{padding:10px}
+}
+
+/* Readable source assertions and participant identity; categories retain source semantics. */
+.cx-record-heading{padding:12px 14px;background:var(--slate-2);border-radius:6px;gap:12px}
+.cx-record-heading h3{font-size:17px;color:var(--slate-12);margin:0;font-weight:600}
+.cx-record-heading>div>span{font-size:12px;display:none}
+.cx-back{font-size:13px;color:var(--blue-11)}
+.cx-heading p{font-size:14px;color:var(--slate-11)}
+.cx-hint{font-size:13px;line-height:1.5;border:0;padding:9px 0;background:transparent}
+.cx-evidence-tag{font-size:13px;font-weight:500}
+.cx-evidence-tag-inheritance,.cx-evidence-tag-source{border:0;background:transparent;color:var(--slate-11);padding:0}
+.cx-record-count{font-size:13px;color:var(--slate-11);margin:12px 0 0}
+.cx-disease-table .data-table,.cx-interaction-table .data-table{table-layout:fixed;min-width:880px}
+.cx-disease-table .data-table th,.cx-interaction-table .data-table th{font-size:13px;line-height:1.45;text-transform:none;letter-spacing:0;background:var(--slate-2);color:var(--slate-11)}
+.cx-disease-table .data-table td,.cx-interaction-table .data-table td{font-size:14px;line-height:1.5;padding:12px 14px;vertical-align:top;white-space:normal;overflow-wrap:anywhere}
+.cx-disease-table:not(.is-mixed) .data-table th:first-child{width:32%}
+.cx-disease-table:not(.is-mixed) .data-table th:nth-child(2){width:17%}
+.cx-disease-table:not(.is-mixed) .data-table th:nth-child(3){width:17%}
+.cx-disease-table:not(.is-mixed) .data-table th:nth-child(4){width:23%}
+.cx-disease-table:not(.is-mixed) .data-table th:last-child{width:11%}
+.cx-disease-name .text-button{display:inline-flex;align-items:flex-start;gap:6px;text-align:left;font-size:15px;line-height:1.5;font-weight:550;padding:0}
+.cx-disease-name .text-button svg{flex:none;margin-top:4px}
+.cx-disease-name small{display:block;font-size:12px;color:var(--slate-11);margin-top:3px}
+.cx-disease-table .external-link{font-size:13px;white-space:normal}
+.cx-validity{display:inline-flex;align-items:center;gap:6px;color:var(--validity-color);font-size:14px;font-weight:600;line-height:1.5}
+.cx-validity>svg{flex:none}
+.cx-inheritance{display:inline-flex;gap:6px;align-items:center;font-size:14px;font-weight:400;color:var(--slate-12);line-height:1.5}
+.cx-submitter{display:inline-flex;align-items:flex-start;gap:6px;font-size:14px;color:var(--slate-12);line-height:1.5}
+.cx-submitter svg{flex:none;margin-top:3px}
+.cx-classification-guide{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13px;line-height:1.5;color:var(--slate-11);margin:10px 0}
+.cx-interaction-table:not(.is-mutation):not(.is-mixed) .data-table th:first-child{width:30%}
+.cx-interaction-table:not(.is-mutation):not(.is-mixed) .data-table th:nth-child(2){width:23%}
+.cx-interaction-table:not(.is-mutation):not(.is-mixed) .data-table th:nth-child(3){width:30%}
+.cx-interaction-table:not(.is-mutation):not(.is-mixed) .data-table th:last-child{width:17%}
+.cx-participant-list{display:grid;gap:10px}
+.cx-participant-name{display:flex;align-items:flex-start;gap:7px;font-size:15px;line-height:1.5;font-weight:550;overflow-wrap:anywhere}
+.cx-participant-name>svg{color:var(--slate-11);flex:none;margin-top:3px}
+.cx-participant-name strong{font-weight:550}
+.cx-participant-properties{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px;color:var(--slate-11);font-size:13px}
+.cx-participant-properties>span+span:before{content:"·";margin-right:8px}
+.cx-participant-id{font-size:12px}
+.cx-participant-taxon{display:flex;align-items:flex-start;gap:6px;font-size:13px;line-height:1.5;margin-top:3px;color:var(--slate-12)}
+.cx-participant-taxon svg{flex:none;margin-top:3px;color:var(--slate-11)}
+.cx-interaction-category{font-size:14px;font-weight:500;color:var(--slate-12)}
+.cx-detection-method{font-size:14px;font-weight:400}
+.cx-evidence-actions{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.cx-evidence-actions .text-button{font-size:13px;display:inline-flex;gap:6px;align-items:center;white-space:normal}
+.cx-negative{display:flex;align-items:center;gap:6px;color:#926000;background:#fff8e8;border-radius:5px;padding:5px 7px;font-size:13px;font-weight:550;line-height:1.4}
+.cx-negative svg{flex:none}
+.cx-object-note{font-size:13px;color:var(--slate-11)}
+.cx-detail-lead{background:var(--slate-2);padding:16px;border-radius:7px;margin:8px 0 18px}
+.cx-detail-kicker{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--slate-11);margin-bottom:10px}
+.cx-detail-kicker .cx-assay-badge{margin-bottom:0}
+.cx-detail-lead h3{font-size:18px;margin:0 0 12px;color:var(--slate-12)}
+.cx-detail-lead .field-grid{margin-bottom:0}
+.cx-detail-measurement{margin-top:14px;padding-top:12px;border-top:1px solid var(--slate-6);display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 18px}
+.cx-detail-measurement>span{font-size:13px;color:var(--slate-11)}
+.cx-detail-measurement strong{font-size:20px;color:var(--slate-12);font-weight:600;font-variant-numeric:tabular-nums}
+.cx-detail-measurement small{margin-left:6px;font-size:14px;font-weight:400}
+.cx-detail-measurement p{font-size:13px;margin:0;color:var(--slate-11)}
+.cx-participant-detail{padding:12px 0}
+.cx-raw-identifier{font-size:12px;color:var(--slate-11);margin-top:7px;overflow-wrap:anywhere}
+.cx-assertion-detail>header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.cx-assertion-detail>.cx-inheritance{margin:9px 0}
+.cx-assertion-detail>.external-link{display:block;font-size:13px;margin-bottom:6px}
+.cx-section-dot{width:7px;height:7px;border-radius:50%;background:var(--slate-9);display:inline-block;margin-right:8px}
+.cx-disease-detail-groups>section{padding:0;border:0}
+.cx-disease-detail-groups h3{font-size:16px;background:var(--slate-2);padding:10px 12px;border-radius:5px;margin-bottom:0}
+.cx-disease-detail-groups .annotation{padding:14px 12px;border-bottom:1px solid var(--slate-5);margin:0}
+.cx-disease-detail-groups .cx-facts .field-grid{margin:0}
+.cx-metric-top strong,.cx-disease-source-title strong{font-size:15px;color:var(--slate-12)}
+.cx-metric-value,.cx-disease-count strong{font-size:20px;font-weight:550;margin-top:8px;color:var(--slate-12)}
+.cx-metric-value>span,.cx-metric-secondary,.cx-disease-count span,.cx-disease-identifiers{font-size:12px;color:var(--slate-11)}
+.cx-disease-card{padding:14px;box-shadow:none}
+.cx-disease-card>p{font-size:13px;color:var(--slate-11);min-height:0;margin:7px 0 10px;line-height:1.5}
+.cx-disease-count strong{margin-top:0}
+.cx-body-intro>p,.cx-chart-note{font-size:13px;color:var(--slate-11)}
+.cx-region-buttons button,.cx-tissue-grid span,.cx-tissue-grid strong{font-size:13px}
+.cx-region-buttons button>span,.cx-body-caption{font-size:12px}
+.cx-ptmd-warning{font-size:14px}
+
+.cx-interaction-table.is-mutation .data-table,.cx-interaction-table.is-mixed .data-table,.cx-disease-table.is-mixed .data-table{table-layout:auto}
+/* Disease source cards: aligned source/count, then evidence and counting scope. */
+#diseases .cx-disease-card{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:28px minmax(34px,auto) 1fr auto;align-content:start;align-items:start;gap:8px 10px;padding:16px;position:relative}
+#diseases .cx-disease-source-title{grid-column:1;grid-row:1;min-height:28px;align-items:center}
+#diseases .cx-disease-source-title strong{font-size:15px;color:var(--slate-12)}
+#diseases .cx-disease-source-title>svg{display:none}
+#diseases .cx-disease-count{display:contents}
+#diseases .cx-disease-count strong{grid-column:2;grid-row:1;font-size:22px;line-height:28px;color:var(--cx-source);font-variant-numeric:tabular-nums}
+#diseases .cx-disease-count span{grid-column:1/-1;grid-row:2;max-width:none;font-size:12px;line-height:1.4;color:var(--slate-11)}
+#diseases .cx-disease-card>p{grid-column:1/-1;grid-row:3;background:var(--slate-2);border-radius:5px;padding:10px;margin:0;font-size:13px;line-height:1.5;align-self:stretch}
+#diseases .cx-disease-card>p>small{display:block;font-size:11px;font-weight:650;color:var(--cx-source);margin-bottom:4px}
+#diseases .cx-disease-identifiers{grid-column:1/-1;grid-row:4;border-top:1px solid var(--slate-5);padding-top:9px;font-size:12px;line-height:1.5}
+#diseases .cx-disease-card:hover,#diseases .cx-disease-card:focus-visible{border-color:var(--cx-source);background:color-mix(in srgb,var(--cx-source) 4%,white)}
+.cx-ptmd-distributions{margin:0 0 18px;border:1px solid var(--slate-5);border-radius:8px;padding:14px;background:var(--slate-2)}
+.cx-ptmd-distributions>p{font-size:12px;color:var(--slate-11);margin:0 0 12px}
+.cx-ptmd-distributions>div{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.cx-ptmd-distributions section{min-width:0;background:white;border:1px solid var(--slate-5);border-radius:6px;padding:12px}
+.cx-ptmd-distributions header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.cx-ptmd-distributions h4{margin:0;font-size:14px}
+.cx-ptmd-bars{display:grid;gap:5px;max-height:280px;overflow:auto}
+.cx-ptmd-bars>button{display:grid;grid-template-columns:minmax(120px,1.3fr) minmax(40px,1fr) 38px;gap:10px;align-items:center;text-align:left;padding:7px;border:1px solid transparent;border-radius:5px;background:white;color:var(--slate-12);font-size:13px;transition:background .15s,border-color .15s}
+.cx-ptmd-bars>button:hover{background:var(--slate-3)}
+.cx-ptmd-bars>button.is-selected{background:var(--blue-3);border-color:var(--blue-8)}
+.cx-ptmd-bars>button>span:first-child{overflow-wrap:anywhere}
+.cx-ptmd-bars strong{text-align:right;font-variant-numeric:tabular-nums}
+.cx-ptmd-bar-track{height:8px;border-radius:3px;background:var(--slate-4);overflow:hidden}
+.cx-ptmd-bar-track i{display:block;height:100%;background:#c154a4;border-radius:3px}
+.cx-ptmd-distributions section:nth-child(2) .cx-ptmd-bar-track i{background:#308dc3}
+@media(max-width:1300px){#diseases .cx-disease-sources{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){#diseases .cx-disease-sources,.cx-ptmd-distributions>div{grid-template-columns:1fr}.cx-ptmd-card{grid-column:auto}}
+@media(prefers-reduced-motion:reduce){.cx-ptmd-bars>button{transition:none}}
+
+.cx-ptmd-cell-filter{display:grid;gap:6px;font-size:13px;font-weight:600;color:var(--slate-11)}
+.cx-ptmd-cell-filter select{font-weight:400;min-width:200px;max-width:300px}
+
+/* Independent source panels retain a visible source identity. */
+#diseases .cx-disease-sources{gap:18px}
+#diseases .cx-disease-sources .cx-disease-card{border:1px solid color-mix(in srgb,var(--cx-source) 30%,white);border-top:4px solid var(--cx-source);border-radius:10px;background:color-mix(in srgb,var(--cx-source) 5%,white);box-shadow:0 3px 8px #172b4d08;padding:16px;gap:10px}
+#diseases .cx-disease-sources .cx-disease-card>p{background:white;border:1px solid color-mix(in srgb,var(--cx-source) 15%,white);padding:11px 12px;border-radius:6px}
+#diseases .cx-disease-source-title strong{font-size:16px}
+#diseases .cx-disease-sources .cx-disease-card.is-selected{background:color-mix(in srgb,var(--cx-source) 9%,white);border-color:var(--cx-source);box-shadow:0 0 0 1px var(--cx-source),0 3px 8px #172b4d0a}
+#diseases .cx-disease-sources .cx-disease-card:hover{background:color-mix(in srgb,var(--cx-source) 8%,white);box-shadow:0 3px 10px #172b4d14}
+#diseases .cx-disease-identifiers{border-color:color-mix(in srgb,var(--cx-source) 20%,white)}
+#qtl .cx-metrics{gap:16px}
+#qtl .cx-metrics .cx-metric{background:color-mix(in srgb,var(--cx-source) 5%,white);border:1px solid color-mix(in srgb,var(--cx-source) 28%,white);border-top:3px solid var(--cx-source);border-radius:9px;padding:16px 18px;box-shadow:0 2px 6px #172b4d06}
+#qtl .cx-metrics .cx-metric-top{padding-bottom:11px;border-bottom:1px solid color-mix(in srgb,var(--cx-source) 20%,white)}
+#qtl .cx-metrics .cx-metric-value{color:var(--cx-source);font-size:24px;margin-top:12px}
+#qtl .cx-metrics .cx-metric.is-selected,#qtl .cx-metrics .cx-metric:not(:disabled):hover{background:color-mix(in srgb,var(--cx-source) 9%,white);border-color:var(--cx-source)}
+#qtl .cx-metrics .cx-metric.is-selected{box-shadow:0 0 0 1px var(--cx-source)}
+#qtl .cx-metrics .cx-metric:disabled{background:var(--slate-2);border-color:var(--slate-6);opacity:.7}

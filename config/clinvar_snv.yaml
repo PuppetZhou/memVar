@@ -1,0 +1,4 @@
+data_version: 20260922_clinvar_snv_conditions_01
+schema: web_clinvar_snv
+input: modules/disease/data/curated/20260922_clinvar_snv_conditions_01
+current_variant_snapshot: modules/variant/data/curated/20260916_final_snv_v2

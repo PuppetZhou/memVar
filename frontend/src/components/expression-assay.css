@@ -1,0 +1,44 @@
+.cx-assay-overview .cx-expression-types{display:inline-flex;gap:3px;margin-bottom:14px}
+.cx-expression-types .mode-toggle-label{display:inline-flex;gap:7px;align-items:center}
+.cx-assay-overview .cx-expression-sources{display:flex;flex-direction:column;gap:14px}
+.cx-expression-source{display:grid;grid-template-columns:170px minmax(0,1fr);gap:14px;align-items:start}
+.cx-expression-database{display:flex;gap:8px;align-items:flex-start;padding:10px;background:var(--expression-source-soft,var(--slate-2));border-radius:6px;color:var(--expression-source,var(--slate-11))}
+.cx-expression-database>svg{flex:none;margin-top:1px}
+.cx-expression-database strong{display:block;font-size:14px;color:var(--expression-source,var(--slate-12));font-weight:650}
+.cx-expression-database small{display:block;font-size:12px;line-height:1.5;margin-top:3px;color:var(--slate-11)}
+.cx-expression-collections{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.cx-expression-collections button{display:flex;gap:8px;align-items:center;min-width:0;min-height:58px;text-align:left;padding:10px;border:1px solid var(--slate-6);border-radius:7px;background:var(--surface);color:var(--slate-11);cursor:pointer;transition:background .15s,border-color .15s,color .15s,transform .15s}
+.cx-expression-collections button>svg{flex:none}
+.cx-expression-collections button>span{min-width:0;flex:1}
+.cx-expression-collections button strong{display:block;font-size:14px;line-height:1.4;font-weight:600;color:var(--slate-12)}
+.cx-expression-collections button small{display:block;font-size:12px;line-height:1.45;margin-top:4px;color:var(--slate-11)}
+.cx-expression-collections button:hover{background:var(--slate-2);border-color:var(--slate-8)}
+.cx-expression-collections button.is-selected{background:var(--blue-2);border-color:var(--blue-8);color:var(--blue-11)}
+.cx-expression-collections button.is-selected strong{color:var(--blue-11)}
+.cx-expression-collections button:active{transform:scale(.99)}
+.cx-expression-collections button:focus-visible{outline:2px solid var(--blue-8);outline-offset:2px}
+.cx-assay-overview .cx-expression-unit-guide{margin-top:14px;border-top:1px solid var(--slate-5)}
+.cx-expression-unit-guide .details-trigger{padding:10px 0 0;font-size:14px}
+.cx-expression-unit-notes{font-size:14px;line-height:1.65;color:var(--slate-11);padding-top:9px}
+.cx-expression-unit-notes p{margin:0 0 7px}
+.cx-expression-unit-notes>div{display:flex;flex-wrap:wrap;gap:7px 16px;margin-top:9px}
+#expression .cx-expression-selection{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--slate-11)}
+#expression .cx-expression-selection .cx-assay-badge{margin-bottom:0}
+#expression .cx-expression-selection strong{font-weight:600;color:var(--slate-12)}
+@media(max-width:1150px){.cx-expression-collections{grid-template-columns:repeat(2,minmax(0,1fr))}.cx-expression-source{grid-template-columns:130px minmax(0,1fr)}}
+@media(max-width:650px){.cx-expression-source{grid-template-columns:1fr;gap:7px}.cx-expression-database{padding-top:0}.cx-expression-database small{display:inline;margin-left:6px}.cx-expression-database>div{display:flex;align-items:baseline;flex-wrap:wrap}.cx-expression-collections{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.cx-expression-collections button{transition:none}.cx-expression-collections button:active{transform:none}}
+
+.cx-assay-overview>header{padding-bottom:12px;border-bottom:1px solid var(--slate-5);margin-bottom:14px}
+.cx-assay-overview>header h3{font-size:17px}
+.cx-assay-overview>header p{font-size:14px;line-height:1.5;margin-bottom:0}
+.cx-assay-badge{font-size:12px;font-weight:500}
+
+/* Color distinguishes type, source and assay; Blue still marks the active control. */
+.cx-expression-type-icon{display:grid;place-items:center;width:25px;height:25px;border-radius:6px;flex:none}
+.cx-expression-type-icon[data-kind=rna]{color:var(--cyan-11);background:var(--cyan-3)}
+.cx-expression-type-icon[data-kind=protein]{color:var(--violet-11);background:var(--violet-3)}
+.cx-assay-overview .cx-expression-types .mode-toggle-item{min-height:37px}
+.cx-expression-collections button>.cx-expression-collection-icon{display:grid;place-items:center;width:29px;height:29px;flex:0 0 29px;background:color-mix(in srgb,var(--expression-assay) 10%,white);border-radius:7px;color:var(--expression-assay)}
+.cx-expression-collections .cx-expression-method{color:color-mix(in srgb,var(--expression-assay) 83%,var(--slate-12));font-weight:500}
+.cx-expression-collections button.is-selected>.cx-expression-collection-icon{background:color-mix(in srgb,var(--expression-assay) 12%,white)}

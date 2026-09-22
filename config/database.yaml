@@ -1,0 +1,9 @@
+container: memvar-re-web-postgres
+image: postgres:17-bookworm
+host: 127.0.0.1
+port: 55432
+database: memvar_web
+user: memvar
+schema: web
+storage: data/postgres
+credentials_file: data/.postgres.env

@@ -1,0 +1,11 @@
+data_version: 20260921_interface_predictions_01
+source_path: modules/PPI/data/curated/20260921_interface_predictions_01
+source_manifest: manifest.json
+schema: web_interface
+policy:
+  source_scope: complete_published_dataset
+  score_storage: native_real_and_real_arrays
+  sequence_mapping: complete_sequence_equality_with_current_web
+  fragment_aggregation: none
+  partner_aggregation: none
+  thresholds: none

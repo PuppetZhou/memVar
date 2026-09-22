@@ -1,0 +1,23 @@
+/* Parent owns the shared plot inset, labels and ruler. No horizontal padding here. */
+.compact-annotation-track{position:relative;width:100%;min-width:0;margin:0;padding:0;isolation:isolate}
+.compact-annotation-track>svg{display:block;width:100%;min-width:0;margin:0;padding:0;overflow:visible}
+.compact-feature-mark{cursor:pointer;outline:none}
+.compact-hit-area{transition:stroke .12s ease;stroke:transparent;stroke-width:1;vector-effect:non-scaling-stroke}
+.compact-feature-mark:hover .compact-hit-area,.compact-feature-mark:focus-visible .compact-hit-area{fill:transparent;stroke:var(--blue-9,#2563eb)}
+.compact-track-legend{min-height:22px;min-width:0;display:flex;align-items:center;flex-wrap:wrap;gap:3px 13px;padding:1px 0 3px;color:#344f6d;font-size:12px;line-height:18px}
+.compact-track-legend>span{display:inline-flex;align-items:center;gap:5px;min-width:0;max-width:100%;overflow-wrap:anywhere}
+.compact-track-legend i{width:9px;height:9px;display:inline-block;border-radius:2px;flex:none}
+.compact-ptm-count{font-size:12px;font-weight:700;font-family:ui-sans-serif,system-ui,sans-serif;fill:#244768}
+.compact-aggregate-key{color:#556d85;font-size:11px}
+.compact-annotation-track:hover,.compact-annotation-track:focus-within,.compact-annotation-track:has(.compact-track-tooltip){z-index:2}
+.compact-track-tooltip{position:absolute;z-index:20;left:0;bottom:calc(100% + 3px);display:flex;flex-direction:column;gap:4px;width:max-content;max-width:min(480px,100%);padding:10px 12px;background:#fff;border:1px solid #b8cade;border-radius:6px;box-shadow:0 5px 18px #243e5921;color:#27445f;font-size:12px;line-height:1.5;overflow-wrap:anywhere;pointer-events:none}
+.compact-track-tooltip strong{font-size:12px;color:#173d67}.compact-track-tooltip small{font-size:11px;color:#536a83}
+.compact-cluster-summary{font-size:13px;color:#48617c;margin:0 0 14px}
+.compact-cluster-list{display:flex;flex-direction:column;gap:7px}
+.compact-cluster-list>button{display:flex;align-items:center;gap:11px;width:100%;padding:10px 12px;background:#f9fbff;border:1px solid #dce6f2;border-radius:6px;text-align:left;color:#294664;line-height:1.5}
+.compact-cluster-list>button:hover{background:#eff6ff;border-color:#8caed3}.compact-cluster-list>button>i{width:8px;height:8px;border-radius:2px;flex:none}.compact-cluster-list>button>strong{font-size:13px;min-width:68px;font-variant-numeric:tabular-nums}.compact-cluster-list>button>span{flex:1;min-width:0;font-size:13px;overflow-wrap:anywhere}.compact-cluster-list small{display:block;font-size:12px;color:#526c88}.compact-cluster-list svg{flex:none}
+.compact-cluster-pager{display:flex;align-items:center;justify-content:flex-end;gap:9px;margin-top:16px;flex-wrap:wrap}.compact-cluster-pager>span{font-size:12px;margin-right:auto;color:#506980}
+@media(max-width:650px){.compact-track-legend{font-size:12px;gap:3px 10px}.compact-track-tooltip{padding:9px;font-size:12px}.compact-cluster-list>button{gap:8px;padding:9px}.compact-cluster-list>button>strong{min-width:48px;font-size:12px}.compact-cluster-list>button>span{font-size:12px}}
+.compact-track-lanes{display:flex;gap:6px 12px;flex-wrap:wrap;margin:5px 0 2px;color:#6b7f98;font-size:10px}.compact-track-lanes em{font-style:normal;font-weight:700;color:#455f7e}.compact-track-lanes span{display:inline-flex;align-items:center;gap:4px}.compact-track-lanes b{display:inline-grid;place-items:center;width:15px;height:15px;border-radius:50%;background:#edf3fb;color:#345779;font-size:9px}
+.compact-selected-position{stroke:var(--blue-9,#2563eb)}
+@media(prefers-reduced-motion:reduce){.compact-hit-area{transition:none}}

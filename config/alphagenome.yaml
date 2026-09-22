@@ -1,0 +1,3 @@
+# Reuse the immutable legacy display bundle; no raw prediction import or API calls.
+assets_path: /home/xuyzh/memVar/website/data/generated/alphagenome
+snapshot_created_utc: '2026-08-17T07:39:30.492989+00:00'

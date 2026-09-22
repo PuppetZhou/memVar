@@ -1,0 +1,48 @@
+data_version: 20260921_disease_v1
+schema: web_disease
+inputs:
+  disease:
+    path: modules/disease/data/curated/20260916_disease_links_02
+    version: 20260916_disease_links_02
+  protein_gene:
+    path: modules/foundation/data/curated/protein_gene.parquet
+    version: 20260913_hgnc_links
+  disease_native:
+    path: modules/disease/data/curated/20260916_native_mapping_02
+    version: 20260916_native_mapping_02
+rules:
+  identity: reuse_existing_gene_protein_mapping_only
+  cross_source_identity: unique_exact_MONDO_navigation_only
+  medgen_identity_merge_allowed: false
+  clingen_activity_and_hpo_gene_links: navigation_not_independent_assertions
+  clinvar_condition_links: deferred_no_inference_from_gene
+  disease_categories: deferred_no_legacy_36_classes
+native_field_aliases:
+  GenCC:
+    sgc_id: source_record_id
+    version_number: source_record_version
+    gene_curie: gene_id
+    disease_curie: disease_id
+    disease_title: disease_name_raw
+    classification_title: classification
+    moi_title: inheritance
+    submitter_title: submitter
+    submitted_as_date: date
+    submitted_as_public_report_url: report_url
+    submitted_as_pmids: references
+  ClinGen/Clingen-Gene-Disease-Summary-2026-07-14.parquet:
+    GENE ID (HGNC): gene_id
+    DISEASE ID (MONDO): disease_id
+    DISEASE LABEL: disease_name_raw
+    MOI: inheritance
+    SOP: method_version
+    CLASSIFICATION: classification
+    ONLINE REPORT: report_url
+    CLASSIFICATION DATE: date
+    GCEP: submitter
+  ClinGen/Clingen-Curation-Activity-Summary-Report-2026-07-14.parquet:
+    hgnc_id: gene_id
+    mondo_id: disease_id
+    disease_label: disease_name_raw
+    disease_url: report_url
+    mode_of_inheritance: inheritance

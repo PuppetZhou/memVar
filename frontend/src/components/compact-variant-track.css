@@ -1,0 +1,26 @@
+.compact-variant-track{min-width:0;color:#334155;font-size:11px}
+.cvt-canvas{position:relative;min-width:0;height:82px}
+.cvt-canvas>svg{display:block;width:100%;height:82px;overflow:visible}
+.cvt-baseline{stroke:#d5dfed;stroke-width:1;vector-effect:non-scaling-stroke}
+.cvt-bin{cursor:pointer;outline:none}
+.cvt-hit{fill:transparent;stroke:transparent;stroke-width:1;vector-effect:non-scaling-stroke;transition:stroke .12s ease}
+.cvt-bin:hover .cvt-hit,.cvt-bin:focus-visible .cvt-hit{stroke:var(--blue-9,#2563eb)}
+.cvt-selected .cvt-hit{stroke:var(--blue-9,#2563eb);stroke-width:2}
+.cvt-ungrouped{fill:#94a3b8;fill-opacity:.45;stroke:#64748b;stroke-dasharray:2 2;vector-effect:non-scaling-stroke}
+.cvt-state{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:11px;pointer-events:none;text-align:center}
+.cvt-legend{display:flex;align-items:center;gap:4px 9px;min-height:26px;flex-wrap:wrap;font-size:12px;line-height:1.5;color:#475569}
+.cvt-legend>span{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.cvt-legend i,.cvt-tooltip-category i{display:inline-block;width:7px;height:7px;border-radius:2px;flex:none}
+.cvt-unit{color:#334155;font-weight:600}
+.cvt-scale{margin-left:auto;color:#64748b}
+.cvt-tooltip{position:fixed;z-index:1200;box-sizing:border-box;width:288px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);overflow:auto;pointer-events:none;background:#fff;border:1px solid #b8cef5;border-radius:8px;padding:10px 12px;box-shadow:0 8px 28px #153a6926;display:flex;flex-direction:column;gap:5px;color:#334155;font-family:inherit;font-size:11px;line-height:1.4}
+.cvt-tooltip>strong{font-size:12px;color:#172554}
+.cvt-tooltip-total{font-weight:600;color:#1d4ed8;margin-bottom:2px}
+.cvt-tooltip-category{display:flex;align-items:center;gap:7px}
+.cvt-tooltip-category>span{flex:1;min-width:0}
+.cvt-tooltip-category>b{font-variant-numeric:tabular-nums;color:#172554}
+.cvt-tooltip small{font-size:10px;color:#64748b;border-top:1px solid #e5edf8;padding-top:5px;margin-top:3px}
+@media(max-width:520px){.cvt-legend{gap:4px 7px}.cvt-scale{margin-left:0}.cvt-tooltip{font-size:10px}}
+
+@media(max-width:520px){.cvt-legend{font-size:11px}.cvt-canvas,.cvt-canvas>svg{height:82px}}
+@media(prefers-reduced-motion:reduce){.cvt-hit{transition:none}}

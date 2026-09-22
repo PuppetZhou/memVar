@@ -1,0 +1,15 @@
+data_version: 20260921_context_v1
+schema: web_context
+table_directory: Web/data/context_tables
+inputs:
+  qtl: modules/expression/data/curated/20260914_qtl_full_01/qtl
+  hpa: modules/expression/data/curated/20260914_hpa_full_01/hpa
+  ppi: modules/PPI/data/curated/20260916_legacy_ppi_01
+  gene_ensembl: modules/foundation/data/curated/gene_ensembl.parquet
+  protein_gene: modules/foundation/data/curated/protein_gene.parquet
+  expression_indexes: modules/expression/data/curated/20260914_expression_indexes_01/expression_indexes
+  expression_snapshot: modules/expression/runs/20260914_expression_indexes_01/summary.json
+deferred:
+  tabula_summary: 矩阵含义与供者/技术汇总口径尚未确认，不生成汇总
+  qtl_variant_mapping: 沿用本轮不做等位基因映射的决定
+  ppi_interface_predictions: 正式已发布但未接入服务库，展示选择/查询另待定；来源互作与预测独立

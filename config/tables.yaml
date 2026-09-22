@@ -1,0 +1,56 @@
+scope: cleaned_identity_intersect_confirmed_protein_gene
+postgresql: current_revision_import_authorized
+data_version: 20260922_membrane_classification_v1
+metadata:
+  protein_inclusion_basis: UniProt membrane keyword KW-0472; confirmed project scope
+  function_selection_rule: canonical_then_entry_then_source_order
+  uniprot_location_comment_type: SUBCELLULAR LOCATION
+  baseline_audit: 00_initial_preview/20260921_basic_info_v2_audit.json
+  sequence_scope: canonical_only
+  pfam_display_boundary: pending; all three coordinate systems retained
+deduplicated_columns:
+  protein:
+  - inclusion_basis
+  protein_function_overview:
+  - default_sequence_id
+  - selection_rule
+  protein_rhea_reaction:
+  - master_id
+  - direction
+  protein_uniprot_location:
+  - comment_type
+  membrane_biodolphin_interaction:
+  - source_sites
+  - source_site_rows
+  - mapped_site_rows
+  - sequence_mapping_status
+function_types:
+- FUNCTION
+- COFACTOR
+- CATALYTIC ACTIVITY
+- ACTIVITY REGULATION
+- SIMILARITY
+external_databases:
+- UniProt
+- HGNC
+- Ensembl
+- RefSeq
+topology_datasets:
+- TOPDB
+- HTP
+- HTP/3D
+- HTP/experimental
+- TmAlphaFold/cctop
+- TmAlphaFold/tmdet
+- PDBTM/pdbtm
+- PDBTM/pdbtm_all
+uniprot_membrane_types:
+- Transmembrane
+- Intramembrane
+- Topological domain
+- Lipidation
+deferred:
+  reactome_counts: 用户要求暂不计算
+  membrane_counts: 暂不计算跨膜区段聚合；保留来源区段
+  protein_data_overview: 统计指标尚未设计
+  unresolved_structure_residues: 映射处理已完成；缺少唯一对应、链编号冲突及来源残基不符的行保留明确状态，不强配

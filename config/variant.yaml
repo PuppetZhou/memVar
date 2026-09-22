@@ -1,0 +1,13 @@
+data_version: 20260921_variant_v1
+schema: web_variant
+inputs:
+  variant: modules/variant/data/curated/20260916_final_snv_v2
+  frequency: modules/variant/data/curated/20260921_local_frequency_01
+  alphagenome: modules/Alphagenome/data/curated/20260916_atlas_mapping_01
+  ddg: modules/Site-Region/data/curated/20260917_ddg_thermompnn_01
+  field_dictionary: modules/variant/docs/dbnsfp_field_requirements.tsv
+  representative_sequence: modules/foundation/data/curated/20260922_representative_sequence_match_01
+scope:
+  representative: existing_MANE_Select_else_Ensembl_canonical
+  frequency: local_gnomad_exomes_4.1_only
+  ddg: canonical_only_existing_predictions

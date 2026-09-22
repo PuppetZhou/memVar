@@ -1,0 +1,43 @@
+data/.postgres.env
+data/.api.env
+data/postgres/
+frontend/node_modules/
+frontend/dist/
+frontend/*.tsbuildinfo
+__pycache__/
+*.pyc
+.runtime/
+output/playwright/
+.playwright-cli/
+# Research data, credentials and transient browser/build artifacts are not source.
+data/*
+!data/README.md
+.env
+.env.*
+!.env.example
+.playwright-mcp/
+.pytest_cache/
+frontend/dist-*/
+frontend/.vite/
+*.log
+*.zip
+Web-research-reference-2026-09-20/
+
+# Public source baseline: keep generated research outputs and local environments private.
+.venv/
+venv/
+output/
+docs/**/results/
+*.parquet
+*.arrow
+*.feather
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+*.sql.gz
+*.pem
+*.key
+# Original design uploads; runtime copies are tracked under frontend/src/assets/.
+/docs/logo.png
+/docs/tissue.png
