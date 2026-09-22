@@ -366,3 +366,8 @@ CATVariant首页可读取，并结合既有本地视觉审查；VarCards2读取4
 2026-09-22。QTL 人体图从200×347放大至275×476，左栏同步加宽；点位随SVG等比放大。序列来源控件使用独立浅蓝底和显著按钮；Topology改为来源入口→该来源下的类型/方法复选列表，并提供返回入口。来源按名称首段分组，原始option ID、来源证据、可用状态和多来源选择语义保持不变。结构局部残基条支持垂直鼠标滚轮和横向触控板浏览，只移动32残基窗口；保留选区，边界放行页面滚动，Ctrl/Meta缩放不拦截。膜特征详情改为突出按钮，基本信息六字段分卡片并以底色区分身份、物种和序列。
 
 验证：TypeScript/Vite通过；沿用此前Browser无可用实例后的已授权独立Playwright，在4174/Q12809以1230×837检查组织图大小及Brain点选、膜详情打开、Topology的HTP选层及返回UniProt保留选择、滚轮正向与横向反向浏览及选区不变。1470宽无横向溢出，页面身份/内容及框架覆盖检查通过，控制台0应用错误，仅Mol* ReadPixels性能提示。截图在/tmp/memvar-feedback-{overview,tissue,structure,topology-final}.png。未扩大为移动端或全蛋白验收。最终index-DPNrjsTz.js/index-7VHsDzQI.css发布本地8000。
+
+
+## 恢复公网预览
+
+2026-09-22 18:36 HKT，用户授权使用 screen 后台启动 ngrok 并公布。独立会话 memvar-ngrok 转发 http://127.0.0.1:8000，入口 https://renewably-ashy-undiluted.ngrok-free.dev 。启动时继承的HTTP代理触发ERR_NGROK_9009，已仅为ngrok进程清除代理环境变量后成功连接，未修改全局代理或凭据。公网首页及Q12809 overview API均返回200，首页确认当前index-DPNrjsTz.js版本。核查从本机经公网域名发起，不代表所有外部网络均已验收。日志保存在忽略的.runtime/ngrok.log；screen后台运行不等同于开机自启。
