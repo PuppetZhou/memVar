@@ -46,3 +46,9 @@
 用户确认仅优化字体、按钮、背景和外围方框。已在现有 refined-surfaces.css 增加明确限定范围的 Medical shell 样式，标题/导航加载 Figtree，正文 Inter 保留；不覆盖共享科学色阶变量、表格单元格、序列轨道或 Molstar。后续本段状态优先于上文研究阶段的“尚未实施”。
 
 验证：TypeScript/Vite 构建通过；独立 Playwright 在 localhost:8000/protein/P00533 的 1470×950、1230×837 下检查页面与截图，无横向溢出；膜详情打开和 Escape 关闭，结构 canvas 与模型/chain/样式控件存在。表头/单元格/位置数值、序列容器/轨道标签、结构残基区的计算样式（颜色、背景、字体、字号）与改动前逐项一致。Figtree 加载成功。无应用控制台错误，Molstar 有 WebGL ReadPixels 性能警告。内置 Browser 返回空实例列表，沿用此前用户允许的 Playwright 后备验证。截图在 /tmp/memvar-medical-1230.png；未做全量科学颜色逐像素比较或移动端验收。
+
+## 第二版控件与详情统一（2026-09-23）
+
+已获用户授权继续优化：统一概览三级标题 Figtree、底部文字操作的高度/焦点、来源入口与来源卡片的轻背景，保留选中边界及科学类别颜色。Expression/QTL/Interactions/Diseases 与详情内来源工具栏统一标签间距、36px 下拉框和轻边框按钮。共享详情弹窗统一标题栏、36px 关闭按钮、内容留白及独立滚动。仅修改限定容器的 CSS，不修改科研数据/轨道/结构着色。
+
+验证：构建通过；localhost:8000 P00533 在 1230×837 与 1470×950 无横向溢出。膜详情打开/关闭正常，关闭后焦点返回触发按钮；QTL GTEx→QTLbase 下拉切换及 URL 状态更新成功。抽查变异单元格和序列容器/标签字体颜色一致。无应用 console error；WebGL ReadPixels 性能 warning 同前。截图 /tmp/memvar-portal-dialog.png、/tmp/memvar-portal-filters.png。Browser 实例列表仍为空，继续使用此前允许的 Playwright 后备。尚未逐一验收所有详情或移动端。

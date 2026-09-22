@@ -116,3 +116,50 @@ body{background:#f3f6f8}
 }
 /* Header search already has one outer field boundary. */
 .site-header input:not([type=checkbox]){border:0;background:transparent;box-shadow:none}
+
+/* Shared portal chrome, outside table cells, scientific tracks and 3D canvas. */
+#overview .ov-section>header h3{font-family:Figtree,Inter,sans-serif;font-size:20px;font-weight:650;letter-spacing:-.025em;color:#193545}
+.report>.panel>.section-heading,.report>.cx-panel>.cx-heading{padding-bottom:18px;margin-bottom:20px;gap:12px}
+.section-heading>div>p,.cx-heading>div>p{line-height:1.55;max-width:78ch}
+#overview .ov-section-action{display:flex;align-items:center;flex-wrap:wrap;gap:12px 24px}
+#overview .ov-section-action>.ov-browse{display:inline-flex;align-items:center;gap:8px;min-height:34px;font-weight:600;text-underline-offset:4px}
+#overview .ov-section-action>.ov-browse:hover{text-decoration:underline}
+#overview .ov-section-action>.ov-browse:focus-visible{outline:2px solid #087ba6;outline-offset:3px;border-radius:4px}
+#overview .ov-source-launchers{gap:16px}
+#overview .ov-source-launchers>button{background:#f5f8fa;border:0;border-radius:8px;padding:16px 18px;box-shadow:none}
+#overview .ov-source-launchers>button:hover{background:#eaf3f8}
+#overview .ov-source-launchers>button small{margin-top:5px;line-height:1.5}
+:is(#expression,#qtl,#interactions) .cx-metrics{gap:14px}
+:is(#expression,#qtl,#interactions) .cx-metrics .cx-metric{border-color:transparent;background:#f5f8fa;border-radius:9px;box-shadow:none}
+:is(#expression,#qtl,#interactions) .cx-metrics .cx-metric.is-selected{background:#edf5fa;border-color:#8baec4;box-shadow:inset 0 2px 0 #608ba5}
+:is(#expression,#qtl,#interactions) .cx-metrics .cx-metric:hover{background:#edf3f7;border-color:#b7cbd8}
+:is(#expression,#qtl,#interactions) .cx-metrics .cx-metric-top{padding-bottom:0}
+#diseases .cx-disease-sources{gap:14px}
+#diseases .cx-disease-sources .cx-disease-card:not(.is-selected){border-color:transparent;background:#f5f8fa}
+#diseases .cx-disease-sources .cx-disease-card:hover{border-color:#b7cbd8}
+/* Unified controls for source filters, including filters inside details. */
+:where(#expression,#qtl,#interactions,#diseases,.dialog-body) .toolbar{
+ padding:14px 16px;gap:12px 18px;background:#f5f8fa;border:0;border-radius:9px;margin-bottom:18px;
+}
+:where(#expression,#qtl,#interactions,#diseases,.dialog-body) .toolbar .filter{display:flex;flex-direction:column;gap:6px;min-width:140px;max-width:100%}
+:where(#expression,#qtl,#interactions,#diseases,.dialog-body) .toolbar .filter>span{font-size:12px;font-weight:600;color:#526878}
+:where(#expression,#qtl,#interactions,#diseases,.dialog-body) .toolbar select{
+ min-height:36px;border:1px solid #c9d8e2;border-radius:7px;background:#fff;padding:6px 30px 6px 10px;max-width:100%;
+}
+:where(#expression,#qtl,#interactions,#diseases,.dialog-body) .toolbar select:focus-visible{outline:2px solid #087ba6;outline-offset:2px}
+:where(#expression,#qtl,#interactions,#diseases,.dialog-body) .toolbar button[data-slot=button]{border-radius:7px;min-height:34px;font-weight:600}
+:where(#expression,#qtl,#interactions,#diseases,.dialog-body) .toolbar button[data-variant=outline]{background:#fff;border-color:#c9d8e2;color:#28516a}
+:where(#expression,#qtl,#interactions,#diseases,.dialog-body) .toolbar button[data-variant=outline]:hover{background:#edf5f9;border-color:#91b7cc}
+/* One frame per dialog; the header stays outside the body scroll area. */
+[data-slot=dialog-content]:has(>.dialog-heading){background:#fff;border:1px solid #d6e1e8;border-radius:12px;box-shadow:0 20px 70px #15364c26;overflow:hidden}
+[data-slot=dialog-content]>.dialog-heading{padding:18px 24px;background:#f7fafc;border-bottom:1px solid #e1e9ef;gap:16px}
+[data-slot=dialog-content]>.dialog-heading h2{font-family:Figtree,Inter,sans-serif;font-size:20px;font-weight:650;line-height:1.4;letter-spacing:-.02em;color:#193545;margin:0;min-width:0}
+[data-slot=dialog-content]>.dialog-heading button{flex:none;width:36px;height:36px;border-radius:8px;color:#416175;background:transparent;box-shadow:none}
+[data-slot=dialog-content]>.dialog-heading button:hover{background:#e7eff4}
+[data-slot=dialog-content]>.dialog-heading button:focus-visible{outline:2px solid #087ba6;outline-offset:2px}
+[data-slot=dialog-content]>.dialog-body{padding:22px 24px;min-height:0;scrollbar-gutter:stable;overscroll-behavior:contain}
+@media(max-width:650px){
+ [data-slot=dialog-content]>.dialog-heading{padding:14px 16px}
+ [data-slot=dialog-content]>.dialog-body{padding:16px}
+ [data-slot=dialog-content]>.dialog-heading h2{font-size:18px}
+}
