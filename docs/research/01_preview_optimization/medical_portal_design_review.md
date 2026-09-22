@@ -82,3 +82,9 @@
 按用户提供的 Uiverse 示例选择性适配：Praashoo7 的卡片悬停反馈用于概览来源入口；vishnupprajapat 的对勾绘制用于现有 Radix checkbox；vinodjangid07 的轻微图标弹动用于帮助入口；ayman-ashine 的动作提示用于文字入口箭头。独立 interaction-polish.css 保留作者说明。保留当前色系、尺寸和文字可见性，避免悬停改变布局或隐藏控件；键盘焦点与减少动态效果均支持。数据内容和科学着色未调整。
 
 验证：TypeScript/Vite 构建通过；P00533 来源卡片悬停上移2px、减少动态效果时 transform 为 none；键盘 Space 切换复选框正常，对勾动画 portal-check-draw 生效，减少动态效果时为 none；帮助 Enter 打开及关闭正常，详情展开 aria-expanded 正常更新。无横向溢出，浏览器 console error 为0。沿用已授权 Playwright 后备；未逐项测试全部页面控件。
+
+## 标签图标与选择反馈（2026-09-23）
+
+修复 overview-v2.css 中标签/来源图标误用 GO 标题面板样式的问题，移除图标的负 margin、padding 与底边框，恢复正常小图标，消除 UniProt 等标签左侧短线。按用户提供 nazar-gavrylyk 与 Cybercom682 示例，在功能分类加入轻微悬停/焦点位移、按压反馈；结构局部残基字母悬停/键盘焦点放大18%，选中放大10%。仅缩放字母，保持残基点击区域与拖动坐标稳定；减少动态效果关闭缩放。颜色保持原状。
+
+验证：构建通过；P00533 标签图标 padding/border 均0，功能分类点击激活正常，残基悬停 scale1.18、点击选中 scale1.1，减少动态效果为 none；拖选6–10共5个残基正确。1230×837及390×844页面无横向溢出，控制台无错误，截图已检查。使用已授权 Playwright 后备；未遍历所有蛋白和浏览器。

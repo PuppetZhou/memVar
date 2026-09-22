@@ -67,7 +67,6 @@
 
 
 .ov-evidence-automatic{--evidence-bg:var(--slate-3);--evidence-line:var(--slate-7);--evidence-fg:var(--slate-12)}
-.ov-identity-fields dt svg,.ov-mini-heading svg,.ov-source svg,
 .ov-go-aspect-heading{background:var(--slate-2);padding:10px;margin:-14px -14px 0;border-bottom:1px solid var(--slate-6);border-radius:6px 6px 0 0}
 
 /* Functional annotations and Reactome share the left overview column. */

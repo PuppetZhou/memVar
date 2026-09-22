@@ -68,3 +68,24 @@ button[data-slot=checkbox][data-state=checked]:focus [data-slot=checkbox-indicat
  .help-trigger:is(:hover,:focus-visible)>svg,
  button[data-slot=checkbox][data-state=checked]:focus [data-slot=checkbox-indicator] svg :is(path,polyline){animation:none}
 }
+
+/* Adapted from nazar-gavrylyk (list feedback) and Cybercom682 (scale feedback).
+   Preserve scientific colors and the residue hit grid: scale glyphs only. */
+.functional-context .fc-category{
+ transition:transform 180ms ease,background-color 180ms ease,box-shadow 180ms ease;
+}
+.functional-context .fc-category:focus-visible{transform:translate(1px,-1px)}
+@media(hover:hover){
+ .functional-context .fc-category:hover{transform:translate(1px,-1px)}
+}
+.functional-context .fc-category:active{transform:scale(.99)}
+.ssc .ssc-residue>span{transition:transform 160ms ease;transform-origin:center}
+.ssc .ssc-residue.is-selected>span{transform:scale(1.1)}
+.ssc .ssc-residue:focus-visible>span{transform:scale(1.18)}
+@media(hover:hover){
+ .ssc .ssc-residues:not(.is-dragging) .ssc-residue:hover>span{transform:scale(1.18)}
+}
+@media(prefers-reduced-motion:reduce){
+ .functional-context .fc-category{transition:none;transform:none!important}
+ .ssc .ssc-residue>span{transition:none;transform:none!important}
+}
