@@ -1,13 +1,12 @@
-import { PageJump } from './ui';
 import { Button } from './ui/button';
 import { ModeToggleGroup } from './ui/mode-toggle-group';
 import { ContentTransition, SelectionFeedback } from '@/lib/motion';
 import { ClinicalIcon, FrequencyIcon, PredictionIcon } from '@/lib/icons';
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode, type CSSProperties } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import type { ColumnDef } from '@tanstack/react-table';
-import { ArrowUpRight, BarChart3, Check, ChevronLeft, ChevronRight, Dna, Filter, FlaskConical, Globe2, MapPin, Search, Settings2, ShieldCheck, SlidersHorizontal, Sparkles, Layers3, Activity, X } from 'lucide-react';
+import { ArrowUpRight, BarChart3, Check, ChevronLeft, Dna, Filter, FlaskConical, Globe2, MapPin, Search, Settings2, ShieldCheck, SlidersHorizontal, Sparkles, Layers3, Activity, X } from 'lucide-react';
 import { api, display, label, number, params, type RecordData } from '../api';
 import { DataTable, DetailFields, Disclosure, Fields, LinkOut, Modal, Panel, SelectFilter, Status } from './ui';
 import './variant-v2.css';
@@ -111,9 +110,24 @@ export default function VariantCatalog({accession,selectedPosition,onClearSelect
   const selected=selectedRaw===null?DEFAULT_PREDICTORS:selectedRaw==='-'?[]:[...new Set(selectedRaw.split(',').filter(Boolean))];
   const cursor=searchParams.get('variants_cursor')??'';
   const requestedPage=Number(searchParams.get('variants_page')??0);const pageNumber=Number.isSafeInteger(requestedPage)&&requestedPage>=0?requestedPage:0;
+  useEffect(()=>{
+    if(!cursor&&!pageNumber)return;
+    setSearchParams(previous=>{const next=new URLSearchParams(previous);next.delete('variants_cursor');next.delete('variants_page');return next;},{replace:true});
+  },[cursor,pageNumber,setSearchParams]);
   const filterSignature=JSON.stringify([accession,filterValues,selected]);
   const queryParams={...filterValues,predictors:selected.length?selected.join(','):'none'};
-  const list=useQuery({queryKey:['variants-v2',accession,filterSignature,cursor,pageNumber],queryFn:({signal})=>api<VariantPage>(`/proteins/${accession}/variants?${params({...queryParams,limit:15,cursor,offset:cursor?undefined:pageNumber*15})}`,signal)});
+  const list=useInfiniteQuery({queryKey:['variants-scroll',filterSignature],initialPageParam:null as string|null,queryFn:({pageParam,signal})=>api<VariantPage>(`/proteins/${accession}/variants?${params({...queryParams,limit:50,cursor:pageParam})}`,signal),getNextPageParam:page=>page.next_cursor??undefined});
+  const rows=list.data?.pages.flatMap(page=>page.items)??[];
+  const scrollRoot=useRef<HTMLDivElement>(null);
+  const scrollEnd=useRef<HTMLDivElement>(null);
+  useEffect(()=>{scrollRoot.current?.scrollTo({top:0});},[filterSignature,cursor,pageNumber]);
+  useEffect(()=>{
+    const root=scrollRoot.current,target=scrollEnd.current;
+    if(!root||!target||!list.hasNextPage||list.isFetching||list.isFetchNextPageError)return;
+    const observer=new IntersectionObserver(entries=>{if(entries.some(entry=>entry.isIntersecting))void list.fetchNextPage();},{root,rootMargin:'0px 0px 240px 0px'});
+    observer.observe(target);return()=>observer.disconnect();
+  },[list.hasNextPage,list.isFetching,list.isFetchNextPageError,list.fetchNextPage,rows.length]);
+
   const summary=useQuery({queryKey:['variants-v2-summary',accession,JSON.stringify(filterValues)],queryFn:({signal})=>api<Summary>(`/proteins/${accession}/variants/summary?${params(filterValues)}`,signal)});
   // Keep the whole sequence visible when a bin restricts the catalog. Other filters apply to both.
   const distributionFilters={...filterValues,canonical_start:'',canonical_end:''};
@@ -139,7 +153,7 @@ export default function VariantCatalog({accession,selectedPosition,onClearSelect
     change({canonical_start:start,canonical_end:end,range_origin:'position'});setPositionError('');
   }
   useEffect(()=>{const closeFromHistory=()=>{if(detailHistory.current){detailHistory.current=false;setSelection(null);}};window.addEventListener('popstate',closeFromHistory);return()=>window.removeEventListener('popstate',closeFromHistory);},[]);
-  const options=summary.data?.filters??list.data?.filters;const coverageFields=summary.data?.predictor_summary?.groups.flatMap(group=>group.fields)??[];const coverageByField=new Map(coverageFields.map(field=>[field.field,field]));const definitions=(options?.predictors??DEFAULT_DEFINITIONS).map(p=>({...p,...coverageByField.get(p.field)}));
+  const options=summary.data?.filters??list.data?.pages[0]?.filters;const coverageFields=summary.data?.predictor_summary?.groups.flatMap(group=>group.fields)??[];const coverageByField=new Map(coverageFields.map(field=>[field.field,field]));const definitions=(options?.predictors??DEFAULT_DEFINITIONS).map(p=>({...p,...coverageByField.get(p.field)}));
   const predictorNames=new Map(definitions.map(d=>[d.field,d]));
   // Navigation commits before expensive scientific views finish rendering.
   function change(values:Record<string,string|number|undefined>){
@@ -151,9 +165,6 @@ export default function VariantCatalog({accession,selectedPosition,onClearSelect
   function submitSearch(event:FormEvent){event.preventDefault();const value=searchText.trim();const range=value.match(/^(\d+)\s*[-–:]\s*(\d+)$/);if(range){const start=Number(range[1]),end=Number(range[2]);if(start<1||end<start||(summary.data?.sequence_length&&end>summary.data.sequence_length)){setSearchError('Enter a valid interval on the current canonical sequence.');return;}change({search:'',canonical_start:start,canonical_end:end,range_origin:'search'});}else change({search:value,canonical_start:'',canonical_end:'',range_origin:''});setSearchError('');}
   function open(row:VariantRow,tab:DetailTab='overview'){if(!selection){window.history.pushState({...window.history.state,memvarVariantDetail:true},'',window.location.href);detailHistory.current=true;}setSelection({id:row.variant_id,title:shortChange(row),tab});}
   function closeDetail(){if(detailHistory.current)window.history.back();else setSelection(null);}
-  function jumpPage(page:number){setSearchParams(current=>{const next=new URLSearchParams(current);next.delete('variants_cursor');next.set('variants_page',String(page));return next;},{replace:true});}
-  function nextPage(){if(!list.data?.next_cursor)return;setSearchParams(previous=>{const next=new URLSearchParams(previous);next.set('variants_cursor',list.data!.next_cursor!);next.set('variants_page',String(pageNumber+1));return next;},{replace:true});}
-  function previousPage(){jumpPage(Math.max(0,pageNumber-1));}
   const columns=useMemo<ColumnDef<VariantRow>[]>(()=>[
     {id:'genomic-variant',header:()=> <span>Genomic variant<small>GRCh38 · chromosome : position</small></span>,cell:({row})=><button className="vc-genomic" onClick={()=>open(row.original)} title={row.original.variant_id}><strong>{row.original.chromosome}:{row.original.position}</strong><span>{row.original.ref} <span aria-hidden="true">→</span> {row.original.alt}</span></button>},
     {id:'aa-position',header:'Position',cell:({row})=><button className="vc-position" onClick={()=>open(row.original)}><strong>{missing(row.original.aa_position)?'—':row.original.aa_position}</strong></button>},
@@ -189,9 +200,12 @@ export default function VariantCatalog({accession,selectedPosition,onClearSelect
     <SelectionFeedback visible={active.length>0} className="vc-active-filters" aria-label="Active variant filters"><Filter size={13}/>{active.map(key=><button key={key} onClick={()=>change({[key]:''})}>{key.replaceAll('_',' ')}: {key==='clinvar'?clinicalLabel(filterValues[key]):label(filterValues[key])}<X size={11}/></button>)}<Button variant="ghost" size="sm" className="vc-clear" onClick={clear}>Clear filters</Button></SelectionFeedback>
     
     <p className="vc-table-reading-note">Scores retain each tool’s scale and direction. Categories appear only when supplied by the source; — means unavailable. AF is shown as a percentage.</p>
-    <div className="vc-main-table vc-compact" style={{'--predictor-count':selected.length} as CSSProperties}><Status loading={list.isPending} error={list.error}><DataTable items={list.data?.items??[]} columns={columns}/>{!list.data?.items.length&&<div className="vc-empty-results"><Search size={24}/><strong>No variants match these filters</strong><span>Adjust a condition or return to the complete catalog.</span><Button variant="outline" size="sm" onClick={clear}>Clear filters</Button></div>}</Status></div>
-    <div className="vc-pagination"><span>Page {pageNumber+1} · {list.data?.items.length??0} annotation rows{totals?` of ${number(totals.annotation_rows,0)} matching rows`:''}</span><div><Button variant="outline" size="sm" onClick={previousPage} disabled={pageNumber===0||list.isFetching}><ChevronLeft size={15}/>Previous</Button><Button variant="outline" size="sm" onClick={nextPage} disabled={!list.data?.next_cursor||list.isFetching}>Next<ChevronRight size={15}/></Button></div><PageJump page={pageNumber} onJump={jumpPage} totalPages={totals?Math.ceil(totals.annotation_rows/15):undefined} loading={list.isFetching} label="Go to variant page"/></div>
-    
+    <div className="vc-main-table vc-compact vc-scroll" ref={scrollRoot} role="region" aria-label="Variant annotation records" tabIndex={0} style={{'--predictor-count':selected.length} as CSSProperties}>
+      <Status loading={list.isPending} error={rows.length?undefined:list.error}><DataTable items={rows} columns={columns}/>{!rows.length&&<div className="vc-empty-results"><Search size={24}/><strong>No variants match these filters</strong><span>Adjust a condition or return to the complete catalog.</span><Button variant="outline" size="sm" onClick={clear}>Clear filters</Button></div>}</Status>
+      <div ref={scrollEnd} className="vc-scroll-status" role="status">{list.isFetchingNextPage?'Loading more records…':list.isFetchNextPageError?<><span>More records could not be loaded.</span><Button variant="outline" size="sm" onClick={()=>void list.fetchNextPage()}>Retry loading</Button></>:list.hasNextPage?'Scroll to browse more records':rows.length?'All matching records loaded':''}</div>
+    </div>
+    <p className="vc-scroll-count">{rows.length.toLocaleString()} annotation rows loaded{totals?` · ${number(totals.annotation_rows,0)} matching rows`:''}</p>
+
     {picker&&<PredictorPicker options={definitions} selected={selected} initialGroup={picker.group} initialSearch={picker.search} onChange={fields=>change({predictors:fields.length?fields.join(','):'-'})} onClose={()=>setPicker(null)}/>}
     {selection&&<VariantDetails key={`${selection.id}:${selection.tab}`} accession={accession} selection={selection} onClose={closeDetail} population={filterValues.frequency}/>} 
   </div></Panel>;

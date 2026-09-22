@@ -6,7 +6,7 @@
 
 ## 公网预览
 
-[访问 memVar](https://renewably-ashy-undiluted.ngrok-free.dev)（2026-09-22 恢复开放）。临时预览依赖本地服务及 ngrok 隧道持续运行，首次访问可能出现 ngrok 提示页。
+公网 ngrok 已由用户关闭，当前继续本地优化。维护环境访问 `http://localhost:8000/`；历史公网地址不代表当前在线。
 
 ## 功能
 

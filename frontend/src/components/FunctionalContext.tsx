@@ -1,3 +1,4 @@
+import { ReactionEquation } from './ReactionEquation';
 import type { CSSProperties } from 'react';
 import { ArrowRight, BookOpen, FlaskConical, SlidersHorizontal, Zap } from 'lucide-react';
 import { display, label, type RecordData } from '../api';
@@ -49,7 +50,7 @@ function Annotation({ item, index }: { item: RecordData; index: number }) {
   const { reaction, cofactors, evidence, narrative } = annotationParts(item);
   return <article className="fc-annotation">
     <div className="fc-annotation-meta"><span>Annotation {index + 1} · {scope(item)}</span>{Boolean(item.mapping_status) && <span>{label(item.mapping_status)}</span>}</div>
-    {narrative && <p className="fc-full-text">{narrative}</p>}
+    {narrative && (item.comment_type==='CATALYTIC ACTIVITY'?<ReactionEquation text={narrative}/>:<p className="fc-full-text">{narrative}</p>)}
     {Boolean(reaction.ecNumber) && <p className="fc-ec">EC {display(reaction.ecNumber)}</p>}
     {cofactors.map((item, index) => <Fields key={index} items={[{ label: 'Cofactor', value: item.name }, { label: 'ChEBI', value: (item.cofactorCrossReference as RecordData | undefined)?.id }]} />)}
     {evidence.length > 0 && <Disclosure title={`Source references · ${evidence.length}`}><EvidenceLinks items={evidence} /></Disclosure>}
@@ -87,7 +88,7 @@ function FunctionalContext({ annotations, accession, activeType, onTypeChange, o
             {full ? category.rows.map((item, index) => <Annotation key={String(item.annotation_id ?? index)} item={item} index={index} />) : <>
               <div className="fc-preview-meta">UniProt · {scope(first)}<span>Annotation 1 of {category.rows.length}</span></div>
               {Boolean(reaction.ecNumber) && <span className="fc-ec">EC {display(reaction.ecNumber)}</span>}
-              {narrative ? <p className="fc-preview-text">{narrative}</p> : <p className="fc-empty">No narrative text is supplied for this annotation. Source fields remain available.</p>}
+              {narrative ? (category.type==='CATALYTIC ACTIVITY'?<ReactionEquation text={narrative}/>:<p className="fc-preview-text">{narrative}</p>) : <p className="fc-empty">No narrative text is supplied for this annotation. Source fields remain available.</p>}
             </>}
           </TabsContent>;
         })}

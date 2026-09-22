@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
 import './design-system.css';
+import './refined-surfaces.css';
 import { MotionConfig } from 'motion/react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 const queryClient = new QueryClient({defaultOptions:{queries:{staleTime:300_000,retry:1,refetchOnWindowFocus:false}}});

@@ -119,7 +119,7 @@ export function frequencyStyle(value:unknown){
  const af=Number(value);if(!Number.isFinite(af)||af<0||af>1)return {color:'#94a3b8',progress:0,valid:false,zero:false};
  if(af===0)return {color:'#64748b',progress:0,valid:true,zero:true};
  const t=Math.max(0,Math.min(1,(Math.log10(af)+6)/6));
- return {color:`hsl(${270-105*t} 70% 43%)`,progress:t*100,valid:true,zero:false};
+ return {color:`hsl(211 24% ${47-20*t}%)`,progress:t*100,valid:true,zero:false};
 }
 export function scoreVisual(item:Predictor){
  const tone=predTone(item),scale=SCORE_SCALES[item.field],v=Number(item.value);

@@ -376,3 +376,16 @@ CATVariant首页可读取，并结合既有本地视觉审查；VarCards2读取4
 ## 20:59 运行检查与恢复
 
 2026-09-22 20:58 HKT检查发现screen中的ngrok仍在运行，PostgreSQL端口55432监听正常，但网站8000无监听，公网首页及接口均502。当前退出原因未确定，旧/tmp日志不能证明本次退出原因。20:58:53以用户级systemd临时服务memvar-web-preview.service恢复网站，Restart=always、RestartSec=3，脱离工具终端生命周期；ngrok仍由原screen会话管理。20:59复核本地及公网首页、Q12809/P00533 overview、Q12809 sequence、QTL summary、structures全部200且JSON可解析，首页JS/CSS可获取；本地响应约0.03–0.35秒，公网约0.55–1.26秒。服务active/running，NRestarts=0。该验证从服务器经公网地址发起，不代表所有外部网络；临时服务未配置开机启动。
+
+
+## 克制配色试版、反应式与变异滚动列表
+
+2026-09-22。根据新一轮八条批注试行灰蓝操作色、近中性表面、深色正文；样式集中于refined-surfaces.css，降低装饰色饱和度而非整块降低透明度。膜来源信息改为无分割线的轻底网格，去掉标签套框；详情入口取消橙底边框，保留加粗文字与箭头。疾病六来源保留外框和来源色点，去掉彩色顶线、内部证据框及重复横线；QTL/Expression等来源卡片一并收敛表面色。科学轨道与来源分类保留独立颜色。
+
+Functional context及Rhea反应式共用ReactionEquation：浅底、数学衬线字体及明确电荷括号的上标显示；来源词语、等号和方向不改写，不自动推导化学式。Reactome概览移除重复TAS标签，详情证据保留。
+
+变异目录改为50行一批的游标滚动加载，固定高度、粘性表头，取消翻页栏。筛选/预测列变化隔离查询缓存并回顶，旧分页URL归一到全列表起点；续载失败保留现有行并支持重试，空结果和末尾状态独立显示。没有修改后端数据收录或排序规则。
+
+频率依据核查：[ClinGen Variant Curation SOP](https://www.clinicalgenome.org/docs/variant-curation-sop/)及其[2021 SOP](https://clinicalgenome.org/site/assets/files/5933/variant_curation_sop_2_0_jan_2021.pdf)。一般BA1需要大洲人群AF>0.05、至少2000个观察等位基因及基因/变异例外审查；BS1/PM2依赖具体疾病/基因规则。不能将overall AF、零频率或缺失直接转换为良性/致病证据。本轮仅把原连续AF量级色阶改为低饱和灰蓝，并在频率详情提供上述依据；没有新建ACMG判定或正式科学阈值。
+
+验证：TypeScript/Vite通过。独立Playwright沿用已授权Browser无实例降级，在P00533的1470/1230桌面检查页面、截图与横向溢出；实际滚轮50→100行，start_lost筛选6行且回顶、noncanonical空结果及返回、末尾提示、频率说明展开均通过。模拟续载请求失败（预期产生网络错误）后仍保留50行，恢复请求并重试至100行；正常访问无应用错误，仅既有Mol* ReadPixels性能提示。Q12809页面和膜详情可打开。截图/tmp/memvar-muted-{overview,disease,variants,reaction}.png。未做全量4096行性能或全移动端验收。最终index-DNPCApWG.js/index-CXugCG_H.css同步本地8000，ngrok保持关闭；README及计划纠正当前公网状态。

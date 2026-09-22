@@ -1,0 +1,65 @@
+/* Quiet presentation palette. Scientific tracks and source classification colors
+   retain their own scales; opacity is never applied to a whole content panel. */
+html:root {
+ --blue-2:#f6f8fa; --blue-3:#eaf0f5; --blue-5:#d5dfe8;
+ --blue-6:#c9d5df; --blue-7:#b3c4d2; --blue-8:#899fb3;
+ --blue-9:#4c7293; --blue-10:#3e6383; --blue-11:#315b7c; --blue-12:#203d55;
+ --border:#d8dde2; --border-strong:#b7c0ca;
+ --background:#f5f6f7; --canvas:#f5f6f7; --foreground:#202932;
+ --text:#202932; --text-secondary:#53606c; --muted-foreground:#596572;
+}
+body{background:var(--canvas);color:var(--foreground)}
+#overview .ov-section>header{background:#f7f8f9;border-bottom:0}
+#overview .ov-section-action{background:white;border-top:0;padding-top:8px}
+#overview .ov-identity .ov-identity-fields>div{background:#f5f7f8;border-color:#e0e4e8}
+#overview .ov-identity .ov-identity-fields>div:nth-child(n+5){background:#f2f5f7}
+#overview .ov-section>header .ov-icon,#overview .ov-identity-icon,
+.panel>.section-heading .heading-icon,#sequence>.section-heading .viewer-icon,
+#structure>.section-heading .viewer-icon,.cx-panel>.cx-heading .cx-heading-icon{background:#edf1f4;color:#47647c}
+.section-nav a[class*="nav-"] svg{color:#587084}
+.section-nav a[class*="nav-"].active{background:#e9eff4;box-shadow:inset 0 -2px 0 #587a97}
+#sequence .composite-source-controls{background:#f4f6f8;border-color:#d9e0e6}
+#sequence .annotation-source-trigger{border-color:#ccd5de;box-shadow:none}
+#sequence .annotation-source-trigger strong{color:#2c4357}
+#variants .vc-catalog .vc-filter-group{background:#f5f7f8;border-color:#dce2e7}
+#variants .vc-catalog .vc-filter-group legend{color:#364d5f}
+#overview .fc-category[data-state=active]{background:#edf2f5;color:#2d495e}
+#overview .fc-panel-heading,#overview .fc-ec{color:#365f65}
+#membrane-association .mov-compact-sources{border:0;gap:8px;background:transparent}
+#membrane-association .mov-compact-sources>button{border:0;border-radius:7px;background:#f5f7f8;padding:14px}
+#membrane-association .mov-compact-sources>button:hover{background:#eaf0f3}
+#membrane-association .mov-compact-sources .badge{border:0;background:transparent;padding:0;color:#64707b;font-weight:450}
+#membrane-association .mov-labels>button{background:transparent;border:0;padding-left:0;color:#3f5261}
+#overview #membrane-association .membrane-details-button{background:transparent;border:0;color:#263e52;font-weight:650;box-shadow:none;padding:8px 0}
+#overview #membrane-association .membrane-details-button:hover{background:transparent;color:#1b5279;text-decoration:underline}
+#membrane-association .ov-section-action{gap:28px}
+#overview .reaction-equation{background:#f2f5f6;border:0;border-radius:7px;padding:12px 15px;margin:12px 0;color:#263b49}
+.reaction-equation-label{font:600 10px/1.4 Inter,sans-serif;letter-spacing:.09em;text-transform:uppercase;color:#63717d}
+#overview .reaction-equation p{font-family:"Cambria Math",Cambria,"STIX Two Math",Georgia,serif;font-size:17px;line-height:1.8;margin:4px 0 0;overflow-wrap:anywhere}
+.reaction-equation sup{font-size:.72em;line-height:0;vertical-align:super}
+#diseases .cx-heading{border-bottom:0}
+#diseases .cx-disease-sources .cx-disease-card{border:1px solid #dce2e6;border-top:1px solid #dce2e6;background:#f8f9fa;box-shadow:none;gap:12px}
+#diseases .cx-disease-sources .cx-disease-card>p{background:transparent;border:0;padding:0;color:#4a5966}
+#diseases .cx-disease-identifiers{border:0;padding-top:0}
+#diseases .cx-disease-sources .cx-disease-card.is-selected{background:#edf2f5;border-color:#8099ac;box-shadow:inset 0 3px 0 #58778e}
+#diseases .cx-disease-sources .cx-disease-card:hover{background:#f0f3f5;box-shadow:none}
+#diseases .cx-disease-count strong,#diseases .cx-disease-card>p>small{color:#435d70}
+#diseases>.details,#diseases .cx-counting-scope{border-top:0}
+.vc-main-table.vc-scroll{max-height:620px;overflow:auto;scrollbar-gutter:stable;border:1px solid #d8e0e6;border-radius:8px;overscroll-behavior:auto}
+.vc-main-table.vc-scroll .table-wrap{overflow:visible;border:0;border-radius:0}
+.vc-main-table.vc-scroll .data-table thead th{position:sticky;top:0;z-index:2;background:#edf1f4;border-bottom:1px solid #cbd5de}
+.vc-scroll-status{display:flex;align-items:center;justify-content:center;gap:12px;min-height:46px;padding:12px;color:#5c6a76;font-size:13px}
+.vc-scroll-count{font-size:12px;color:#5c6a76;margin:10px 0 0}
+.ve-frequency-legend>i{background:linear-gradient(90deg,hsl(211 24% 47%),hsl(211 24% 27%))}
+
+#diseases .cx-panel-footer,#diseases .cx-section-note{border-top:0}
+#variants .vc-catalog .vc-filter-group{border-left:0}
+#variants .vc-catalog .vc-filter-group legend svg{color:#526979}
+
+#diseases .cx-scope{border-top:0;padding-top:0}
+:is(#expression,#qtl,#interactions) .cx-metrics .cx-metric{background:#f6f8f9;border:1px solid #d9e0e5;border-top-width:1px;box-shadow:none}
+:is(#expression,#qtl,#interactions) .cx-metrics .cx-metric .cx-metric-top{border-bottom:0}
+:is(#expression,#qtl,#interactions) .cx-metrics .cx-metric-value{color:#3b586d}
+:is(#expression,#qtl,#interactions) .cx-metrics .cx-metric.is-selected{background:#eaf0f4;border-color:#8fa5b6}
+#overview .fc-panel-heading h4{color:#365f65}
+.ve-population .ve-frequency-legend>i{background:linear-gradient(90deg,hsl(211 24% 47%),hsl(211 24% 27%))}
