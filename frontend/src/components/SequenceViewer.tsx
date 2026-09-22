@@ -28,15 +28,24 @@ async function getData<T>(url: string, signal?: AbortSignal): Promise<T> {
 function sequenceUrl(accession:string,topologies:string[]){const query=new URLSearchParams();(topologies.length?topologies:['none']).forEach(value=>query.append('topology',value));return `/api/proteins/${accession}/sequence?${query}`;}
 function SourceCheckboxGroup({label,options,selected,onToggle}:{label:string;options:AnnotationSourceOption[];selected:string[];onToggle:(id:string)=>void}){
   const groupId=useId();
+  const [activeSource,setActiveSource]=useState<string|null>(null);
+  const hierarchical=label==='Topology';
+  const family=(option:AnnotationSourceOption)=>option.source.split('/')[0];
+  const families=Array.from(new Set(options.map(family)));
+  const currentSource=activeSource&&families.includes(activeSource)?activeSource:null;
+  const visibleOptions=hierarchical?options.filter(option=>family(option)===currentSource):options;
   const SourceIcon=label==='Domains'?Layers:label==='PTM'?CircleDot:ScanLine;
   const [explained,setExplained]=useState<string|null>(null);
   const checked=options.filter(option=>selected.includes(option.id));
   const sourceNames=Array.from(new Set(checked.map(option=>option.source)));
   const summary=checked.length===0?'Off':checked.length===1?(checked[0].method?`${checked[0].source} · ${checked[0].method}`:checked[0].source):checked.length===2&&checked[0].source!==checked[1].source?checked.map(option=>option.source).join(' + '):sourceNames.length===1?`${sourceNames[0]} · ${checked.length} layers`:`${sourceNames[0]} + ${sourceNames.length-1} sources`;
-  return <Popover.Root><Popover.Trigger asChild><Button variant="outline" size="sm" className="annotation-source-trigger" aria-label={`${label} sources: ${summary}`}><SourceIcon size={14} aria-hidden="true"/><strong>{label}</strong><span title={checked.map(option=>option.label).join('; ')||'No source selected'}>{summary}</span><ChevronDown className="annotation-source-chevron" size={14}/></Button></Popover.Trigger><Popover.Portal><Popover.Content className="annotation-source-popover" sideOffset={6} align="start" collisionPadding={16} aria-label={`${label} sources`}>
+  return <Popover.Root onOpenChange={open=>{if(open){setActiveSource(null);setExplained(null);}}}><Popover.Trigger asChild><Button variant="outline" size="sm" className="annotation-source-trigger" aria-label={`${label} sources: ${summary}`}><SourceIcon size={14} aria-hidden="true"/><strong>{label}</strong><span title={checked.map(option=>option.label).join('; ')||'No source selected'}>{summary}</span><ChevronDown className="annotation-source-chevron" size={14}/></Button></Popover.Trigger><Popover.Portal><Popover.Content className="annotation-source-popover" sideOffset={6} align="start" collisionPadding={16} aria-label={`${label} sources`}>
     <div className="annotation-source-heading"><strong>{label} sources</strong><span>{checked.length} of {options.length} selected</span></div>
-    <p className="annotation-source-hint">Choose source layers · Details shows descriptions and provenance.</p>
-    <div className="annotation-source-options-list">{options.length?options.map((option,index)=>{
+    <p className="annotation-source-hint">{hierarchical?'1. Choose a source · 2. Select its types or methods. Selections across sources are kept.':'Choose source layers · Details shows descriptions and provenance.'}</p>
+    {hierarchical&&!currentSource&&<div className="topology-source-grid" aria-label="Topology data sources">{families.map(source=><button key={source} type="button" aria-pressed={currentSource===source} onClick={()=>{setActiveSource(source);setExplained(null);}}><strong>{source}</strong><small>{options.filter(option=>family(option)===source&&selected.includes(option.id)).length} selected <ChevronDown size={13}/></small></button>)}</div>}
+    {hierarchical&&currentSource&&<Button variant="ghost" size="sm" onClick={()=>setActiveSource(null)}>← All topology sources</Button>}
+    {hierarchical&&<strong className="topology-layer-heading">{currentSource?`${currentSource} · types & methods`:'Choose a source above to see available types'}</strong>}
+    <div className="annotation-source-options-list">{visibleOptions.length?visibleOptions.map((option,index)=>{
       const guide=annotationSourceGuide(option.source,option.kind);
       const description=option.kind==='method_prediction'||option.kind==='prediction'?`Computational prediction from ${option.source}${option.method?` using ${option.method}`:''}.`:guide.description;
       const provenance=option as AnnotationSourceOption&{source_record_id?:string;source_sequence_id?:string;model_id?:string|null};
@@ -48,7 +57,7 @@ function SourceCheckboxGroup({label,options,selected,onToggle}:{label:string;opt
         <Button variant="ghost" size="sm" className="annotation-source-info-trigger" aria-label={`Details for ${label}: ${option.label}`} aria-expanded={isExplained} aria-controls={detailId} onClick={()=>setExplained(isExplained?null:option.id)}><CircleHelp size={14}/><span>Details</span></Button>
         <CollapseRegion open={isExplained} className="annotation-source-detail-region" id={detailId}><div className="annotation-source-detail"><p>{description}</p><dl><div><dt>Source</dt><dd>{option.source}</dd></div>{option.method&&<div><dt>Method</dt><dd>{option.method}</dd></div>}{option.kind&&<div><dt>Evidence kind</dt><dd>{option.kind.replaceAll('_',' ')}</dd></div>}{provenance.source_record_id&&<div><dt>Source record</dt><dd>{provenance.source_record_id}</dd></div>}{provenance.source_sequence_id&&<div><dt>Source sequence</dt><dd>{provenance.source_sequence_id}</dd></div>}{provenance.model_id&&<div><dt>Model</dt><dd>{provenance.model_id}</dd></div>}{typeof option.count==='number'&&<div><dt title="Count reported for this source layer">Source count</dt><dd>{option.count.toLocaleString()}</dd></div>}</dl>{option.available===false&&<p className="muted">This source layer is unavailable for the current protein.</p>}{guide.url&&<a href={guide.url} target="_blank" rel="noreferrer">Source documentation <ExternalLink size={12}/></a>}</div></CollapseRegion>
       </div>;
-    }):<p className="annotation-source-empty">No source layers are available for this protein.</p>}</div>
+    }):(!hierarchical||currentSource)&&<p className="annotation-source-empty">No source layers are available for this protein.</p>}</div>
   </Popover.Content></Popover.Portal></Popover.Root>;
 }
 

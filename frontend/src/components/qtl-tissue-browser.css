@@ -17,3 +17,9 @@
 .qtl-statistic{display:flex;align-items:flex-start;flex-direction:column;gap:7px}.qtl-statistic small{font-size:11px;color:var(--slate-11);max-width:150px}.qtl-pvalue:focus-visible{outline:2px solid var(--blue-8);outline-offset:3px}
 
 .cx-anatomy-art{opacity:1}.cx-human-panel .cx-body-point circle:last-child{filter:drop-shadow(0 1px 2px #172f4c40)}
+
+/* Give the anatomy the same visual depth as the tissue list. */
+.cx-body-layout{grid-template-columns:280px minmax(0,1fr);gap:24px}
+.cx-human-panel .cx-human{width:275px;height:476px;max-width:100%}
+@media(min-width:701px) and (max-width:1100px){.cx-body-layout{grid-template-columns:235px minmax(0,1fr);gap:18px}.cx-human-panel .cx-human{width:230px;height:399px}}
+@media(max-width:700px){.cx-body-layout{grid-template-columns:1fr}.cx-human-panel .cx-human{width:200px;height:347px}}

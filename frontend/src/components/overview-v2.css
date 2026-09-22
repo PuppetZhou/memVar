@@ -77,3 +77,10 @@
 .ov-functional-column .ov-pathway-totals{min-width:0}
 .ov-functional-column .ov-pathway-preview{gap:9px}
 .ov-functional-column .ov-pathway-preview li{align-items:start;flex-wrap:wrap}
+
+.ov-identity .ov-identity-fields{background:transparent;padding:0;gap:10px}
+.ov-identity .ov-identity-fields>div{padding:12px 14px;border:1px solid var(--slate-6);border-radius:8px;background:var(--slate-2)}
+.ov-identity .ov-identity-fields>div:nth-child(-n+3){background:var(--blue-2);border-color:var(--blue-5)}
+.ov-identity .ov-identity-fields>div:nth-child(n+5){background:var(--violet-2);border-color:var(--violet-5)}
+#membrane-association .membrane-details-button{padding:10px 15px;border:1px solid #d39134;border-radius:7px;background:#fff0d5;color:#804b08;font-weight:650;font-size:14px;text-decoration:none}
+#membrane-association .membrane-details-button:hover{background:#ffe3b1;border-color:#b87920}

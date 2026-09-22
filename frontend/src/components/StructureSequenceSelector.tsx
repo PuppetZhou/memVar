@@ -20,6 +20,7 @@ export default function StructureSequenceSelector({ sequence, mapping, value, fo
   const [error, setError] = useState('');
   const drag = useRef<Drag | null>(null);
   const selector = useRef<HTMLDivElement>(null);
+  const residueStrip = useRef<HTMLDivElement>(null);
   const keyboardEdge = useRef<0 | 1 | null>(null);
   const overview = useRef<HTMLDivElement>(null);
   const captionId = useId();
@@ -55,6 +56,25 @@ export default function StructureSequenceSelector({ sequence, mapping, value, fo
     });
   // Window browsing is independent; recenter only when the committed range changes.
   }, [value?.[0], value?.[1], length]);
+
+  useEffect(() => {
+    const strip=residueStrip.current;
+    if(!strip)return;
+    let accumulated=0;
+    const wheel=(event:WheelEvent)=>{
+      if(event.ctrlKey||event.metaKey||drag.current)return;
+      const delta=(Math.abs(event.deltaX)>Math.abs(event.deltaY)?event.deltaX:event.deltaY)*(event.deltaMode===1?16:event.deltaMode===2?strip.clientWidth:1);
+      if(!delta)return;
+      const atBoundary=(delta<0&&windowStart===1)||(delta>0&&windowEnd===length);
+      if(atBoundary)return;
+      event.preventDefault();
+      accumulated+=delta;
+      const step=Math.trunc(accumulated/24);
+      if(step){accumulated-=step*24;setWindowStart(current=>clampWindow(current+step));}
+    };
+    strip.addEventListener('wheel',wheel,{passive:false});
+    return ()=>strip.removeEventListener('wheel',wheel);
+  },[windowStart,windowEnd,length]);
 
   useLayoutEffect(() => {
     if (keyboardEdge.current === null) return;
@@ -148,12 +168,12 @@ export default function StructureSequenceSelector({ sequence, mapping, value, fo
       {shown && ([0,1] as const).map(edge => <button key={edge} type="button" className={`ssc-overview-handle ssc-overview-handle-${edge}${(shown[1]-shown[0]+1)/length<.15?" is-close":""}`} data-near-start={shown[edge]/length<.1} data-near-end={shown[edge]/length>.9} data-edge={edge} role="slider" aria-label={`Full sequence range ${edge===0?'start':'end'} handle`} aria-orientation="horizontal" aria-describedby={captionId} aria-valuemin={edge===0?1:shown[0]} aria-valuemax={edge===0?shown[1]:length} aria-valuenow={shown[edge]} aria-valuetext={residue(shown[edge])} style={{left:`${(shown[edge]-1+(edge===1?1:0))/length*100}%`}} onKeyDown={event=>moveEdge(event,edge)}><i className="ssc-thumb" aria-hidden="true"/><span>{edge===0?'Start':'End'} {residue(shown[edge])}</span></button>)}
       <div className="ssc-overview-ticks" aria-hidden="true">{[0, .25, .5, .75, 1].map(fraction => <span key={fraction}>{Math.max(1, Math.round(length * fraction)).toLocaleString()}</span>)}</div>
     </div>
-    <div className="ssc-local-heading"><strong>Visible residues {windowStart}–{windowEnd}</strong><span>Detail view · click or drag residues to select.</span><div>
+    <div className="ssc-local-heading"><strong>Visible residues {windowStart}–{windowEnd}</strong><span>Scroll to browse left / right · click or drag to select.</span><div>
       {value && <><Button variant="ghost" size="sm" onClick={() => showPosition(value[0])}>View start</Button><Button variant="ghost" size="sm" onClick={() => showPosition(value[1])}>View end</Button></>}
       <Button variant="outline" size="icon-sm" aria-label="Previous residues in structure selector" disabled={windowStart === 1} onClick={() => setWindowStart(current => clampWindow(current - WINDOW_SIZE))}><ChevronLeft/></Button>
       <Button variant="outline" size="icon-sm" aria-label="Next residues in structure selector" disabled={windowEnd === length} onClick={() => setWindowStart(current => clampWindow(current + WINDOW_SIZE))}><ChevronRight/></Button>
     </div></div>
-    <div className={`ssc-residues${dragging ? ' is-dragging' : ''}`} tabIndex={0} role="group" aria-label="Local sequence detail; click or drag residues to select a structure range" style={{ gridTemplateColumns: `repeat(${visibleCount}, minmax(0, 1fr))` }} {...pointerHandlers(true)}>
+    <div ref={residueStrip} className={`ssc-residues${dragging ? ' is-dragging' : ''}`} tabIndex={0} role="group" aria-label="Local sequence detail; click or drag residues to select a structure range" style={{ gridTemplateColumns: `repeat(${visibleCount}, minmax(0, 1fr))` }} {...pointerHandlers(true)}>
       {Array.from({ length: visibleCount }, (_, index) => {
         const position = windowStart + index, mapped = positions.has(position), selected = !!shown && position >= shown[0] && position <= shown[1];
         const start = shown?.[0] === position, end = shown?.[1] === position, focused = position === focusedPosition;

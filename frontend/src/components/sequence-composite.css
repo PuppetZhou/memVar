@@ -96,3 +96,14 @@
 @media(prefers-reduced-motion:reduce){.sequence-range-navigator .range-handle{transition:none}}
 
 .sequence-range-navigator{position:relative}.range-residue-readout,.composite-residue-readout{position:absolute;transform:translateX(-50%);pointer-events:none;z-index:8;background:var(--blue-11);color:white;border-radius:5px;padding:4px 8px;font-size:12px;font-weight:600;line-height:18px;white-space:nowrap;box-shadow:0 2px 6px #17345a20}.range-residue-readout{top:-5px}.composite-residue-readout{font-style:normal}
+
+/* Source controls are a distinct editing surface, separate from the view window. */
+#sequence .composite-source-controls{padding:14px;background:var(--blue-2);border:1px solid var(--blue-6);border-radius:9px;gap:12px}
+#sequence .annotation-source-trigger{min-height:40px;background:white;border-color:var(--blue-7);box-shadow:0 2px 4px #193a6810;font-size:14px}
+#sequence .annotation-source-trigger strong{color:var(--blue-11)}
+#sequence .annotation-source-trigger[data-state=open]{background:var(--blue-3);border-color:var(--blue-9)}
+.topology-source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:4px 0 12px}
+.topology-source-grid button{display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:10px 12px;border:1px solid var(--slate-6);border-radius:7px;background:white;color:var(--slate-12);text-align:left;cursor:pointer}
+.topology-source-grid button[aria-pressed=true]{background:var(--blue-3);border-color:var(--blue-8);color:var(--blue-11)}
+.topology-source-grid small{display:flex;align-items:center;justify-content:space-between;width:100%;color:var(--slate-11)}
+.topology-layer-heading{display:block;padding:10px 0;border-top:1px solid var(--slate-6);font-size:13px}
