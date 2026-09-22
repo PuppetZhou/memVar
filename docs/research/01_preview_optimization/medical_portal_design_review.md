@@ -76,3 +76,9 @@
 用户反馈变异搜索出现重复边框/底色，并明确要求给结构全长序列选择条上色。修正通用输入样式对组合框内部 input 的覆盖：外框统一、输入无内框/底色、按钮与焦点状态一致。结构映射条及图例改浅蓝 #a2d2ff，选区深蓝边界、局部窗口紫色虚线；三维模型和其他科学轨道颜色不变。
 
 构建通过；P00533 实测两个搜索 input 边框均0px且背景透明，L858R 提交更新URL；点击结构 L11 后选区及共享焦点正常，已映射条计算色 rgb(162,210,255)。无横向溢出或应用控制台错误。截图 /tmp/memvar-search-fixed.png、/tmp/memvar-range-colored.png。Browser 无实例，沿用已授权 Playwright 后备。未全量测试拖动及所有结构映射状态。
+
+## 局部交互细节（2026-09-23）
+
+按用户提供的 Uiverse 示例选择性适配：Praashoo7 的卡片悬停反馈用于概览来源入口；vishnupprajapat 的对勾绘制用于现有 Radix checkbox；vinodjangid07 的轻微图标弹动用于帮助入口；ayman-ashine 的动作提示用于文字入口箭头。独立 interaction-polish.css 保留作者说明。保留当前色系、尺寸和文字可见性，避免悬停改变布局或隐藏控件；键盘焦点与减少动态效果均支持。数据内容和科学着色未调整。
+
+验证：TypeScript/Vite 构建通过；P00533 来源卡片悬停上移2px、减少动态效果时 transform 为 none；键盘 Space 切换复选框正常，对勾动画 portal-check-draw 生效，减少动态效果时为 none；帮助 Enter 打开及关闭正常，详情展开 aria-expanded 正常更新。无横向溢出，浏览器 console error 为0。沿用已授权 Playwright 后备；未逐项测试全部页面控件。

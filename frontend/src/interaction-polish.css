@@ -1,0 +1,70 @@
+/* Interaction adaptations from user-provided Uiverse.io examples:
+   Praashoo7 (card feedback), vishnupprajapat (checkbox wave/check),
+   vinodjangid07 (help icon), ayman-ashine (action reveal).
+   Retain existing colors, labels, Radix semantics and layout dimensions. */
+
+/* Stable card geometry: elevation replaces margin/width changes. */
+#overview .mov-compact-sources>button,
+#overview .ov-source-launchers>button{
+ transition:transform 180ms ease,box-shadow 180ms ease,background-color 180ms ease;
+}
+@media(hover:hover){
+ #overview .mov-compact-sources>button:hover,
+ #overview .ov-source-launchers>button:hover{
+  transform:translateY(-2px);box-shadow:0 5px 14px #20334d12;
+ }
+}
+#overview .mov-compact-sources>button:focus-visible,
+#overview .ov-source-launchers>button:focus-visible{
+ outline:2px solid var(--portal-focus);outline-offset:3px;box-shadow:0 3px 10px #20334d12;
+}
+#overview .mov-compact-sources>button:active,
+#overview .ov-source-launchers>button:active{transform:translateY(0);box-shadow:none}
+
+/* Existing Radix checkbox stays focusable; no hidden replacement input. */
+button[data-slot=checkbox]{
+ position:relative;isolation:isolate;
+ transition:transform 140ms ease,box-shadow 160ms ease,background-color 160ms ease,border-color 160ms ease;
+}
+button[data-slot=checkbox]:not(:disabled):active{transform:scale(.92)}
+button[data-slot=checkbox][data-state=checked]:focus [data-slot=checkbox-indicator] svg :is(path,polyline){
+ stroke-dasharray:24;stroke-dashoffset:0;animation:portal-check-draw 220ms ease-out;
+}
+@keyframes portal-check-draw{from{stroke-dashoffset:24}to{stroke-dashoffset:0}}
+
+/* Small help feedback, triggered equally by keyboard and pointer. */
+.help-trigger{transition:box-shadow 160ms ease}
+.help-trigger:is(:hover,:focus-visible)>svg{animation:portal-help-bounce 420ms ease-out both}
+@keyframes portal-help-bounce{
+ 0%,100%{transform:scale(1)}
+ 35%{transform:scale(.92,1.08)}
+ 65%{transform:scale(1.05,.95)}
+}
+
+/* Keep the action label visible; move only the trailing arrow. */
+#overview .ov-browse>svg:last-child,
+#overview .ov-source-launchers>button>svg:last-child{
+ transition:transform 180ms ease;
+}
+#overview .ov-browse:is(:hover,:focus-visible)>svg:last-child,
+#overview .ov-source-launchers>button:is(:hover,:focus-visible)>svg:last-child{transform:translateX(3px)}
+.details-trigger>svg:last-child{transition:transform 180ms ease}
+.details-trigger[data-state=closed]:is(:hover,:focus-visible)>svg:last-child{transform:translateX(2px)}
+.details-trigger[data-state=open]>svg:last-child{transform:rotate(90deg)}
+
+@media(prefers-reduced-motion:reduce){
+ #overview .mov-compact-sources>button,
+ #overview .ov-source-launchers>button,
+ button[data-slot=checkbox],.help-trigger,
+ #overview .ov-browse>svg:last-child,
+ #overview .ov-source-launchers>button>svg:last-child,
+ .details-trigger>svg:last-child{transition:none}
+ #overview .mov-compact-sources>button:hover,
+ #overview .ov-source-launchers>button:hover,
+ button[data-slot=checkbox]:not(:disabled):active,
+ #overview .ov-browse:is(:hover,:focus-visible)>svg:last-child,
+ #overview .ov-source-launchers>button:is(:hover,:focus-visible)>svg:last-child,
+ .details-trigger[data-state=closed]:is(:hover,:focus-visible)>svg:last-child{transform:none}
+ .help-trigger:is(:hover,:focus-visible)>svg,
+ button[data-slot=checkbox][data-state=checked]:focus [data-slot=checkbox-indicator] svg :is(path,polyline){animation:none}
+}
