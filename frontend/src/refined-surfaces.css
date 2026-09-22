@@ -182,3 +182,12 @@ body{background:var(--portal-canvas)}
 .section-nav a[class*="nav-"].active{box-shadow:inset 0 -2px 0 var(--sky-blue)}
 #sequence .annotation-source-trigger{border-color:var(--icy-blue)}
 #overview .ov-section-action>.ov-browse:hover{background:color-mix(in srgb,var(--baby-pink) 14%,white);border-radius:5px}
+
+/* Compound search fields own a single boundary; child inputs stay borderless. */
+#variants .vc-catalog .vc-filter-group .vc-search{background:#fff;border:1px solid var(--portal-line);border-radius:7px;gap:8px;padding-left:10px;overflow:visible}
+#variants .vc-catalog .vc-filter-group .vc-search>input{border:0;border-radius:0;background:transparent;box-shadow:none;outline:0;min-height:0;height:100%;padding:6px 0}
+#variants .vc-catalog .vc-filter-group .vc-search:focus-within{outline:2px solid var(--portal-focus);outline-offset:2px}
+#variants .vc-catalog .vc-filter-group .vc-search>button{background:var(--portal-selected);color:var(--portal-heading);border:0;border-left:1px solid var(--portal-line);border-radius:0 6px 6px 0;padding:0 12px;font-weight:600}
+#variants .vc-catalog .vc-filter-group .vc-search>button:hover{background:var(--icy-blue)}
+#variants .vc-catalog .vc-filter-group .vc-search>button:focus-visible{outline:2px solid var(--portal-focus);outline-offset:2px}
+#variants .vc-catalog .vc-filter-group .vc-search>button:not(:last-child){border-radius:0}

@@ -72,3 +72,11 @@
 .ssc-local-heading{margin:4px 0 12px}
 .ssc-form [data-slot=button]{min-height:32px}
 @media(prefers-reduced-motion:reduce){.ssc-thumb{transition:none}}
+
+/* Explicitly colored navigation overview; 3D representation colors are independent. */
+.ssc{--ssc-mapped:#a2d2ff;--ssc-selection:#457b9d;--ssc-window:#806495}
+.ssc .ssc-overview-track{background:#edf2f8}
+.ssc .ssc-mapped-segment,.ssc .ssc-mapped-key{background:var(--ssc-mapped)}
+.ssc .ssc-overview-selection{background:#bde0fe80;border-color:var(--ssc-selection)}
+.ssc .ssc-selected-key{background:#bde0fe;border-color:var(--ssc-selection)}
+.ssc .ssc-window,.ssc .ssc-window-key{border-color:var(--ssc-window);background:#cdb4db26}
