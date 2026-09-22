@@ -93,10 +93,10 @@ body{background:#f3f6f8}
 /* Only external toolbars and filters get new controls; scientific widgets inherit nothing here. */
 #sequence .composite-source-controls,#sequence .viewer-search,#structure>.toolbar,
 #variants .vc-catalog .vc-filter-group{background:#f6f9fb;border-color:#dce6ec;border-radius:9px}
-:is(.site-header,#sequence .viewer-search,#sequence .composite-source-controls,#structure>.toolbar,.vc-filter-group) :is(input:not([type=checkbox]),select){
+:is(#sequence .viewer-search,#sequence .composite-source-controls,#structure>.toolbar,.vc-filter-group) :is(input:not([type=checkbox]),select){
  background:#fff;border:1px solid #c9d8e2;border-radius:7px;min-height:36px;box-shadow:0 1px 2px #15354b04;
 }
-:is(.site-header,#sequence .viewer-search,#sequence .composite-source-controls,#structure>.toolbar,.vc-filter-group) :is(input,select):focus-visible{
+:is(#sequence .viewer-search,#sequence .composite-source-controls,#structure>.toolbar,.vc-filter-group) :is(input,select):focus-visible{
  outline:2px solid #087ba6;outline-offset:2px;
 }
 :is(#sequence .viewer-search,#sequence .composite-source-controls,#structure>.toolbar,.vc-filter-group) button[data-slot=button]{
