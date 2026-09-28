@@ -10,7 +10,11 @@
 
 用户七条页面批注授权重排 Membrane architecture & source evidence：序列区段与残基交互优先，UniProt、各拓扑来源和预测改为精简表格，合并start/end，移除默认可见的mapping/status技术字段。OPM展示PDB、chain、原残基编号、几何与逐模型深度，不增加侧别推断或跨结构汇总。区分来源序列与canonical编号，缺失/不确定记录保留。已完成实现、候选构建及本地8000更新：EGFR悬停/选择/来源切换/表格/深度链路、KRAS空状态、Q12809原结构编号保留及1414/1230桌面检查通过。用户视觉验收继续，未扩大为全站/移动端验收。公网继续暂停，不重建科研数据；见[实施与验证](../../record/01_preview_optimization/20260922_ui_toolkit.md#2026-09-28膜架构与来源证据重排)。
 
-## Medical 风格研究（2026-09-23）
+## 数据库风格微调（2026-09-28）
+
+用户最新要求以gnomAD截图的清晰度为参考，采用新提供的蓝色基调，暖色仅用于内容与序列强调，替代此前五色外层配色。当前保留卡片、图标容器与交互；撤掉黄色/杏色外层背景，白与浅蓝灰阅读面，#001233深色正文/标题、#33415c说明文字、#0353a4链接、#0466c8焦点。概览标签14px/值15px，导航14px，表格正文14px；原科学分类和评分色标不变。已进一步落实来源与变异后果增添色；按最新批注，主表头改浅蓝灰，表达选中改来源浅底/色边，GTEx柳绿/HPA珊瑚橙/FANTOM暗青/CPTAC金黄；consequence突出、转录本次级，重复UniProt位点移入详情，来源按钮去箭头；表达来源图标与来源色同步，catalog省略canonical重复标记（非canonical/未知仍提示），表头简化为Consequence；序列轨道标题装饰点已移除；catalog按主记录15px、后果14px、辅助12px区分层级，并减轻表头/斑马行与行间距。功能/Reactome/细胞定位概览已压缩头尾、列表及反应式留白，取消定位固定最小高度。候选已更新本地8000供视觉反馈，见[本轮记录](../../record/01_preview_optimization/20260922_ui_toolkit.md#2026-09-28数据库风格微调)。
+
+## Medical 风格研究（2026-09-23，外层风格已由上述方案替代）
 
 已按用户要求安装项目级 UI UX Pro Max 技能并核对医疗配色、字体与在线范例。用户随后授权温和实施：只调整标题/导航字体、外围背景卡片与控件；表格内容、序列及结构内部的字体和颜色保持基线。第一版已构建并在本地核对。保留已确认科研组件与交互，候选设计和安装验证见[Medical Portal 审查](../../research/01_preview_optimization/medical_portal_design_review.md)。
 
@@ -110,3 +114,9 @@ Web已建立独立Git仓库，首次提交为开始追踪时的在途快照，�
 - [03已选工具接入](03_ui_toolkit.md)：shadcn/ui、Motion、Radix Colors与Lucide/Tabler，逐项图标定位、调用方式和迁移顺序。
 - [数据选择](../../research/01_preview_optimization/01_data_decisions.md)：D01/D02已关闭，D03补全已取消，D04代表ID/匹配目标已确认，D05～D07已确认，剩余任务授权实施。
 - [审查与试算记录](../../record/01_preview_optimization/20260922_solution_review.md)：本轮实际执行及限制。
+
+## PaxDB接入（2026-09-28）
+
+用户确认纳入PaxDB、字段最简、organ归入互动图及cell单独区分。上游完成全419个人类数据集mapping与curated发布，Web独立web_paxdb导入完成；Expression的Protein measurements提供integrated默认入口与individual studies，组织复用人体图，cell/体液/组分/全身独立，不聚合丰度。内部标识与weights仅后端保留。本地已更新；实施与必要验证见[记录](../../record/01_preview_optimization/20260922_ui_toolkit.md#2026-09-28paxdb后端与页面接入)。
+
+PaxDB最新呈现：默认Protein abundance入口、Tissue/ppm两列与线性横条，连续滚动替代翻页；表达来源卡片左右等高、移除图标彩底和侧边色条。来源整合类型仍保留后端及详情。

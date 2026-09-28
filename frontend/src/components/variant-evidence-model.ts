@@ -106,7 +106,7 @@ export function consequenceCategory(term:string){
   if(term.startsWith('inframe_'))return 'inframe';
   return 'other';
 }
-export const CONSEQUENCE_COLOURS:Record<string,string>={missense:'#ef9a16','stop-gained':'#d94a68','start-lost':'#d97724','stop-lost':'#b55a36',synonymous:'#159b9b',splice:'#7f56d9',frameshift:'#c5488c',inframe:'#3975d8',other:'#667b96'};
+export const CONSEQUENCE_COLOURS:Record<string,string>={'missense':'#f8961e','stop-gained':'#f94144','start-lost':'#f3722c','stop-lost':'#f9844a','synonymous':'#43aa8b','splice':'#577590','frameshift':'#f9c74f','inframe':'#277da1','other':'#4d908e'};
 
 // Presentation mappings only: preserve source labels and never derive a clinical call.
 export function reviewStars(value:unknown):number|null {

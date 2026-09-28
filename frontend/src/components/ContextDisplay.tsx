@@ -15,17 +15,20 @@ export function ContextPages({offset,limit,total,disabled,onChange}:{offset:numb
 
 type Assay={name:string;target:string;description:string;color:string};
 export const ASSAYS:Record<string,Assay>={
+ abundance:{name:'Protein abundance',target:'Protein',description:'PaxDB protein abundance in parts per million.',color:'#277da1'},
  rna:{name:'Bulk RNA-seq',target:'RNA',description:'RNA abundance in tissues, cancer samples and cell lines.',color:'#2775cd'},
  single:{name:'Single-cell RNA-seq',target:'RNA',description:'Single-cell / single-nucleus RNA grouped by cell type or cluster.',color:'#7e58c9'},
  cage:{name:'CAGE',target:'RNA',description:'FANTOM transcription-start tags; tags per million.',color:'#c18323'},
  ms:{name:'Mass spectrometry',target:'Protein',description:'Protein intensity or source-specific protein fold change; includes DVP.',color:'#0a958c'},
  ihc:{name:'Immunohistochemistry',target:'Protein',description:'Antibody staining levels or counts by staining category.',color:'#cd5985'},
 };
-const DATASET_ASSAYS:Record<string,string>={gtex_gene_median_tpm:'rna',rna_tissue_hpa:'rna',rna_cancer_sample:'rna',rna_celline:'rna',rna_cell_line_cancer:'rna',rna_single_cell_type:'single',rna_single_cell_cluster:'single',rna_tissue_fantom:'cage',ms_tissue_sample_data:'ms',cancer_cptac:'ms',dvp_cell_type:'ms',dvp_cell_type_group_data:'ms',normal_ihc_data:'ihc',cancer_data:'ihc'};
+const DATASET_ASSAYS:Record<string,string>={paxdb_integrated:'abundance',paxdb_studies:'abundance',gtex_gene_median_tpm:'rna',rna_tissue_hpa:'rna',rna_cancer_sample:'rna',rna_celline:'rna',rna_cell_line_cancer:'rna',rna_single_cell_type:'single',rna_single_cell_cluster:'single',rna_tissue_fantom:'cage',ms_tissue_sample_data:'ms',cancer_cptac:'ms',dvp_cell_type:'ms',dvp_cell_type_group_data:'ms',normal_ihc_data:'ihc',cancer_data:'ihc'};
 export function assayFor(dataset:string){return ASSAYS[DATASET_ASSAYS[dataset]];}
 export function AssayBadge({dataset}:{dataset:string}){const assay=assayFor(dataset);return assay?<span className="cx-assay-badge" style={{color:assay.color,borderColor:assay.color+'40',background:assay.color+'0c'}}>{assay.target} · {assay.name}</span>:null;}
 // Source collection labels organize navigation; they do not harmonize contexts or units.
 const EXPRESSION_COLLECTIONS:Record<string,{context:string;detail:string;icon:typeof Layers}>={
+ paxdb_integrated:{context:'Protein abundance',detail:'PaxDB integrated human protein abundance in ppm.',icon:Layers},
+ paxdb_studies:{context:'Individual protein studies',detail:'Original human protein abundance datasets, kept separate.',icon:Microscope},
  gtex_gene_median_tpm:{context:'Tissue & cell groups',detail:'Source median RNA expression across tissue, cultured-cell and microdissection groups.',icon:Layers},
  rna_tissue_hpa:{context:'Normal tissues',detail:'HPA gene RNA expression across normal tissues.',icon:Layers},
  rna_tissue_fantom:{context:'Normal tissues · CAGE',detail:'FANTOM transcription-start tag expression across normal tissues.',icon:Layers},
@@ -42,8 +45,8 @@ const EXPRESSION_COLLECTIONS:Record<string,{context:string;detail:string;icon:ty
  dvp_cell_type_group_data:{context:'Cell type groups · DVP',detail:'Deep Visual Proteomics source protein summaries by cell type group.',icon:CircleDot},
 };
 export function expressionCollectionFor(dataset:string){return EXPRESSION_COLLECTIONS[dataset]??{context:label(dataset),detail:'Original source collection.',icon:Database};}
-const EXPRESSION_SOURCE_TONES:Record<string,string>={GTEx:'teal',HPA:'violet',FANTOM:'amber',CPTAC:'pink'};
-const SOURCE_NAMES:Record<string,string>={GTEx:'Genotype-Tissue Expression',HPA:'Human Protein Atlas',FANTOM:'FANTOM5 · via HPA',CPTAC:'Cancer proteomics · via HPA'};
+const EXPRESSION_SOURCE_COLOURS:Record<string,string>={PaxDB:'#277da1',GTEx:'#90be6d',HPA:'#f9844a',FANTOM:'#4d908e',CPTAC:'#f9c74f'};
+const SOURCE_NAMES:Record<string,string>={PaxDB:'Protein abundance · human',GTEx:'Genotype-Tissue Expression',HPA:'Human Protein Atlas',FANTOM:'FANTOM5 · via HPA',CPTAC:'Cancer proteomics · via HPA'};
 interface AssayCollection {dataset?:string;key:string;count:number|null;source?:string;measurement?:string;measurement_unit?:string;filter?:Record<string,string>;}
 export function AssayOverview({datasets,selectedDataset,onChooseDataset}:{datasets:AssayCollection[];selectedDataset:string;onChooseDataset:(dataset:AssayCollection)=>void}){
  const selectedTarget=assayFor(selectedDataset)?.target??'RNA';
@@ -56,7 +59,7 @@ export function AssayOverview({datasets,selectedDataset,onChooseDataset}:{datase
    {value:'Protein',label:<><span className="cx-expression-type-icon" data-kind="protein"><Orbit size={16}/></span>Protein measurements</>,disabled:!datasets.some(collection=>assayFor(collection.dataset??collection.key)?.target==='Protein')},
   ]}/>
   <ContentTransition transitionKey={selectedTarget} className="cx-expression-sources">
-   {sources.map(source=><div className="cx-expression-source" key={source} style={{'--expression-source':`var(--${EXPRESSION_SOURCE_TONES[source]??'slate'}-11)`,'--expression-source-soft':`var(--${EXPRESSION_SOURCE_TONES[source]??'slate'}-3)`} as CSSProperties}>
+   {sources.map(source=><div className="cx-expression-source" key={source} style={{'--expression-source':EXPRESSION_SOURCE_COLOURS[source]??'#577590','--expression-source-soft':`color-mix(in srgb,${EXPRESSION_SOURCE_COLOURS[source]??'#577590'} 16%,white)`} as CSSProperties}>
     <div className="cx-expression-database"><Database size={16}/><div><strong>{source}</strong><small>{SOURCE_NAMES[source]??'Source database'}</small></div></div>
     <div className="cx-expression-collections" role="group" aria-label={`${source} ${selectedTarget} contexts`}>
      {selectedCollections.filter(collection=>(collection.source??collection.filter?.source??'Source')===source).map(collection=>{

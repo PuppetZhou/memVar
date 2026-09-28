@@ -84,7 +84,7 @@ def setup_reader():
             conn.execute(sql.SQL('ALTER ROLE {} LOGIN PASSWORD {}').format(sql.Identifier(role), sql.Literal(password)))
         conn.execute(sql.SQL('ALTER ROLE {} SET default_transaction_read_only=on').format(sql.Identifier(role)))
         conn.execute(sql.SQL('GRANT CONNECT ON DATABASE {} TO {}').format(sql.Identifier(config['database']), sql.Identifier(role)))
-        for schema in ['web', 'web_variant', 'web_variant_sequence', 'web_clinvar_snv', 'web_context', 'web_disease']:
+        for schema in ['web', 'web_variant', 'web_variant_sequence', 'web_clinvar_snv', 'web_context', 'web_disease', 'web_paxdb']:
             if not conn.execute('SELECT 1 FROM pg_namespace WHERE nspname=%s', (schema,)).fetchone():
                 continue
             conn.execute(sql.SQL('GRANT USAGE ON SCHEMA {} TO {}').format(sql.Identifier(schema), sql.Identifier(role)))

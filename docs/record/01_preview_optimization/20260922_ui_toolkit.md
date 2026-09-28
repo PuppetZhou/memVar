@@ -430,3 +430,84 @@ OPM序列接口增加每条原结构观察的depth、basis、model、PDB残基�
 本批仅前端展示调整，不改API、数据库或科研规则。TypeScript及项目Vite 6.4.3构建通过（8458模块）；使用既有本机Playwright降级，对EGFR检查Reactome无TAS但链接可用、GO的IMP/IDA实际前景/背景色不同、筛选组透明且边框0、ClinVar疾病与RCV/SCV分区、COSMIC六条记录与六个COSV链接及每行原count=2、COSMIC来源筛选/R2Q搜索、Escape返回和1230宽度无根/弹窗横向溢出。1414宽度截图已目检；既有Mol* ReadPixels性能warning保留，不扩大为全站/移动端验收。
 
 候选通过后复制资源并原子替换本地8000入口，保留旧assets；最终`index-C7YBMfBc.js`、`index-k79CoIgt.css`。本批无需重启后端；8000实际发布页再次通过ClinVar分区/COSMIC六行及计数/来源筛选/搜索检查，API健康正常，控制台0应用错误。截图及可重用检查脚本保存在`Web/output/playwright/evidence-{reactome,go,filters,clinvar,cosmic}-20260928.png`及`evidence_*_check.js`；用户视觉验收继续，公网仍暂停。
+
+
+## 2026-09-28数据库风格微调
+
+以GitHub main `fcb8ca9`为调整前基线。用户确认现有素材和布局，仅授权配色、字体及表面样式微调；不做组件重排。实际浏览UniProt P00533及gnomAD EGFR详情，参考白/灰阅读底、清晰深色文字及蓝色操作提示，保留memVar品牌与科学配色。外层浅紫/浅粉改为中性灰白，蓝色选中态及键盘焦点；标题改为Inter 600，减少负字距；外层卡片/弹窗圆角5px、控件4px，取消常驻卡片阴影和来源入口悬停上浮。来源入口按已有compact-accent显示轻浅底色。膜区段、OPM、GO、变异预测、结构与序列色标不变。维护于`refined-surfaces.css`及`interaction-polish.css`，未改组件结构、API或数据。
+
+验证：TypeScript/Vite构建通过；应用内Browser无可用实例，按既有流程使用本机Playwright。EGFR概览、膜详情打开/Escape、GO的IMP/IDA颜色差异、变异筛选区截图检查；1414与1230桌面无新增根/弹窗横向溢出，弹窗稳定态opacity=1、白色标题栏、5px圆角。截图在`output/playwright/style-{overview,membrane,go,variants}-20260928.png`，参考截图为`reference-{uniprot,gnomad}.png`。未作全蛋白/移动端验收。
+
+候选资源更新至本地8000，保留旧assets并原子替换index；当前`index-Dua5DTtI.js`/`index-DTKlfwxH.css`。未恢复公网或提交本轮风格变更；等待用户视觉反馈。此前Medical方案作为历史依据保留，当前外层风格以上述授权为准。
+
+
+### 同日追加：概览底板与变异标签去框
+
+用户对第一版具体批注：变异标签配色/框线及概览卡片仍过度装饰。只调整`refined-surfaces.css`：连续白色阅读底、外层模块保留分组横线；身份字段、图标底座、膜来源入口取消背景块；变异表格中的来源按钮、consequence、ClinVar、预测标签去底色/外框，氨基酸取消底块。原语义文字色、连续评分色、星级和图表色标保持，不改变字段、排布、数据或点击处理器。表头/斑马纹改为中性灰，保留行边界。
+
+TypeScript/Vite通过；本机Playwright目检1414桌面截图，1230根页面无横向溢出；实查身份边框0、来源/ClinVar标签边框0且背景透明，ClinVar绿色文字仍保留，来源详情打开和Escape通过。截图`output/playwright/style-flat-{overview,variants}-20260928.png`。更新本地8000，未提交本轮样式、未恢复公网，等待视觉反馈；全站及移动端未作完整验收。
+
+
+### 同日追加：用户色板与适度外框
+
+用户提供两组颜色并要求Basic information及Membrane features恢复适当边框。当前外层色板采用#577590混白4%为页面底、混白34%为边框，#0081a7用于焦点及混白10%的选中态，#00afb9混白4%用于工具区，#fdfcdc混白35%用于膜标题区，#fed9b7混白20%用于膜来源hover。两组cerulean独立命名，未覆盖科学色标。两个概览区域恢复1px外框/4px圆角，无阴影；字段及变异标签保持去框状态。高饱和红橙未铺成大面积背景。
+
+TypeScript/Vite构建通过。Playwright实查两个外框1px/4px，变异标签边框仍为0；1414截图目检、1230无根横向溢出。截图`output/playwright/style-user-palette-20260928.png`。候选已更新本地8000，未推送Git或恢复公网。
+
+
+### 同日纠正：统一第一套色板并恢复UI组件外观
+
+用户否定混用色板及孤立黄色标题，明确要求纠正。采用第一套五色：#0081a7焦点/操作与调浅边界，#00afb9工具底/hover，#fdfcdc混白28%为全页阅读底、22%为身份字段底，#fed9b7混白22%为来源入口、40%为hover，#f07167用于悬停/键盘焦点的箭头点缀。移除第二套蓝灰/蓝色变量。恢复8px外层卡片、6px图标容器和来源入口、原interaction-polish交互文件（包含reduced-motion），膜标题恢复白色。变异表格文字标签无框、科学色标与组件结构不改。
+
+TypeScript/Vite通过，1414截图目检；实查膜标题白色、概览外框1px、变异标签0边框、来源入口杏色；1230无根横向溢出，膜详情打开/Escape通过。截图`output/playwright/style-palette-corrected-20260928.png`。已更新本地8000，未提交本轮样式或恢复公网。此前同日试版只作历史依据，当前方案以此条为准。
+
+
+### 同日更新：蓝色阅读基调与文字对比度
+
+根据用户新色板及gnomAD截图，替代五色页面装饰。撤掉奶黄/杏色底与珊瑚悬停箭头，蓝白/浅灰背景、深色阅读文字。#001233正文与标题、#33415c说明、#0353a4链接、#0466c8焦点；卡片边框/图标容器/交互保留。概览标签14px、值15px，导航14px，说明与表格正文适度加大；未改变科学色标、数据或组件布局。
+
+TypeScript/Vite通过；1414概览及变异表格截图目检、1230无根横向溢出；实查标签为#33415c/14px、评分独立色仍保留。截图`output/playwright/style-blue-{reading,table}-20260928.png`。更新本地8000供用户比较，未提交Git或恢复公网，完整移动端未验收。
+
+
+### 同日更新：四处卡片增添色与深蓝层级
+
+按用户四条批注落实具体模块，而非只调整外层字体：表达入口GTEx海草绿、HPA蓝、FANTOM黄、CPTAC珊瑚橙，来源浅底/色边，选中卡片#002855白字；疾病卡片改为白底彩色顶线、深蓝大计数、按来源hover与选中反馈，ClinGen蓝/GenCC绿/HPO暗青/OMIM橙/ClinVar红/PTMD2珊瑚橙。ContextPanels来源色同步使用相同值。变异分类卡片深蓝顶线，后果色使用用户橙/红/绿/蓝灰等新色，文字取同色系深色提高对比；分类映射/计数不变。主变异表深蓝表头白字，浅蓝灰斑马行；预测数值、ClinVar科学分类和结构置信色标保持。
+
+实现：`ContextDisplay.tsx`、`ContextPanels.tsx`、`variant-evidence-model.ts`及`refined-surfaces.css`。TypeScript/Vite通过，1414四处截图目检；表达HPA选择等待异步状态后正确、ClinGen来源切换后显示2条原断言记录（内嵌表格，不是弹窗）、1230根横向溢出检查通过。表头及选中卡片实际为#002855白字；原focus-visible规则未修改，本批未完整验收键盘导航。截图`output/playwright/accent-{expression,diseases,categories,table}-20260928.png`。更新本地8000；未提交Git、未恢复公网，未扩大到全站/移动端验收。
+
+
+### 同日更新：浅表头与表达来源色、变异行信息精简
+
+用户认为整块深蓝过重，明确要求表格/表达选中变浅。表头改#e9eff5深色文字；表达选中使用来源16%浅底、色边和深色字，来源配色改GTEx #90be6d、HPA #f9844a、FANTOM #4d908e、CPTAC #f9c74f，并同步来源色映射。consequence 14px/600突出，转录本12px灰色保留可点击；来源按钮删除箭头。删除表格重复的“UniProt position”行，以选中记录原canonical_positions传入详情，在Variant与Representative transcripts页展示；已有Position列不变，无位点时不新增断言。不更改数据或API。
+
+TypeScript/Vite通过。Playwright验证主表无vc-mapped或来源SVG；7:55019282记录打开转录本详情可读“UniProt canonical position · P00533 / 2”，Escape正常；1414表格/表达截图目检、1230无根横向溢出。截图`output/playwright/soft-{variant-table,expression}-20260928.png`。候选更新本地8000，Git未提交，公网未恢复。
+
+### 同日更新：序列轨道标签与catalog文字层级
+
+删除SequenceViewer alignedRow标题旁的装饰点，8条轨道保留数据图形及图例。catalog以用户gnomAD截图为排版参考：变异标识15px/500蓝色、consequence 14px/600、辅助转录本与评分说明12px；表头14px、浅灰蓝底，斑马行减淡、单元格上下8px，预测数字15px。字段、来源交互和科学色标不变。TypeScript/Vite通过；EGFR桌面检查确认装饰点0、轨道8、详情可打开并Escape关闭，1230宽无页面横向溢出。截图output/playwright/type-{variant-catalog,sequence-labels}-20260928.png。本地8000更新，未提交Git或恢复公网；全站及手机未作本轮验收。
+
+### 同日更新：来源图标一致性与canonical标记精简
+
+表达来源数据库图标、场景图标与箭头/选中勾统一采用来源色的深色调，图标底色使用来源浅底。catalog仅省略canonical行的重复Ensembl canonical，保留非canonical/未知提示和详情转录本信息，表头改Consequence。TypeScript/Vite通过；1176宽EGFR检查canonical标签为0、GTEx/HPA/FANTOM图标随来源色变化、无根横向溢出。截图output/playwright/source-icons-20260928.png。本地8000更新；未提交Git或发布公网。
+
+### 同日更新：功能与细胞定位概览高度
+
+仅对overview功能/Reactome/定位卡片收紧头尾和正文间距、功能标签间距、反应式padding，取消细胞定位布局390px最小高度及卡片拉伸，定位列表最小行高61改44px，保留全部标签与详情入口。桌面功能导航155px，为反应式让出宽度。TypeScript/Vite通过；1414与1176×827截图检查三张卡片可在滚动至本区后完整呈现，1176无根横向溢出。截图output/playwright/compact-overview-1176-20260928.png。本地8000已更新，未提交Git或发布公网。
+
+## 2026-09-28：PaxDB后端与页面接入
+
+用户确认organ归纳进入现有人体互动图，cell独立；默认字段通过，gene_name、string_external_id、id、filename、weights仅后端保留。上游配置与来源保持mapping/发布见科研工作区modules/expression/docs/paxdb_mapping_review.md；419成员均H.sapiens且全部2,452,008源行均9606.，映射目标6,999蛋白均human。人类来源包含细胞系等，不宣称全部正常组织。
+
+配置config/paxdb.yaml引用20260928_paxdb_01。build_paxdb.py投影为data/tables/paxdb，import_paxdb.py独立事务导入web_paxdb（419 datasets、826,088 observations、6,999 mapping），主键/外键与计数通过；当前web.protein无缺失关联，API reader仅获读权限。源码保留全部后端信息；无丰度合并、13条重复源ID按来源行号保留。
+
+新增/api/proteins/{accession}/expression/paxdb及summary，原值分页按organ/context_type过滤、参数约束。页面Protein measurements→PaxDB提供Integrated protein abundance与Individual protein studies；默认三列Context/Abundance(ppm)/Dataset。组织复用QTL人体导航组件（对PaxDB使用上游显式body_region）；cells、fluids、cell fractions、whole organism独立，内部字段不进入公开详情。
+
+验证：前端构建通过；MEMVAR_TEST_LIVE=1 python -m unittest Web.tests.test_paxdb_live -v共3测试通过（分区计数、人类/公开字段、肾脏原值、分页与无效参数）。EGFR 48 integrated/254 studies，其中研究cell64；Playwright测试图→肾脏3.6ppm→详情、Cells、研究切换、空记录状态、1176无根横向溢出。截图output/playwright/paxdb-{map,cells}-20260928.png。只验收本轮桌面范围；本地8000更新，未Git提交/公网发布。
+
+### 同日更新：表达入口对齐与PaxDB连续丰度表
+
+表达来源块与右侧场景区等高，去除侧边色条、彩色图标底块，使用中性图标与浅蓝选中。PaxDB默认入口简为Protein abundance；默认表仅Tissue/Context与Abundance(ppm)，不重复展示Integrated或Dataset。单项研究名放组织名下辅助区，类型仍保留详情。使用useInfiniteQuery滚动加载替代Previous/Next，后端仍有界分页；线性蓝色横条按当前筛选完整结果的最大值缩放，原始ppm不改，加载后续记录不改变比例。构建及3项live API测试通过（新增跨页maximum一致检查）；浏览器实测37默认组织记录全部呈现、研究167行滚动加载完成且无Next按钮、来源左右高度一致、详情可开关。截图expression-neutral-20260928.png与paxdb-bars-20260928.png。更新本地8000，未提交Git或发布公网。
+
+### 同日更新：配色恢复与GitHub提交
+
+按用户要求撤回柔和附加色系试用，恢复此前红、橙、绿、青与蓝色的来源和内容强调配色；保留PaxDB接入、连续丰度表、中性图标、入口对齐及此前文字层级调整。恢复后重新构建本地预览，并将当前网站源码、配置及必要文档提交GitHub；数据、凭据与运行产物不上传。

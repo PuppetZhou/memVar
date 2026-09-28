@@ -238,3 +238,6 @@ router.include_router(ptmd_router)
 
 from .membrane_overview import router as membrane_overview_router
 router.include_router(membrane_overview_router)
+
+from .paxdb import router as paxdb_router
+router.include_router(paxdb_router)
