@@ -389,3 +389,44 @@ Functional context及Rhea反应式共用ReactionEquation：浅底、数学衬线
 频率依据核查：[ClinGen Variant Curation SOP](https://www.clinicalgenome.org/docs/variant-curation-sop/)及其[2021 SOP](https://clinicalgenome.org/site/assets/files/5933/variant_curation_sop_2_0_jan_2021.pdf)。一般BA1需要大洲人群AF>0.05、至少2000个观察等位基因及基因/变异例外审查；BS1/PM2依赖具体疾病/基因规则。不能将overall AF、零频率或缺失直接转换为良性/致病证据。本轮仅把原连续AF量级色阶改为低饱和灰蓝，并在频率详情提供上述依据；没有新建ACMG判定或正式科学阈值。
 
 验证：TypeScript/Vite通过。独立Playwright沿用已授权Browser无实例降级，在P00533的1470/1230桌面检查页面、截图与横向溢出；实际滚轮50→100行，start_lost筛选6行且回顶、noncanonical空结果及返回、末尾提示、频率说明展开均通过。模拟续载请求失败（预期产生网络错误）后仍保留50行，恢复请求并重试至100行；正常访问无应用错误，仅既有Mol* ReadPixels性能提示。Q12809页面和膜详情可打开。截图/tmp/memvar-muted-{overview,disease,variants,reaction}.png。未做全量4096行性能或全移动端验收。最终index-DNPCApWG.js/index-CXugCG_H.css同步本地8000，ngrok保持关闭；README及计划纠正当前公网状态。
+
+
+## 2026-09-27暂停公网与本地开发衔接
+
+用户要求跟进现状、暂停发布并继续展示细节优化。实查ngrok仍转发本机8000，与此前“已关闭”记录不符；已对该网站ngrok进程发送TERM，复核无ngrok进程、4040无监听。现有memvar-web-preview用户服务保持active/running，8000 API健康检查返回PostgreSQL只读ok。
+
+启动Vite时遇到系统文件监听数上限（ENOSPC），改为仅在开发服务使用CHOKIDAR_USEPOLLING=true、CHOKIDAR_INTERVAL=500，不调整全局系统参数。用户级临时服务memvar-web-dev.service从Web/frontend运行npm run dev，仅监听127.0.0.1:5173；页面HTTP 200，经5173代理的/api/health返回PostgreSQL只读ok。服务脱离工具终端生命周期，但未配置开机启动。可用systemctl --user stop memvar-web-dev停止，journalctl --user -u memvar-web-dev查看日志；手动终端启动可在Web/frontend使用CHOKIDAR_USEPOLLING=true CHOKIDAR_INTERVAL=500 npm run dev。
+
+日常改动在5173热更新查看，8000保留现有构建版；完成定向验证后再更新构建产物，公网保持暂停。本轮只核对运行入口与API健康，未做浏览器交互验收，未修改页面、数据库或科学规则。
+
+
+## 2026-09-28膜架构与来源证据重排
+
+根据用户七条页面批注重做 Membrane architecture & source evidence。默认入口改为Sequence & OPM：先展示UniProt全长区段及原始胞内/胞外注释，再展示按PDB/chain/model切换的OPM深度图和残基窗口；区段、残基和深度点支持悬停/键盘聚焦读数，点选残基保留其结构证据表。OPM表展示canonical residue、PDB/chain、PDB residue、geometry及depth，替代小字号嵌套卡片。UniProt合并start/end，直接列类型、区间、注释和证据；Topology保留数据集/来源条目选择、来源序列轨道和类型/区间/role表，方法/文献等有内容时直接显示；DeepTMHMM2只保留膜类型、信号肽及预测区段。mapping、coordinate status、EXACT等技术字段不再默认展示，API及上游数据保留。
+
+OPM序列接口增加每条原结构观察的depth、basis、model、PDB残基及插入码，未聚合不同结构/模型值。深度沿用现行几何规则：正值在膜核心内、负值在核心外，不解释为胞内/胞外朝向；现有来源侧别只在相应拓扑轨道呈现，不引入新朝向推断。来源序列轨道使用来源编号；无法投影的OPM记录另以PDB编号表保留。缺深度不画成零，未知/不确定位点保留文本而不强行投影。实现：`frontend/src/components/MembraneOverview.tsx`、`MembraneTopology.tsx`、`MembraneSequenceViewer.tsx`、`MembraneTrack.tsx`及`src/api/membrane_overview.py`。
+
+验证：
+
+- TypeScript与项目安装的Vite 6.4.3候选构建通过，8458模块。6项既有拓扑检查及新增1项OPM模型/插入码/缺失与零回归通过。
+- EGFR序列接口425条结构观察，与原details接口逐条核对position/PDB/chain/model/原编号/depth/basis，完全一致；其中44条缺signed depth，界面保留其结构并明确缺失。未做全数据集扫描。
+- 应用内Browser返回无可用实例，发现列表为空；按既有降级采用本机Playwright。EGFR区段和残基悬停、点选、深度点键盘Enter、OPM链切换、缺深度结构、UniProt无展开表、HTP方法Hmmtop六行、TOPDB原PMID、预测区段、结构分页/空来源及Escape通过。1414×827及1230×837无新增根/弹窗横向溢出。
+- KRAS/P01116无UniProt膜区段及无OPM状态正常；Q12809的9组原PDB编号记录仍可见。不同编号未混入canonical轨道。控制台无应用错误。本批未验收全部蛋白、完整移动端或3D结构朝向。
+- 候选通过后重启本地8000 API，复制新资源并最后原子替换index；旧assets保留。最终`index-Bfr6sQMG.js`、`index-Ct0rDk31.css`；8000健康检查通过，实际发布页再次检查深度hover读数/高亮、残基表、拓扑与预测通过。ngrok无进程；未开放公网，未重导入数据库。
+
+截图和浏览器检查脚本保存在`Web/output/playwright/`，包括`membrane-published-20260928.png`、`membrane-topology-20260928.png`、`membrane-residue-20260928.png`、`membrane-empty-20260928.png`、`membrane-pdb-numbering-20260928.png`及本批`membrane_*_check.js`。用户视觉验收继续；先前全站55项与移动端未完成状态不因本次局部交付自动关闭。
+
+
+## 2026-09-28证据标签筛选区与来源记录五条批注
+
+按用户五条页面批注完成展示精简：
+
+- Reactome详情移除TAS标签，保留通路名称/ID、主题、来源及官方图链接；API evidence_code不变。
+- GO标签从按大类统一颜色改为按原始证据代码配色，例如IDA青绿、IMP蓝、IPI紫；代码、全称和说明仍保留。配色不建立科学置信等级或改变来源分类，维护于`OverviewEvidence.tsx`。
+- Variant筛选保留两组语义标题与原输入控件，外观改为单一浅灰背景、去除组边框及分隔线，维护于`refined-surfaces.css`。
+- ClinVar将Disease / condition和ClinVar records分栏；MedGen/MONDO/MeSH/Orphanet等ID与RCV/SCV各归其区，去掉链接卡片背景/框线和重复数量，改为紧凑标签行。RCV说明移入标签提示，SCV保留Germline/Somatic impact/Oncogenicity类别。原条件列表与ID列表仍不推断一一配对，原始字段入口保留。COSMIC说明仅在COSMIC页显示。
+- COSMIC改为五列表：ID（含次级legacy ID）、Transcript、CDS、AA、Sample count；删除Gene、重复HGVSc/HGVSp、SO_TERM和每行独立Open source入口，ID本身可跳转。每条来源记录保留，不跨转录本去重或累加sample count；计数继续指原GENOME_SCREEN_SAMPLE_COUNT。
+
+本批仅前端展示调整，不改API、数据库或科研规则。TypeScript及项目Vite 6.4.3构建通过（8458模块）；使用既有本机Playwright降级，对EGFR检查Reactome无TAS但链接可用、GO的IMP/IDA实际前景/背景色不同、筛选组透明且边框0、ClinVar疾病与RCV/SCV分区、COSMIC六条记录与六个COSV链接及每行原count=2、COSMIC来源筛选/R2Q搜索、Escape返回和1230宽度无根/弹窗横向溢出。1414宽度截图已目检；既有Mol* ReadPixels性能warning保留，不扩大为全站/移动端验收。
+
+候选通过后复制资源并原子替换本地8000入口，保留旧assets；最终`index-C7YBMfBc.js`、`index-k79CoIgt.css`。本批无需重启后端；8000实际发布页再次通过ClinVar分区/COSMIC六行及计数/来源筛选/搜索检查，API健康正常，控制台0应用错误。截图及可重用检查脚本保存在`Web/output/playwright/evidence-{reactome,go,filters,clinvar,cosmic}-20260928.png`及`evidence_*_check.js`；用户视觉验收继续，公网仍暂停。

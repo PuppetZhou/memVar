@@ -132,7 +132,8 @@ def membrane_sequence(accession: str):
     params = {'sequence_id': summary['sequence_id'], 'accession': summary['accession']}
     sequence = one('SELECT sequence,length FROM web.protein_sequence WHERE sequence_id=:sequence_id', params)
     rows = query('''SELECT target_position position,target_residue residue,pdb_id,
-        local_chain_id chain_id,model_id,pdb_resseq source_position,insertion_code,geometry_type,mapping_method
+        local_chain_id chain_id,model_id,pdb_resseq source_position,insertion_code,geometry_type,mapping_method,
+        site_coordinate_basis,"site_signed_depth_A",pdb_residue
         FROM web.membrane_opm_observation WHERE sequence_id=:sequence_id
         AND mapping_status='mapped' ORDER BY target_position,pdb_id,local_chain_id,model_id''', params)
     positions = {}
@@ -144,7 +145,14 @@ def membrane_sequence(accession: str):
         key = (row['pdb_id'], row['chain_id'])
         structure = item['structures'].setdefault(key, {'pdb_id': row['pdb_id'], 'chain_id': row['chain_id'],
                                                         'models': set(), 'geometry_types': set(),
-                                                        'mapping_methods': set(), 'source_positions': set()})
+                                                        'mapping_methods': set(), 'source_positions': set(),
+                                                        'observations': []})
+        # Retain each model's value and coordinate basis; never average structures or chain copies.
+        structure['observations'].append({
+            'model': row['model_id'], 'source_position': f"{row['source_position']}{row['insertion_code'] or ''}",
+            'source_residue': row['pdb_residue'], 'geometry': row['geometry_type'],
+            'depth': row['site_signed_depth_A'], 'basis': row['site_coordinate_basis'],
+        })
         if row['model_id'] is not None:
             structure['models'].add(row['model_id'])
         if row['geometry_type']:

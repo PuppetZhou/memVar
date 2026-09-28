@@ -11,7 +11,7 @@ import { api, display, label, number, params, type RecordData } from '../api';
 import { DataTable, DetailFields, Disclosure, Fields, LinkOut, Modal, Panel, SelectFilter, Status } from './ui';
 import './variant-v2.css';
 import { HelpButton } from './HelpGuide';
-import { DBNSFP_COLUMNS, record, records, missing, clinicalTone, clinicalLabel, consequenceCategory, CONSEQUENCE_COLOURS, type Predictor } from './variant-evidence-model';
+import { DBNSFP_COLUMNS, record, records, sourceFieldMap, missing, clinicalTone, clinicalLabel, consequenceCategory, CONSEQUENCE_COLOURS, type Predictor } from './variant-evidence-model';
 import { ClinicalBadge, PredictionValue, ReviewStars, ConsequencePills, FrequencyValue, PopulationDetail, ClinvarEvidence, PredictionDashboard, TranscriptEvidence, StabilityEvidence } from './VariantEvidencePanels';
 import './variant-evidence.css';
 import { PREDICTOR_GUIDES, predictorProject } from './predictor-guides';
@@ -81,6 +81,8 @@ function PredictorIntroduction({options,selected,onOpen,onAlpha,summary}:{option
 function SourceDetails({source,data}:{source:string;data:RecordData}){
   const rows=records(data.sources).filter(r=>r.source===source);
   if(source==='ClinVar')return <ClinvarEvidence rows={rows} hasMore={data.sources_has_more===true}/>;
+  if(source==='COSMIC')return <section className="vc-cosmic-evidence"><div className="vc-cosmic-heading"><h3>COSMIC records</h3><span>{rows.length} source records</span></div>{rows.length?<div className="table-wrap"><table className="data-table"><thead><tr><th>ID</th><th>Transcript</th><th>CDS</th><th>AA</th><th title="GENOME_SCREEN_SAMPLE_COUNT · original source count">Sample count</th></tr></thead><tbody>{rows.map((row,i)=>{const f=sourceFieldMap(row);return <tr key={`${row.source_id}:${i}`}><td><LinkOut href={row.url}>{display(row.source_id)}</LinkOut>{!missing(f.LEGACY_ID)&&<small title="Legacy COSMIC ID">{display(f.LEGACY_ID)}</small>}</td><td>{display(f.TRANSCRIPT)}</td><td>{display(f.CDS)}</td><td>{display(f.AA)}</td><td>{missing(f.GENOME_SCREEN_SAMPLE_COUNT)?'—':display(f.GENOME_SCREEN_SAMPLE_COUNT)}</td></tr>;})}</tbody></table></div>:<p className="empty-state">No COSMIC source annotation is available for this variant.</p>}<p className="vc-note">Sample count is the original genome-screen count. Samples may overlap across transcript records.</p>{data.sources_has_more===true&&<p className="vc-note">First 100 source records shown; follow the ID links for additional records.</p>}</section>;
+
   return <><p className="vc-note">Original {source} records for this genomic variant. Different submissions and classifications are retained.</p>{rows.length?rows.map((row,i)=><article className="vc-source-record" key={`${row.source_id}:${i}`}><header><span className={`vc-source vc-source-${source.toLowerCase()}`}>{source}</span><strong>{row.source_id&&!['.',''].includes(String(row.source_id))?display(row.source_id):`Source record ${i+1}`}</strong><LinkOut href={row.url}>Open source</LinkOut></header><DetailFields items={row.fields}/></article>):<p className="empty-state">No {source} source annotation is available for this variant.</p>}{data.sources_has_more===true&&<p className="vc-note">The first 100 source records are available here; use the source links for additional submissions.</p>}</>;
 }
 function VariantDetails({accession,selection,onClose,population}:{accession:string;selection:Selection;onClose:()=>void;population:string}){
@@ -91,7 +93,7 @@ function VariantDetails({accession,selection,onClose,population}:{accession:stri
     {tab==='overview'&&<><Fields items={[{label:'Genomic variant',value:variant.variant_id},{label:'GRCh38 position',value:`${variant.chromosome}:${variant.position}`},{label:'Genomic alleles',value:`${variant.ref} → ${variant.alt}`} ]}/><div className="vc-detail-entrypoints"><button onClick={()=>setTab('ClinVar')}><ClinicalIcon size={22}/><strong>Clinical source records</strong><span>Classification, review and submitted conditions</span></button><button onClick={()=>setTab('gnomAD')}><FrequencyIcon size={22}/><strong>Allele frequencies</strong><span>Original AF, allele counts and ancestry groups</span></button><button onClick={()=>setTab('predictions')}><PredictionIcon size={22}/><strong>Computational predictions</strong><span>All available tools, grouped by method</span></button></div><TranscriptEvidence consequences={consequences} compact/><HelpButton topic="variants" label="Coordinates & transcripts"/></>}
     {(tab==='ClinVar'||tab==='COSMIC')&&<>
       <ModeToggleGroup className="ve-clinical-sources" aria-label="Clinical evidence sources" value={tab} onValueChange={setTab} options={(['ClinVar','COSMIC'] as const).map(source=>({value:source,label:source}))}/>
-      <p className="ve-caption">Original source evidence. COSMIC records describe somatic observations and do not by themselves establish clinical pathogenicity.</p>
+      {tab==='COSMIC'&&<p className="ve-caption">Original source evidence. COSMIC records describe somatic observations and do not by themselves establish clinical pathogenicity.</p>}
       <SourceDetails source={tab} data={d}/>
     </>}
     {tab==='gnomAD'&&<><PopulationDetail frequencies={record(d.frequencies)} selectedPopulation={population}/><Disclosure title="gnomAD source annotations"><SourceDetails source="gnomAD" data={d}/></Disclosure></>}

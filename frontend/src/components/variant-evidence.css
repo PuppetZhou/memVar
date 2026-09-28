@@ -69,3 +69,17 @@
 .ve-clinvar .ve-id-group{--id-color:var(--slate-11);--id-bg:var(--slate-2);border-color:var(--slate-6)}
 .ve-clinvar .ve-id-chip{border:0;padding:2px 0}
 .ve-clinvar .ve-id-chip a{color:var(--blue-11)}
+
+/* Condition identifiers and ClinVar submissions have separate, compact reading columns. */
+.ve-condition-record-layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:22px;margin:18px 0}
+.ve-condition-record-layout :is(.ve-conditions,.ve-submissions){min-width:0;padding:0}
+.ve-condition-record-layout h3{font-size:15px;margin:0 0 12px;color:#304b64}
+.ve-condition-record-layout .ve-id-grid{display:flex;flex-direction:column;gap:9px;margin:10px 0 0}
+.ve-clinvar .ve-condition-record-layout .ve-id-group{display:grid;grid-template-columns:88px minmax(0,1fr);gap:10px;border:0;border-radius:0;background:transparent;overflow:visible}
+.ve-condition-record-layout .ve-id-group>header{display:block;padding:2px 0;background:transparent;color:#536779}
+.ve-condition-record-layout .ve-id-group>header strong{font-size:13px}
+.ve-condition-record-layout .ve-id-group>header span{display:block;font-size:11px;line-height:1.4;margin-top:3px;color:#6d7d8a}
+.ve-condition-record-layout .ve-id-group>div{padding:0;align-content:start;gap:5px 12px}
+.ve-condition-record-layout .ve-id-chip{padding:2px 0;border:0;border-radius:0;font-size:13px;line-height:1.5}
+.ve-condition-record-layout .ve-condition-names{margin:0 0 12px}
+@media(max-width:700px){.ve-condition-record-layout{grid-template-columns:1fr;gap:20px}.ve-clinvar .ve-condition-record-layout .ve-id-group{grid-template-columns:80px minmax(0,1fr)}}

@@ -8,6 +8,10 @@
 
 公网 ngrok 已由用户关闭，当前继续本地优化。维护环境访问 `http://localhost:8000/`；历史公网地址不代表当前在线。
 
+2026-09-28：膜证据面板已改为序列区段、OPM逐残基深度与精简来源表格，并更新本地8000；[交付与验收范围](docs/record/01_preview_optimization/20260922_ui_toolkit.md#2026-09-28膜架构与来源证据重排)。
+
+同日追加完成Reactome/GO证据标签、变异筛选区、ClinVar链接分区及COSMIC表格精简，见[五条批注交付](docs/record/01_preview_optimization/20260922_ui_toolkit.md#2026-09-28证据标签筛选区与来源记录五条批注)。
+
 ## 功能
 
 - 蛋白检索与膜分类浏览，基本身份、膜特征、功能、细胞定位、GO 与 Reactome 通路。

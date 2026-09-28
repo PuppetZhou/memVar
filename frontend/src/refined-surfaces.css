@@ -106,7 +106,9 @@ body{background:var(--portal-canvas)}
 #overview #membrane-association .membrane-details-button{color:var(--portal-heading);font-weight:650}
 /* Only external toolbars and filters get new controls; scientific widgets inherit nothing here. */
 #sequence .composite-source-controls,#sequence .viewer-search,#structure>.toolbar,
-#variants .vc-catalog .vc-filter-group{background:var(--portal-tint);border-color:var(--portal-line);border-radius:9px}
+#variants .vc-catalog .vc-filters{background:#f5f7f8;padding:14px 16px;border:0;border-radius:9px;gap:18px}
+#variants .vc-catalog .vc-filter-group{background:transparent;border:0;border-radius:0;padding:0}
+#variants .vc-catalog .vc-filter-group legend{padding:0;margin-bottom:9px}
 :is(#sequence .viewer-search,#sequence .composite-source-controls,#structure>.toolbar,.vc-filter-group) :is(input:not([type=checkbox]),select){
  background:#fff;border:1px solid var(--portal-line);border-radius:7px;min-height:36px;box-shadow:0 1px 2px #15354b04;
 }
