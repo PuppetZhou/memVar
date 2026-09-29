@@ -169,6 +169,8 @@ def variant_detail(variant_id: str, accession: str = ""):
                         "homozygotes":frequency.get("nhomalt_exomes_grpmax"),
                         "selected_ancestry_group":frequency.get("grpmax_exomes")})
     source_rows = query("SELECT source,native_id,alt_index,details_json FROM web_variant.variant_source_detail WHERE variant_id=:id AND source IN ('ClinVar','COSMIC','gnomAD') ORDER BY source,record_id LIMIT 101", params)
+    from .disease_classification import source_classifications, record_classification
+    classification = source_classifications(variant_id, source_rows[:100]) if any(r["source"] == "ClinVar" for r in source_rows[:100]) else None
     sources = []
     for row in source_rows[:100]:
         data = row["details_json"] or {}
@@ -183,6 +185,8 @@ def variant_detail(variant_id: str, accession: str = ""):
             selected = fields(data, ["FILTER", "QUAL"])
             url = "https://gnomad.broadinstitute.org/variant/" + "-".join(variant_id.split(":")[1:]) + "?dataset=gnomad_r4"
         sources.append({"source": row["source"], "source_id": row["native_id"], "alt_index": row["alt_index"], "url": url, "fields": selected})
+        if row["source"] == "ClinVar":
+            sources[-1]["disease_classification"] = record_classification(data.get("PhenotypeIDS"), classification)
     ddg = query('''SELECT d.annotation_id,d.gene_id,d.accession,d.sequence_id,d.position,d.ref_aa,d.alt_aa,d.ddg_pred,d.model,d.checkpoint
         FROM web_variant.variant_ddg_detail d WHERE d.variant_id=:id''' + (" AND d.accession=:accession" if accession else "") + " ORDER BY d.annotation_id,d.prediction_id", params)
     for prediction in ddg:

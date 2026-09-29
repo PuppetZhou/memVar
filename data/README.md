@@ -1,5 +1,7 @@
 # 当前本地网站服务表
 
+2026-09-29增量：Q7疾病分类7张服务表已导入`web_classification`。主分类33,417行、变异—MONDO关系760,105行，配套类别/证据完整保留；[manifest](tables/classification/manifest.json)、[导入报告](postgresql_classification_import.json)、[规则边界与复现](../docs/record/01_preview_optimization/20260929_clinvar_classification.md)。迁移须包含此schema或服务目录；API运行不依赖analysis文件。
+
 数据版本：`20260922_membrane_classification_v1`。
 
 构建时间（UTC）：2026-09-21T17:55:07.146851+00:00。构建验证通过；数据库导入状态见[导入报告](postgresql_import.json)，须与本次built_at一致；[查询验证](postgresql_validation.json)独立记录。

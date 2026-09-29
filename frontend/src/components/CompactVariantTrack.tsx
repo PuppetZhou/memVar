@@ -1,3 +1,4 @@
+import { clinicalColors } from '../lib/palette';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'motion/react';
@@ -8,12 +9,12 @@ import './compact-variant-track.css';
 type Range = [number, number];
 type Site = VariantSummary['canonical_sites'][number];
 const categories = [
-  { key: 'pathogenic', short: 'P / LP', label: 'Pathogenic / likely pathogenic', color: '#ef4444' },
-  { key: 'uncertain', short: 'VUS', label: 'Uncertain significance', color: '#f59e0b' },
-  { key: 'benign', short: 'B / LB', label: 'Benign / likely benign', color: '#10b981' },
-  { key: 'conflicting', short: 'Conflict', label: 'Conflicting source classifications', color: '#a855f7' },
-  { key: 'other', short: 'Other', label: 'Other source classification', color: '#38bdf8' },
-  { key: 'unclassified', short: 'No label', label: 'No source classification', color: '#cbd5e1' },
+  { key: 'pathogenic', short: 'P / LP', label: 'Pathogenic / likely pathogenic', color: clinicalColors.pathogenic },
+  { key: 'uncertain', short: 'VUS', label: 'Uncertain significance', color: clinicalColors.uncertain },
+  { key: 'benign', short: 'B / LB', label: 'Benign / likely benign', color: clinicalColors.benign },
+  { key: 'conflicting', short: 'Conflict', label: 'Conflicting source classifications', color: clinicalColors.conflicting },
+  { key: 'other', short: 'Other', label: 'Other source classification', color: clinicalColors.other },
+  { key: 'unclassified', short: 'No label', label: 'No source classification', color: clinicalColors.unclassified },
 ] as const;
 type Category = typeof categories[number]['key'];
 type Bin = { start: number; end: number; count: number; counts: Record<Category, number>; groupingComplete: boolean };

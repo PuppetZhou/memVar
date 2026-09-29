@@ -1,3 +1,4 @@
+import { palette, sequenceScoreColor, bindingSiteColor } from '../lib/palette';
 export type Feature = { id?: string; start: number; end: number; label?: string; type?: string; source?: string; source_type?: string; description?: string; group?: string; record_ids?: string[]; [key: string]: unknown };
 export type Track = { id: string; label: string; type?: string; color?: string; features: Feature[] };
 export type Score = { position: number; value: number | null; status?: string };
@@ -8,19 +9,19 @@ export type AnnotationSourceOptions = {domains:AnnotationSourceOption[];ptm:Anno
 export const sequenceLensLabels:Record<string,string>={
   domains:'Domains',membrane:'Membrane topology',ptm:'PTM',variants:'Variant count',jsd:'JSD conservation',binding:'Binding sites',
 };
-export const missingAnnotationColor='#d9e1ec';
+export const missingAnnotationColor=palette.missing;
 export const variantCountColorNote='Colours show variant counts, not clinical pathogenicity.';
-// CATVariant EGFR count legend, observed 2026-09-22: white/grey/green/blue/yellow/pink.
-// Keep memVar bins; the final 9+ bin extends the reference pink to a stronger red.
-export const sequencePtmPresenceColor='#be185d';
+// memVar count colours, using the author-selected palette. Existing count bins are unchanged.
+// Zero is white; missing annotations use a separate neutral fill.
+export const sequencePtmPresenceColor=palette.rose;
 export const variantCountBins=[
   {label:'0',minimum:0,maximum:0,color:'#ffffff',textColor:'#172a3a'},
-  {label:'1',minimum:1,maximum:1,color:'#e5e7eb',textColor:'#172a3a'},
-  {label:'2–4',minimum:2,maximum:4,color:'#86efac',textColor:'#172a3a'},
-  {label:'5',minimum:5,maximum:5,color:'#93c5fd',textColor:'#172a3a'},
-  {label:'6',minimum:6,maximum:6,color:'#fde68a',textColor:'#172a3a'},
-  {label:'7–8',minimum:7,maximum:8,color:'#fca5a5',textColor:'#172a3a'},
-  {label:'9+',minimum:9,maximum:Number.POSITIVE_INFINITY,color:'#f87171',textColor:'#111111'},
+  {label:'1',minimum:1,maximum:1,color:palette.mist,textColor:'#172a3a'},
+  {label:'2–4',minimum:2,maximum:4,color:palette.ice,textColor:'#172a3a'},
+  {label:'5',minimum:5,maximum:5,color:palette.blue,textColor:'#172a3a'},
+  {label:'6',minimum:6,maximum:6,color:palette.butter,textColor:'#172a3a'},
+  {label:'7–8',minimum:7,maximum:8,color:palette.apricot,textColor:'#172a3a'},
+  {label:'9+',minimum:9,maximum:Number.POSITIVE_INFINITY,color:palette.rose,textColor:'#111111'},
 ] as const;
 
 type SourceGuide={description:string;url?:string};
@@ -44,40 +45,39 @@ export function annotationSourceGuide(source:string,kind?:string):SourceGuide{
   return {description:`${source} source annotation. Original source identity and record boundaries are retained.`};
 }
 export function continuousScoreColor(value:number):string{
-  const v=Math.max(0,Math.min(1,value));const a=v<.5?[224,242,254]:[37,99,235],b=v<.5?[37,99,235]:[109,40,217],t=v<.5?v*2:(v-.5)*2;
-  return '#'+a.map((c,i)=>Math.round(c+(b[i]-c)*t).toString(16).padStart(2,'0')).join('');
+  return sequenceScoreColor(value, 'interface');
 }
 export function jsdScoreColor(value:number):string{
-  const v=Math.max(0,Math.min(1,value)),low=[245,240,255],high=[128,85,192];
-  return '#'+low.map((channel,i)=>Math.round(channel+(high[i]-channel)*v).toString(16).padStart(2,'0')).join('');
+  return sequenceScoreColor(value, 'jsd');
 }
 
 export const featurePalette = [
-  {name:'Dephosphorylation',color:'#92400e',match:/dephospho/i},
-  {name:'Phosphorylation',color:'#d97706',match:/phospho/i},
-  {name:'Glycosylation',color:'#059669',match:/glyco|glycan/i},
-  {name:'Ubiquitination',color:'#e11d48',match:/ubiquit/i},
-  {name:'Acetylation',color:'#0891b2',match:/acetyl/i},
-  {name:'Methylation',color:'#7c3aed',match:/methyl/i},
-  {name:'Disulfide bond',color:'#be185d',match:/disulfide/i},
-  {name:'Sumoylation',color:'#9333ea',match:/sumoyl/i},
-  {name:'Lipidation',color:'#a16207',match:/lipid|palmitoyl/i},
-  {name:'Nitrosylation',color:'#4f46e5',match:/nitroso|nitrosyl/i},
-  {name:'Oxidation',color:'#a85535',match:/oxidation/i},
-  {name:'Cross-link',color:'#a21caf',match:/cross-link/i},
+  {name:'Dephosphorylation',color:palette.blueInk,match:/dephospho/i},
+  {name:'Phosphorylation',color:palette.apricot,match:/phospho/i},
+  {name:'Glycosylation',color:palette.sage,match:/glyco|glycan/i},
+  {name:'Ubiquitination',color:palette.coral,match:/ubiquit/i},
+  {name:'Acetylation',color:palette.cyan,match:/acetyl/i},
+  {name:'Methylation',color:palette.blue,match:/methyl/i},
+  {name:'Disulfide bond',color:palette.rose,match:/disulfide/i},
+  {name:'Sumoylation',color:palette.peach,match:/sumoyl/i},
+  {name:'Lipidation',color:palette.leaf,match:/lipid|palmitoyl/i},
+  {name:'Nitrosylation',color:palette.ice,match:/nitroso|nitrosyl/i},
+  {name:'Oxidation',color:palette.butter,match:/oxidation/i},
+  {name:'Cross-link',color:palette.mist,match:/cross-link/i},
   {name:'Other PTM',color:'#64748b',match:/.*/},
 ];
 function membraneName(f:Feature){const native=String(f.source_type??f.label??'');const raw=f.source==='UniProt'&&native==='Topological domain'?String(f.label??f.description??native):native;const htp:Record<string,string>={M:'Transmembrane',L:'Intramembrane reentrant loop',I:'Cytoplasmic',O:'Non-cytoplasmic',S:'Signal'};return /^HTP(?:$|[:/_])/i.test(f.source??'')?(htp[raw]??raw):f.source==='DeepTMHMM2'&&raw==='TMhelix'?'Transmembrane':raw;}
 export function isMembraneFeature(f:Feature){return /transmembrane|intramembrane/i.test(membraneName(f));}
 export function featureStyle(f: Feature, track: string): {name:string;color:string} {
   const name = `${f.source_type??f.type??''} ${f.label??''}`;
-  if(track==='ptm') {if(f.source==='GlyGen'&&/^[NO]-linked$/i.test(f.source_type??''))return {name:'Glycosylation',color:'#059669'};return featurePalette.find(p=>p.match.test(name))!;}
-  if(track==='secondary') return /helix/i.test(name)?{name:'Helix',color:'#e65c70'}:/strand|sheet/i.test(name)?{name:'Beta strand',color:'#3b82f6'}:{name:'Turn / loop',color:'#10a37f'};
-  if(track==='membrane') {const type=membraneName(f);return /transmembrane|intramembrane/i.test(type)?{name:'Membrane segment',color:'#8b5cf6'}:/extra|outside|non-cyto/i.test(type)?{name:'Non-cytoplasmic / outside',color:'#0891b2'}:/cyto|inside/i.test(type)?{name:'Cytoplasmic / inside',color:'#0f766e'}:/signal/i.test(type)?{name:'Signal region',color:'#ca8a04'}:{name:'Topology',color:'#64748b'};}
-  if(track==='domains') return f.source==='Pfam'?{name:'Pfam domain',color:'#c2410c'}:/domain/i.test(name)?{name:'UniProt domain',color:'#f59e0b'}:{name:'Region / processing',color:'#15803d'};
-  return {name:'Functional site',color:'#db2777'};
+  if(track==='ptm') {if(f.source==='GlyGen'&&/^[NO]-linked$/i.test(f.source_type??''))return {name:'Glycosylation',color:palette.sage};return featurePalette.find(p=>p.match.test(name))!;}
+  if(track==='secondary') return /helix/i.test(name)?{name:'Helix',color:palette.rose}:/strand|sheet/i.test(name)?{name:'Beta strand',color:palette.blue}:{name:'Turn / loop',color:palette.sage};
+  if(track==='membrane') {const type=membraneName(f);return /transmembrane|intramembrane/i.test(type)?{name:'Membrane segment',color:palette.blue}:/extra|outside|non-cyto/i.test(type)?{name:'Non-cytoplasmic / outside',color:palette.cyan}:/cyto|inside/i.test(type)?{name:'Cytoplasmic / inside',color:palette.sage}:/signal/i.test(type)?{name:'Signal region',color:palette.butter}:{name:'Topology',color:'#64748b'};}
+  if(track==='domains') return f.source==='Pfam'?{name:'Pfam domain',color:palette.apricot}:/domain/i.test(name)?{name:'UniProt domain',color:palette.peach}:{name:'Region / processing',color:palette.leaf};
+  if(/binding/i.test(`${f.source_type??''} ${f.type??''} ${f.label??''}`))return {name:'Binding site',color:bindingSiteColor};
+  return {name:'Functional site',color:palette.rose};
 }
-export const sourceColors:Record<string,string>={UniProt:'#2563eb',Pfam:'#c2410c',dbPTM:'#059669',GlyGen:'#0891b2',ProteomeScout:'#7c3aed',PTMD2:'#be185d',DeepTMHMM2:'#475569'};
+export const sourceColors:Record<string,string>={UniProt:palette.blue,Pfam:palette.apricot,dbPTM:palette.sage,GlyGen:palette.cyan,ProteomeScout:palette.leaf,PTMD2:palette.rose,DeepTMHMM2:'#475569'};
 export function variantCountBin(count:number){return variantCountBins.find(bin=>count>=bin.minimum&&count<=bin.maximum)??variantCountBins[variantCountBins.length-1];}
 export function variantFill(count:number):string{return variantCountBin(count).color;}
 export function variantTextColor(count:number):string{return variantCountBin(count).textColor;}

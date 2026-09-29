@@ -2,14 +2,17 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { AnimatePresence, motion, useAnimate, useIsPresent, type HTMLMotionProps } from 'motion/react';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 
-export const uiTransition = { duration: 0.18, ease: [0.22, 1, 0.36, 1] as const };
+// A tightly damped spring for the segmented selector; unrelated content keeps its short fade.
+export const segmentedTransition = { type: 'spring' as const, stiffness: 480, damping: 40, mass: 0.7 };
+
+export const uiTransition = { duration: 0.16, ease: [0.2, 0.8, 0.2, 1] as const };
 
 /** Animate a whole region; never mount a motion controller per residue or heatmap cell. */
 export function Reveal({ children, className }: { children: ReactNode; className?: string }) {
   const reduce = useReducedMotion();
   return <motion.div className={className}
-    initial={reduce ? false : { opacity: 0, y: 4 }}
-    animate={{ opacity: 1, y: 0 }}
+    initial={reduce ? false : { opacity: 0 }}
+    animate={{ opacity: 1 }}
     transition={reduce ? { duration: 0 } : uiTransition}>{children}</motion.div>;
 }
 
@@ -24,7 +27,7 @@ export function ContentTransition({ transitionKey, children, ...props }: RegionP
     if (previousKey.current === transitionKey) return;
     previousKey.current = transitionKey;
     if (!scope.current || reduce) return;
-    const animation = animate(scope.current, { opacity: [0.65, 1] }, uiTransition);
+    const animation = animate(scope.current, { opacity: [0.9, 1] }, uiTransition);
     return () => {
       animation.stop();
       if (scope.current) scope.current.style.opacity = '1';

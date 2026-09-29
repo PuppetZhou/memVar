@@ -1,3 +1,4 @@
+import { clinicalColors } from '../lib/palette';
 import { Button } from './ui/button';
 import { ModeToggleGroup } from './ui/mode-toggle-group';
 import { ContentTransition, SelectionFeedback } from '@/lib/motion';
@@ -46,7 +47,7 @@ function CountGroups({title,icon,groups,onFilter,tone=false}:{title:string;icon:
   const max=Math.max(1,...groups.map(g=>g.count));
   return <div className="vc-summary-group"><h3>{icon}{title}</h3>{groups.length?<div className="vc-group-rows">{groups.map(g=><button key={`${g.dimension}:${g.key}`} className={`vc-count-row ${tone?`vc-count-${clinicalTone(g.label)}`:''}`} onClick={()=>onFilter(g.filter)} title={`Filter: ${tone?clinicalLabel(g.label):g.label} · ${g.count.toLocaleString()} unique variants`}><span className="vc-count-label">{tone?clinicalLabel(g.label):label(g.label)}</span><span className="vc-count-track"><i style={{width:`${g.count/max*100}%`}}/></span><strong>{number(g.count,0)}</strong></button>)}</div>:<p className="vc-summary-empty">No source records in this selection.</p>}</div>;
 }
-const CLINICAL_COLOURS:Record<string,string>={pathogenic:'#e63559',uncertain:'#e9a117',benign:'#12a772',conflicting:'#9c43cf',other:'#1689d5',unclassified:'#94a3b8'};
+const CLINICAL_COLOURS:Record<string,string>=clinicalColors;
 function VariantCategoryCharts({summary,onFilter}:{summary:Summary;onFilter:(filter:Record<string,string|number>)=>void}){
   const consequences=summary.groups.filter(g=>g.dimension==='consequence');const clinical=summary.clinical_groups??[];
   const [hover,setHover]=useState<string|null>(null),[pinned,setPinned]=useState<string|null>(null);
@@ -169,8 +170,8 @@ export default function VariantCatalog({accession,selectedPosition,onClearSelect
   function open(row:VariantRow,tab:DetailTab='overview'){if(!selection){window.history.pushState({...window.history.state,memvarVariantDetail:true},'',window.location.href);detailHistory.current=true;}setSelection({id:row.variant_id,title:shortChange(row),tab,canonicalPositions:row.canonical_positions??[]});}
   function closeDetail(){if(detailHistory.current)window.history.back();else setSelection(null);}
   const columns=useMemo<ColumnDef<VariantRow>[]>(()=>[
-    {id:'genomic-variant',header:()=> <span>Genomic variant<small>GRCh38 · chromosome : position</small></span>,cell:({row})=><button className="vc-genomic" onClick={()=>open(row.original)} title={row.original.variant_id}><strong>{row.original.chromosome}:{row.original.position}</strong><span>{row.original.ref} <span aria-hidden="true">→</span> {row.original.alt}</span></button>},
-    {id:'aa-position',header:'Position',cell:({row})=><button className="vc-position" onClick={()=>open(row.original)}><strong>{missing(row.original.aa_position)?'—':row.original.aa_position}</strong></button>},
+    {id:'genomic-variant',header:()=> <span>Genomic variant<small>GRCh38 · chr:position</small></span>,cell:({row})=><button className="vc-genomic" onClick={()=>open(row.original)} title={row.original.variant_id}><strong>{row.original.chromosome}:{row.original.position}</strong><span>{row.original.ref} <span aria-hidden="true">→</span> {row.original.alt}</span></button>},
+    {id:'aa-position',header:()=> <span>Position<small>Protein</small></span>,cell:({row})=><button className="vc-position" onClick={()=>open(row.original)}><strong>{missing(row.original.aa_position)?'—':row.original.aa_position}</strong></button>},
     {id:'ref-aa',header:'Ref',cell:({row})=><span className="vc-aa vc-aa-ref">{missing(row.original.ref_aa)?'—':row.original.ref_aa}</span>},
     {id:'alt-aa',header:'Alt',cell:({row})=><span className="vc-aa vc-aa-alt">{missing(row.original.alt_aa)?'—':row.original.alt_aa}</span>},
     {id:'consequence',header:'Consequence',cell:({row})=><div className="vc-consequence"><ConsequencePills value={row.original.consequence}/>{row.original.transcript_status!=='canonical'&&<button className={`vc-transcript-label vc-transcript-${row.original.transcript_status??'unknown'}`} onClick={()=>open(row.original,'transcripts')} title={`VEP transcript status · raw CANONICAL: ${row.original.canonical_raw??(row.original.transcript_status==='noncanonical'?'not flagged by VEP':'not available')} · independent of UniProt sequence mapping`}>{row.original.transcript_status==='canonical'?'Ensembl canonical':row.original.transcript_status==='noncanonical'?'Noncanonical · VEP unflagged':'Transcript status unknown'}</button>}</div>},

@@ -1,3 +1,4 @@
+import { palette } from '../lib/palette';
 import { useEffect, useId, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
@@ -21,7 +22,7 @@ import './sequence-composite.css';
 import './viewers.css';
 
 type SequenceData = { sequence_id: string; sequence: string; length: number; tracks: Track[]; conservation: Score[]; topology_options: AnnotationSourceOption[]; annotation_source_options:AnnotationSourceOptions; selected_topology:string[]; [key: string]: unknown };
-const compactTracks=[{id:'variants',label:'Variant density',color:'#e8910c'},{id:'domains',label:'Domains / regions',color:'#f97316'},{id:'membrane',label:'Membrane',color:'#8b5cf6'},{id:'function',label:'Functional sites',color:'#e52b83'},{id:'ptm',label:'PTM',color:'#0891b2'},{id:'secondary',label:'Secondary structure',color:'#16a37b'},{id:'jsd',label:'JSD',color:'#7c3aed'},{id:'interface',label:'Binding interface',color:'#2563eb'}];
+const compactTracks=[{id:'variants',label:'Variant density',color:palette.apricot},{id:'domains',label:'Domains / regions',color:palette.apricot},{id:'membrane',label:'Membrane',color:palette.blue},{id:'function',label:'Functional sites',color:palette.rose},{id:'ptm',label:'PTM',color:palette.cyan},{id:'secondary',label:'Secondary structure',color:palette.sage},{id:'jsd',label:'JSD',color:palette.blue},{id:'interface',label:'Binding interface',color:palette.blue}];
 async function getData<T>(url: string, signal?: AbortSignal): Promise<T> {
   const response = await fetch(url, { signal }); if (!response.ok) throw new Error('Sequence data could not be loaded'); return response.json();
 }

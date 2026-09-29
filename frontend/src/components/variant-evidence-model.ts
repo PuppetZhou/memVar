@@ -1,3 +1,4 @@
+import { evidenceInk, predictionCalls, predictionPalette, predictionRamp, predictionTextColor } from '../lib/palette';
 import { label, number, type RecordData } from '../api';
 export interface Predictor extends RecordData {
   field: string; tool: string; group?: string; scope?: string; value?: unknown;
@@ -123,14 +124,15 @@ export function frequencyStyle(value:unknown){
 }
 export function scoreVisual(item:Predictor){
  const tone=predTone(item),scale=SCORE_SCALES[item.field],v=Number(item.value);
- const categorical:Record<string,string>={damaging:'#e43562',tolerated:'#08996c',uncertain:'#d28b08'};
- if(categorical[tone])return {color:categorical[tone],caption:'Color follows the original source call'};
+ const paint=(fill:string,caption:string)=>({fill,color:predictionTextColor(fill),caption});
+ const categorical:Record<string,string>=predictionCalls;
+ if(categorical[tone])return {...paint(categorical[tone],'Color follows the original source call'),color:evidenceInk[tone as keyof typeof evidenceInk]};
  const valid=!missing(item.value)&&scale&&Number.isFinite(v)&&v>=0&&v<=1;
- if(!valid)return {color:'#3879bc',caption:'Original score; no matched source call'};
+ if(!valid)return paint(predictionPalette.blue,'Original score; no matched source call');
  const directional=/predicted damaging effect|predicted pathogenicity|predicted functional change/.test(scale.direction);
- if(!directional)return {color:`hsl(218 75% ${65-v*30}%)`,caption:'Color intensity follows this native score, not pathogenicity'};
+ if(!directional)return paint(predictionRamp(v,false),'Color follows this native score, not pathogenicity');
  const effect=scale.direction.startsWith('Lower')?1-v:v;
- return {color:`hsl(${165*(1-effect)} 72% 40%)`,caption:`Continuous score tint. ${scale.direction} No categorical call is inferred.`};
+ return paint(predictionRamp(effect),`Continuous score tint. ${scale.direction} No categorical call is inferred.`);
 }
 export function sourceFieldMap(row:RecordData){return Object.fromEntries(records(row.fields).map(f=>[String(f.label),f.value]));}
 export function decodedHGVS(value:unknown){try{return decodeURIComponent(String(value??'')).split(':').at(-1)||'—';}catch{return String(value??'—');}}

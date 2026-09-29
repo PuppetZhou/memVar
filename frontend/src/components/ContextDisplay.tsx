@@ -54,9 +54,9 @@ export function AssayOverview({datasets,selectedDataset,onChooseDataset}:{datase
  const sources=[...new Set(selectedCollections.map(collection=>collection.source??collection.filter?.source??'Source'))];
  return <section className="cx-assay-overview">
   <header><h3>Explore expression data</h3><p>Choose <strong>RNA</strong> or <strong>protein</strong>, then a database and the tissue, cell or cancer context measured.</p></header>
-  <ModeToggleGroup className="cx-expression-types" aria-label="Expression data type" value={selectedTarget} onValueChange={target=>{const next=datasets.find(collection=>assayFor(collection.dataset??collection.key)?.target===target);if(next)onChooseDataset(next);}} options={[
-   {value:'RNA',label:<><span className="cx-expression-type-icon" data-kind="rna"><Dna size={16}/></span>RNA measurements</>,disabled:!datasets.some(collection=>assayFor(collection.dataset??collection.key)?.target==='RNA')},
-   {value:'Protein',label:<><span className="cx-expression-type-icon" data-kind="protein"><Orbit size={16}/></span>Protein measurements</>,disabled:!datasets.some(collection=>assayFor(collection.dataset??collection.key)?.target==='Protein')},
+  <ModeToggleGroup equalWidth className="cx-expression-types" aria-label="Expression data type" value={selectedTarget} onValueChange={target=>{const next=datasets.find(collection=>assayFor(collection.dataset??collection.key)?.target===target);if(next)onChooseDataset(next);}} options={[
+   {value:'RNA',ariaLabel:'RNA measurements',label:<><span className="cx-expression-type-icon" data-kind="rna"><Dna size={16}/></span>RNA</>,disabled:!datasets.some(collection=>assayFor(collection.dataset??collection.key)?.target==='RNA')},
+   {value:'Protein',ariaLabel:'Protein measurements',label:<><span className="cx-expression-type-icon" data-kind="protein"><Orbit size={16}/></span>Protein</>,disabled:!datasets.some(collection=>assayFor(collection.dataset??collection.key)?.target==='Protein')},
   ]}/>
   <ContentTransition transitionKey={selectedTarget} className="cx-expression-sources">
    {sources.map(source=><div className="cx-expression-source" key={source} style={{'--expression-source':EXPRESSION_SOURCE_COLOURS[source]??'#577590','--expression-source-soft':`color-mix(in srgb,${EXPRESSION_SOURCE_COLOURS[source]??'#577590'} 16%,white)`} as CSSProperties}>

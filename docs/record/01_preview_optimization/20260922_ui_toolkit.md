@@ -511,3 +511,218 @@ TypeScript/Vite通过。Playwright验证主表无vc-mapped或来源SVG；7:55019
 ### 同日更新：配色恢复与GitHub提交
 
 按用户要求撤回柔和附加色系试用，恢复此前红、橙、绿、青与蓝色的来源和内容强调配色；保留PaxDB接入、连续丰度表、中性图标、入口对齐及此前文字层级调整。恢复后重新构建本地预览，并将当前网站源码、配置及必要文档提交GitHub；数据、凭据与运行产物不上传。
+
+### 同日更新：iOS组件风格试用
+
+新增独立ios-surfaces.css并由main.tsx加载：圆角卡片、系统字体优先、浅灰分组背景、白色分段选中块、轻阴影、按压反馈、导航毛玻璃及22px圆角弹窗；尊重减少动态和减少透明度偏好。保留数据与科学色标。TypeScript/Vite通过；EGFR页面实测标识弹窗可打开、Escape关闭，RNA/Protein切换正常，1176px及390px无根横向溢出。截图output/playwright/ios-{overview,dialog,expression,mobile}.png；仅本轮局部页面检查，不代表全站移动端验收。本地8000已更新，未提交GitHub。
+
+### 同日更新：依据Apple指南调整材质与反馈
+
+2026-09-28在线读取Apple HIG官方页面对应DocC JSON（常规检索连接失败，官方站点可直接访问）：[Materials](https://developer.apple.com/design/human-interface-guidelines/materials)、[Motion](https://developer.apple.com/design/human-interface-guidelines/motion)、[Buttons](https://developer.apple.com/design/human-interface-guidelines/buttons)、[Accessibility](https://developer.apple.com/design/human-interface-guidelines/accessibility)。采用的原则：玻璃用于导航与交互层，内容保持清晰；自定义按钮提供按压态，反馈短促、允许中断；保留键盘及减少动态效果支持。网页实现为近似材质，不声称复现原生Liquid Glass光学或触觉反馈。
+
+候选实现：导航冷白渐变、20px模糊和125%饱和度；分段控件白色高光及紧阻尼弹簧（stiffness 520、damping 38、mass .7），仅作用选中底块；按压85ms/缩至.975，释放220ms，大卡片仅缩至.992；弹窗入场240ms/退场140ms，遮罩只淡入淡出，不动画化模糊半径。删除帮助图标弹跳及来源卡片hover位移，粗指针主要操作44px触控目标。上述数字均为memVar试用值，并非Apple规定。数据色标、API及查询行为不变。
+
+构建通过；浏览器核对弹窗动画名/240ms、键盘Space关闭和焦点返回、快速RNA/Protein切换；按压85ms，reduced-motion下transform none/transition 0s且弹窗animation none；390px无根横向溢出。截图ios2-dialog.png与ios2-expression.png。浏览器有外部Google Fonts连接失败及WebGL截图警告，系统字体回退正常；未进行真实iOS设备性能验收。更新本地8000预览，未提交GitHub。
+
+
+## 2026-09-28统一配色与动效试行
+
+用户要求统一配色与动效、改善Variant Catalog质感，并以指定11色替代CATVariant序列色系；授权先实施一版再根据观感调整或回退。保留此前未提交iOS代码，仅记录本次增量。
+
+- 界面：`frontend/src/ios-surfaces.css`集中维护最终iOS表面和交互变量，灰白背景、白色内容面、统一蓝色操作态；导航保留轻透明，表格和弹窗内容使用实底。数据介绍页链接复用主色。
+- Sequence：`frontend/src/lib/palette.ts`维护用户11色、临床分类图色、对比度文字及CSS共享色标；`sequence-model.ts`维护展示映射。变异数量的0、1、2–4、5、6、7–8、9+分档不变；PTM、二级结构、膜区段、来源图例和JSD同步使用新色系。数量不等于致病性，缺失与零仍分开。临床分类保持标签并使用独立配色。共享该模型的Structure科学着色和渐变图例同步更新，原生pLDDT色标保留。
+- Variant Catalog：边框和圆角统一，表头文字分主次，Ref/Alt保持单行；固定首列支持横向滚动；数值使用等宽数字属性，源名称为轻量按钮，评分文字为深色、小色标保留既有分类或连续评分方向。未调整原始值、分类判断或阈值。
+- 动效：`lib/motion.tsx`统一160ms内容反馈、收敛分段选择器弹簧，取消内容位移；小按钮轻按压，弹窗200ms打开/120ms关闭；残基格子取消缩放，避免密集数据跳动。保留运行时减少动态效果支持。
+
+验证（本地1600×1100、EGFR/P00533）：
+
+1. `npm run build`（frontend目录）通过TypeScript及Vite；`git diff --check`通过。
+2. Variant初始50行正常；横向滚动350px首列位置不变；`7:55019278 A→G`详情打开、关闭通过。
+3. Atlas数量、PTM、JSD模式切换通过，1,210格；JSD图例端点与实际颜色函数一致。
+4. 模拟`prefers-reduced-motion: reduce`，残基transition为0s、transform为none，弹窗animation为none；恢复普通设置正常。
+5. 0–29计数核对分档与本轮前一致；全部数量格子文字对比度≥4.5，JSD 0–1以0.001步长核对的最低对比度4.588。仅为本轮颜色验证，不代表全站无障碍审计。
+6. 最终浏览器error级控制台消息为0。此前截图过程出现WebGL ReadPixels性能警告；未进行3D性能或全站负载测试。
+
+产物：本地8000已载入新版；截图与颜色核对位于`output/playwright/style-20260928/`，含`after-catalog.png`、`after-atlas-viewport.png`、`variant-dialog.png`及`palette-check.json`。本轮不发布公网或推送GitHub；用户观感与移动端验收未完成。
+
+回退：`output/style-20260928/before/`保存实际修改前文件，包括此前未提交修改；`output/style-20260928/trial.patch`只描述本轮增量。在Web目录先运行`git apply --reverse --check output/style-20260928/trial.patch`，通过后再反向应用，随后在frontend目录重新`npm run build`。存在后续修改导致冲突时逐文件处理，不使用`git reset --hard`。备份和补丁为本地忽略产物，不上传仓库。
+
+
+## 2026-09-28点击反馈与预测配色追加
+
+依据用户浏览器批注：上一版评分颜色不易区分damage与否，指定`#CC247C/#E95351/#F7A24F/#FBEB66/#4EA660/#79CAFB/#5292F7/#AA77E9`；另要求让可点击、可选择部分具有统一iOS反馈。仅修改前端呈现。
+
+- `lib/palette.ts`追加独立predictionPalette、predictionCalls与连续predictionRamp。原来源明确分类采用粉红/绿/橙，连续方向色阶为绿→黄→橙→红→粉红，无damage阈值；无损伤方向的原生0–1分数使用青→蓝→紫；其余原生分数用蓝。文字采用较深同色衍生值，避免黄色和浅青文字对比度不足。上一轮序列分类配色保留。
+- `scoreVisual`保留原SCORE_SCALES、sourceCall及predTone逻辑；PredictionValue显示浅底、鲜明色标与来源分类标签，没有来源分类显示“No source call”。不把REVEL连续分数转成Damaging/Tolerated，不按数值覆盖来源判定。
+- `ios-surfaces.css`末尾的Shared affordances集中维护操作反馈：170ms悬停提亮与轻阴影；75ms按下，普通控件缩到.985、大卡片.996；持久选中用蓝色底与内边线；键盘焦点2px蓝框。分段选择器保留原滑动指示，主要按钮保留深蓝底白字；禁用项排除，减少动态效果设置关闭过渡和缩放。文字链接提供下划线提示。科学残基与SVG轨道不纳入通用控件缩放。
+
+验证：TypeScript/Vite构建、`git diff --check`通过。EGFR浏览器检查来源按钮hover背景`rgb(237,243,251)`及阴影、press缩放.985/75ms、来源详情开合、键盘focus-visible蓝框、主按钮hover深蓝底白字、分段选择器单一滑动指示、功能分类持续选中。减少动态效果时press无transform、transition 0s。SIFT低分方向及原D/T分类保持，REVEL未给分类时不推断；两类连续色阶0.001步长的文字对比度最低4.756。不是全站、移动端或真实设备触觉验收，网页反馈为视觉反馈。
+
+截图及必要核对记录：`output/playwright/touch-20260928/`。本次新增回退包`output/touch-20260928/trial.patch`，从本轮前的真实工作区生成；在Web目录先`git apply --reverse --check output/touch-20260928/trial.patch`，通过后反向应用并重新构建。上一版色板试行不被一并撤销；有后续修改冲突时逐处处理。
+
+
+## 2026-09-28白底简洁化与表格去装饰
+
+依据最新ProtVar参考图与四条浏览器批注调整当前试行，替代前版相应的卡片背景、边框及评分装饰：
+
+- 白底阅读面，主要板块按标题、留白和细横线组织；概览、筛选、表达等减轻嵌套边框，导航保留轻透明。交互保留悬停、短促按压、持续选中与键盘焦点，取消装饰性阴影和选中内边线。
+- Variant Catalog保留固定首列、浅表头与细横线；所有列间竖线移除。评分色条、评分底色及分类标签底色删除；无来源分类只显示原始分值，不重复“No source call”。表头说明与分值提示继续明确来源分类和连续评分的区别。
+- ClinVar、后果与分类文字提高饱和度。`palette.ts`的`evidenceInk`维护分类文字，`predictionTextColor`保留连续色阶色相并按可读性降低亮度；不再混入深蓝灰。未修改分类、评分方向、阈值或数据库。
+
+验证：TypeScript/Vite构建及`git diff --check`通过；本地EGFR实际13列表头左右边框均为0，Ambiguous及其标签计算背景为透明、色条伪元素不存在；详情打开关闭通过。连续两类色阶按0.001步长核对，浅色悬停背景上的最低文字对比度4.602，三类分类文字均超过4.62。实际表格与概览截图见`output/playwright/clean-20260928/`。仅完成本轮桌面定向检查，不表示全站及移动设备验收。
+
+本地8000构建已更新，无GitHub推送。本轮独立回退补丁`output/clean-20260928/trial.patch`从本轮前真实工作区生成；在Web目录先运行`git apply --reverse --check output/clean-20260928/trial.patch`，通过后再反向应用并重新构建。只撤销本轮改动；此前未提交工作保留，有后续冲突时逐处处理。
+
+
+## 2026-09-28恢复模块边界与macOS参考
+
+用户确认白底清爽，但无框区块难以分组。本轮在`frontend/src/ios-surfaces.css`恢复主模块、概览功能／定位等区块、表达选择容器与数据集卡片、疾病来源卡片及指标卡片的细边框。大区块14px圆角，操作卡片沿用紧凑圆角；白底、无重阴影、蓝色选中态保留。疾病卡片恢复顶部来源色线。表格仍无列间竖线，评分及分类标签仍无底色；数据、原始分类与科学规则未修改。
+
+参考核查：[Figma官方说明](https://help.figma.com/hc/en-us/articles/24037833895831-Get-started-with-Apple-s-UI-kit)明确列出Apple macOS 26 UI kit，含组件、样式和示例屏幕，可从Libraries或Community添加。用户[文件链接](https://www.figma.com/community/file/1543337041090580818/macos-26)在当前Web检索及Playwright中不可读取，浏览器返回403；未查看内部画板、未导入资源、未宣称数值取自kit。本轮判断：桌面组件的分组、工具栏、分段选择器和状态规范适合后续参考；实际细框和圆角参数为memVar本地试行值，按用户批注实施。
+
+验证：TypeScript/Vite构建通过。1414px EGFR实页中概览区块、Expression容器和Diseases主模块为白底／1px边框／14px圆角，表达和疾病卡片边框恢复。Expression可切至Individual cell lines并返回Cancer samples；表格所有th/td左右边框仍为0、评分背景透明。390px根页面宽度390，无根横向溢出；不代表完整移动端验收。截图见`output/playwright/blocks-20260928/`，本地8000已更新。未推送GitHub或发布公网。
+
+本轮独立回退：`output/blocks-20260928/trial.patch`。在Web目录先`git apply --reverse --check output/blocks-20260928/trial.patch`，通过后反向应用并重新构建；该补丁仅回退本轮，保留更早工作。
+
+## 2026-09-29Apple组件参考核对
+
+读取交接、现行计划、共用分段控件/动效和`ios-surfaces.css`，查看2026-09-28 Expression截图。当前工作区仍为`/home/xuyzh/memVar-re`；8000 EGFR页面HTTP返回200，仅证明入口可访问，本轮未重新进行浏览器交互验收。Figma `whoami`成功，返回Starter团队及View席位，具体文件权限待真实链接核对；旧交接中的授权阻塞不再适用。
+
+重新核对[Figma官方Apple kit说明](https://help.figma.com/hc/en-us/articles/24037833895831-Get-started-with-Apple-s-UI-kit)，确认提供iOS/iPadOS 26与macOS 26 kit。通过Apple官方DocC JSON读取[Segmented controls](https://developer.apple.com/design/human-interface-guidelines/segmented-controls)及[Materials](https://developer.apple.com/design/human-interface-guidelines/materials)：分段控件适合相关模式/状态选择；Liquid Glass主要用于导航和控件层，应节制使用，内容层避免铺设该材质。
+
+本项目判断：优先校准Expression的RNA/Protein模式控件，再检查工具栏按钮、筛选和详情弹窗的状态一致性。多来源数据集卡片保留名称、测量与记录数，不能压缩成难以区分来源的分段选项；表格、序列和评分继续使用清晰实底。现有分段控件已基于Radix与Motion，实际kit参考应适配到现有组件。CSS存在早期样式与末尾覆盖，实施时仅整理涉及的选择器并以computed style验证。当前弹簧/时长为项目自定义，未获得kit动效证据。
+
+初步评估时仅有Community地址，曾请求复制后的`/design/`链接。随后用户要求直接调用优化，以下执行结果替代“等待链接后再优化”的安排。
+
+### 直接调用与本地实施
+
+Figma创建[组件对照文件](https://www.figma.com/design/kmxJzBoxwUrhs5zeqbzOqY)成功。`get_libraries`返回iOS/iPadOS 26与macOS 26，`search_design_system`检索到两套Segmented control。服务将三项检索限制为一项，button/search field未处理。尝试`importComponentSetByKeyAsync`导入iOS组件返回`Not permitted to upsert from library`（`INVALID_ARGUMENT`）；未获得节点、截图或动效参数，文件尚无设计画板，不据此声称复刻Apple kit。账号授权成功与库组件导入权限分开记录。
+
+本地实施：`ModeToggleGroup`增加可选等宽布局，Expression启用，标签简化为RNA/Protein并保留原完整aria-label。分段选中采用600字重，相关区域按压保持尺寸，禁用态明确；`ios-surfaces.css`将本批相关表面样式合并回主要维护段，移除末尾重复规则，修复增强对比度指示边框被覆盖。显式清除旧`.cx-assay-overview > div`五列布局对新等宽控件的影响。正常桌面每项154.5×40px，总宽320px；粗指针最小高度44px。尺寸、颜色、过渡仍是项目适配值，科学内容与来源卡片结构不变。
+
+验证：Browser运行时连接列表为空，使用Playwright CLI。TypeScript/Vite候选构建通过；EGFR RNA↔Protein、重复点击不取消选中、方向键定位/空格激活与2px焦点、Individual cell lines↔Cancer samples通过；单一选中及单一滑块、增强对比度1px边框、减少动态时transition为0s通过。最终短标签再次验证等宽等高和切换，390px页面无根横向溢出且标签无溢出；不是全站/移动端验收。截图`output/playwright/apple-controls-20260929/after.png`已目视核对。发布候选构建到本地8000后再次验证切换和短标签，未推送GitHub或开放公网。
+
+回退：`output/apple-controls-20260929/trial.patch`仅包含本批三个前端文件增量，基于真实修改前工作区生成；`git apply --reverse --check`通过。反向应用后需重新构建。先前所有未提交修改保留。Figma精确组件参考受库导入权限限制，其余本地UI优化可继续。
+
+## 2026-09-29苹果风格整体界面试行
+
+用户认为上一批局部分段控件调整不足，明确授权参考苹果交互、材质与组件体系，且整体字体颜色/背景配色可以优化。本批在现有布局中实施，依据此前核对的Apple HIG；Figma真实kit导入限制仍未解除，本批参数为项目适配值。
+
+- `ios-surfaces.css`维护当前UI主题：外层`#f5f5f7`，阅读面白色，正文`#1d1d1f`、次级`#60616a`、辅助`#6e6e73`，操作蓝`#0066cc`；系统字体优先，统一标题字重/字距。主模块18px、控件9–12px、详情22px圆角，保留模块细框与来源色。修改现有主要规则并补充对应控件段落，没有再叠一份主题文件。共用交互规则通过`--touch-radius`尊重组件圆角，避免来源卡片被覆盖为8px；搜索结果面板同步为18px。
+- `App.tsx`章节导航加入Motion移动选中块，滚动时增加轻阴影；导航采用24px模糊的浅透明表面。头部搜索增加清除/Escape及清除后焦点返回；空输入的提交按钮禁用。390px头部改为导航与搜索两行，避免固定高度造成重叠。
+- `components/ui/filter-select.tsx`基于已安装Radix Select提供浮层选择菜单，接入共用`SelectFilter`：选中勾号、键盘定位/输入匹配、Home/Enter/Escape与焦点返回。使用`filter:`前缀编码空值，输出去掉前缀；All仍返回原空字符串，现有值与来源含义不变。原生科学viewer内的select保留，仅统一其外观。
+- 工具栏、搜索边框、按钮主次及可点击来源卡片反馈统一；详情弹窗采用轻背景模糊、稳定标题栏、独立正文滚动和圆形关闭入口。提示气泡采用深灰表面，加载提示采用局部中性底；保留既有内容切换/展开Motion实现，不声称新增数据加载缓存或旧结果保留机制。
+- 无修改科研处理、原始值、评分方向或独立色板；ClinVar conflicting文字显式保留原色，避免跟随新的UI蓝。表格无列间竖线、评分无底色规则保留。
+
+验证（2026-09-29，工作区Playwright，桌面1440×1080）：TypeScript/Vite最终构建与`git diff --check`通过；EGFR ClinVar来源选择、键盘Home/Enter恢复All、Escape关闭与焦点返回，名称详情开合/焦点返回/正文滚动，搜索清除/Escape，章节单一选中与单一滑块通过。菜单测试等待实际键盘焦点稳定后再按Enter，避免测试事件过快造成误判。首页搜索AQP4并进入P55087通过；390px根页面无横向溢出，头部搜索底部92px在105px头部内、章节导航起点119px，无重叠。减少动态/增强对比度时菜单和弹窗动画关闭、导航/菜单/遮罩模糊关闭、选中边框保留。新UI文字代表组合对比度最低4.658，不代表全站无障碍审计。
+
+截图位于`output/playwright/apple-system-20260929/`：`overview.png`、`menu.png`、`dialog.png`、`expression.png`、`diseases.png`、`home.png`、`search.png`、`narrow.png`；含修改前的overview/expression对照。上述关键画面已目视核对，窄屏图为AQP4。验证摘要`output/apple-system-20260929/verification.json`。本批仅验证受影响路径，不表示所有页面/长菜单/移动设备均已验收。
+
+最终候选构建已复制到工作区`frontend/dist`，保留旧assets并最后替换index。无GitHub推送、无公网部署。用户先前访问`localhost:8000`返回连接拒绝，当前只确认工作区内服务正常；客户端转发尚未恢复，交付以截图和代码为据，不再直接把该URL称为用户可用链接。
+
+增量回退：`output/apple-system-20260929/trial.patch`覆盖本批三个既有文件及新增`filter-select.tsx`，修改前状态在`before/`；反向应用检查通过。回退后重新构建，本批之前的未提交工作保留。
+
+
+## 2026-09-29序列与结构分值配色
+
+用户反馈JSD、PeSTo与binding site在结构中难以区分，给出八色色板并授权优化序列呈现。本批只调整呈现，不修改科学值或数据处理。
+
+- `lib/palette.ts`集中维护`sequenceScoreStops`与`sequenceScoreColor`：0、0.2、0.4、0.6、0.8、1对应`#5292F7`、`#79CAFB`、`#FBEB66`、`#F7A24F`、`#E95351`、`#CC247C`，段间RGB线性插值。六个颜色锚点不是分类阈值，不按蛋白分布或排名重映射；灰色仍表示无分数/无注释，0为蓝色。绿色、紫色未强行加入有序色阶。
+- `sequence-model.ts`的JSD与界面预测映射共用上述函数。`ConservationPlot`、`InterfaceAnnotations`曲线按纵轴分数着色并加轻描边，下方增加逐残基色带；缺失位置保留灰底且不跨缺口连线。原数值读出、片段/partner/类别选择及位点证据入口保留。共享界面色阶也同步用于SPPIDER-seq，未修改其分数含义。
+- `ScoreColorKey.tsx`与`score-color-key.css`共享SVG颜色锚点与图例；结构图例增加0/0.25/0.5/0.75/1刻度。JSD atlas和残基详情图例同步，序列格保留黑/白自适应文字。旧主题端点渐变替换为同一CSS渐变变量，避免代码换色而图例仍是旧色。
+- `featureStyle`将原binding注释单独呈现为Binding site玫红，其余Functional site颜色保留。`StructureViewer`在精确映射的binding残基增加玫红球棍，维持灰色未注释背景；用户选择仍为蓝色球棍。未增加位点、口袋预测或任何分数阈值。
+
+验证：TypeScript/Vite构建及`git diff --check`通过。EGFR 1,210个JSD逐残基色带与接口原值映射全部一致；PeSTo切换Lipid binding后1,210个色块全部一致。键盘JSD读出R2=0.545852，PeSTo读出原值0.00072767236；Enter打开R2证据，Escape关闭。JSD atlas和结构图例已核对新渐变；JSD/PeSTo丝带、PeSTo分子表面以及binding玫红球棍均完成浏览器实页截图核对，无结构着色错误。本地8000复核六个新颜色锚点及1,210个PeSTo色块生效；390px页面无根横向溢出。此为EGFR定向验证，不代表所有蛋白、partner或完整移动端验收。
+
+截图：`output/playwright/sequence-colors-20260929/sequence.png`（含修改前对照）、`structure-jsd.png`、`structure-pesto.png`、`pesto-surface.png`、`structure-binding.png`。验证摘要和独立增量回退：`output/sequence-colors-20260929/verification.json`、`trial.patch`。回退先`git apply --reverse --check output/sequence-colors-20260929/trial.patch`，再反向应用并构建；之前未提交工作保留。本地`frontend/dist`已更新，未推送或公网部署；用户端预览转发仍未验证恢复。
+
+
+### 同日微调：两套柔和连续色阶
+
+用户反馈六色色阶过艳，要求红蓝与蓝黄橙。当前版本替代上文共同六色色阶：JSD为0蓝`#648FC1`→1红`#C96F72`，PeSTo及共用界面预测为0蓝`#648FC1`→0.5浅黄`#EDDA91`→1橙`#D78C52`。中间颜色仍线性插值，0.5只是颜色锚点；无阈值或分数变换。Binding site沿用上一批玫红球棍。
+
+`palette.ts`按`jsd`/`interface`分别维护锚点；`ScoreGradient`、`ScoreColorKey`显式接收色阶类型，序列曲线/色带、结构、atlas及残基详情同步。构建、差异格式检查、EGFR曲线与两类结构图例核对通过；实看JSD丝带与PeSTo表面截图，无着色错误。本地8000构建已更新，2/3个SVG锚点分别生效；未重复无关数据或交互验收。
+
+截图：`output/playwright/sequence-colors-soft-20260929/sequence.png`、`jsd-ribbon.png`、`pesto-surface.png`。独立增量回退为`output/sequence-colors-soft-20260929/trial.patch`，反向应用检查通过。恢复前先检查冲突，回退后重新构建。
+
+
+### 同日更新：用户指定青蓝与酒红色板
+
+用户提供两套完整色板，并确认分别用于JSD浅青→深蓝、PeSTo亮红→酒红。本次仅改`palette.ts`的两组锚点：JSD按9个给定色值由`#CAF0F8`到`#03045E`，PeSTo/SPPIDER按10个给定色值由`#E01E37`到`#641220`。原输入末尾`ff`为完全不透明，代码保留等价六位RGB。锚点均匀分配于0–1并线性插值，0在浅/亮端、1在深端；不作阈值、分位数或非线性重映射。此决定替代上一节蓝红/蓝黄橙的配色，binding site不变。
+
+TypeScript/Vite构建、差异格式与回退检查通过；EGFR序列显示9/10个渐变锚点，实际映射0/0.5/1分别为JSD `#caf0f8/#00b4d8/#03045e`、PeSTo `#e01e37/#ad1e35/#641220`，结构切换与图例正常且无着色错误。已核对序列与两类丝带截图；本地构建更新，未重复数据或整站测试。
+
+截图在`output/playwright/sequence-palette-20260929/`；本次独立回退为`output/sequence-palette-20260929/trial.patch`，仅包含本轮色板调整，应用前先反向检查并在回退后重新构建。
+
+
+## 2026-09-29结构可读性与CATVariant参考
+
+用户认为3D结构直接沿用sequence颜色区分度不足，提供CATVariant截图并询问原理。核查[CATVariant公开结构组件](https://catvariant.com/assets/Results-hYbukpfr.js)：通过`getPy2DmolHtml`加载iframe，并以`CATVARIANT_PY2DMOL_STATE`传入逐残基颜色、选中及映射；不是默认Mol*材质。其代码还将较浅默认灰映射为更深灰。上游[py2Dmol](https://github.com/sokrypton/py2Dmol)说明可交互的结构投影、管状/插画表示及描边、宽度、光照控制。截图可见粗色块、轮廓与较平的着色，但无图例，未推断截图颜色的科学类别或声称取得其确切渲染参数。参考源码保存在`output/structure-rendering-20260929/reference/`。
+
+[Mol*官方Quick Styles](https://molstar.org/viewer-docs/tips/quick-styles/)支持描边与ignore-light；结合当前安装包实现，本批保留现有Mol*引擎、坐标和科学色标，只改表示/材质。`StructureViewer.tsx`默认Residue backbone（圆柱/球骨架，sizeFactor 0.55），同时保留Ribbon与Molecular surface。新增Appearance选择：默认Clear colours · outlined；Depth shading保留立体着色。平色模式对主体与选中/结合位点球棍统一ignoreLight；白底、1px灰描边（threshold 0.33），关闭深度雾、遮蔽与投射阴影；表面不再开启illumination路径追踪。`viewers.css`桌面视口由420增至540px，窄屏沿用340px。色阶、0–1方向、位点映射及序列外观不变。
+
+实页检查发现并修复初载时序问题：PDBe `render()`只完成UI初始化并启动`load()`，不会等待模型。旧代码立即`setReady(true)`，可能先画空结构、后被加载完成的默认pLDDT/cartoon覆盖。本批在render前订阅`events.loadComplete`，成功后才启用着色；失败显示加载错误，清理时取消订阅。该修复是本轮确保颜色实际生效所必需，非修改科学数据。
+
+验证：TypeScript/Vite构建、`git diff --check`及增量回退检查通过。EGFR初载后选择JSD，读取实际渲染器确认backbone、sizeFactor 0.55、ignoreLight=true、outline开启、fog/illumination关闭，overpaint为1211层（灰底＋1210个残基）。完成JSD/PeSTo实图、三种表示和两种外观切换；shaded实际outline关闭，骨架/球棍ignoreLight=false。M1选择在外观切换后保留，清除与重置通过，无结构着色错误。未进行全站、多模型、全部蛋白或性能基准验收。
+
+截图`output/playwright/structure-rendering-20260929/`含`jsd-backbone.png`、`pesto-backbone.png`、`pesto-ribbon.png`、`pesto-surface.png`。`before.png`保留初载旧实现现象，不作为同分数受控A/B对照。用户截图跨色相色块也贡献可分辨性，不能据此保证相近连续值获得同等色差；当前保留用户已确认色阶，不新增分箱、阈值或分位数重映射。
+
+验证摘要及独立增量回退位于`output/structure-rendering-20260929/verification.json`和`trial.patch`。补丁仅涉及本批两个文件；反向应用前先检查，再重新构建。最终候选已更新本地`frontend/dist`；无GitHub推送或公网部署，用户端转发可用性仍未确认。
+
+
+### 同日更新：协调取色，缩减色相跨度
+
+用户提供新的JSD和binding色板，明确不要求严格串联所有色值，要求符合当前界面风格。本次选取JSD `#A8DADC/#457B9D/#1D3557`（雾蓝/钢蓝/藏蓝），binding界面预测 `#56CFE1/#5390D9/#6930C3`（青蓝/天蓝/靛紫），分别作为0/0.5/1显示锚点。采用给定色板子集，避免整串色相跳变；原值保持连续线性插值，未作分箱或科学阈值。UniProt binding site及其球棍同步改为`#6930C3`，结构提示改为不绑定色名的Coloured sticks，避免后续配色变化留下过时文案。此节替代之前完整青蓝/酒红两套色阶和玫红binding site。
+
+仅修改`palette.ts`与上述结构提示。TypeScript/Vite构建、差异格式与回退检查通过；EGFR曲线/色带的两组图例与锚点一致，三种着色模式切换正常，binding site图例为rgb(105,48,195)，无结构着色错误。已核对序列、JSD骨架、PeSTo骨架及结合位点截图；现有描边平色保留，不重复无关交互或数据测试。本地构建已更新。
+
+截图`output/playwright/sequence-coordinated-20260929/`：`sequence.png`、`jsd.png`、`binding.png`、`binding-sites.png`。独立回退`output/sequence-coordinated-20260929/trial.patch`反向检查通过；仅回退本轮两个文件增量，应用后重新构建。
+
+
+## 2026-09-29恢复GitHub配色与立体默认模式
+
+用户反馈当前结构观感略失真，要求保留并优化此前模式，JSD与binding回退GitHub提交版。`git fetch origin main`后确认远端与本地HEAD均为`2dffcfb63906f6296c42b57dec3d08241f95d0e7`；定向读取提交中的`sequence-model.ts`，通过现有共用色板恢复JSD `#F5F0FF`→`#8055C0`、PeSTo/SPPIDER `#E0F2FE`→`#2563EB`→`#6D28D9`，独立binding site回到提交原有的`#DB2777`玫红。此决定替代上节青蓝/靛紫协调取色。仅恢复颜色映射，保留逐残基色带、图例、atlas与结合位点球棍等近期功能。
+
+`StructureViewer.tsx`恢复Ribbon＋Depth shading为默认；Molecular surface和新增Residue backbone、Clear colours描边均可选。骨架sizeFactor由0.55降至0.35，减少粗管拥挤；描边由深灰改为浅灰，三种表示均增加轻局部遮蔽，立体模式采用0.55环境光＋0.45方向光。保留白底、关闭深度雾，表面使用实时光照而非旧路径追踪；无坐标修改。沿用`loadComplete`着色时序修复及540px视口。
+
+验证：TypeScript/Vite构建、差异格式与增量反向应用检查通过。两套映射各取1001个0–1分值，与GitHub原函数逐一比对共2002次，无差异。EGFR六种表示/外观组合均实际检查，JSD overpaint均1211层（灰底＋1210个残基），描边与ignoreLight状态正确，轻遮蔽开启。PeSTo表面和binding site丝带完成截图核对；M1跨外观切换保留，清除选择与重置相机正常，无结构告警。首次交互脚本在清除后等待已移除的状态节点超时；修正为检查节点数量后通过，属于检查脚本问题。未进行全蛋白或性能基准验收。
+
+截图位于`output/playwright/structure-restore-20260929/`；`output/structure-restore-20260929/verification.json`保存验证摘要，`trial.patch`仅含本轮两个前端文件增量。应用回退前先反向检查并重新构建。本地`frontend/dist`已更新，8000返回入口与候选构建一致；未推送GitHub或公网部署，用户端转发仍未验证。
+
+
+### 同日更新：骨架采用独立插画外观
+
+用户要求Residue backbone模仿CATVariant，在之前粗骨架平色版本上优化渲染。本批只改骨架参数与外观切换：sizeFactor恢复0.55、保留圆柱/球接头、网格回退径向分段24、哑光材质；默认灰轮廓`#697582`与平色，局部遮蔽radius 4、bias 0.8、灰蓝遮蔽色`#798797`，帮助区分重叠。可选Depth shading采用0.7环境光与0.3方向光。保持原坐标、GitHub配色、分数映射和当前相机，不声称复刻py2Dmol的完整渲染方式。
+
+外观选择改为按表示分别保存在当前组件会话中：初始Ribbon/shaded、Molecular surface/shaded、Residue backbone/outlined；用户切换外观后再切换表示，保留各自选择。丝带与表面的渲染参数不变，默认仍是Ribbon。
+
+TypeScript/Vite构建、差异格式与增量反向检查通过。EGFR实页核对骨架sizeFactor 0.55、ignoreLight、轮廓、遮蔽参数，JSD覆盖1211层（灰底＋1210残基）；PeSTo截图、三模式默认外观切换、M1选中跨外观切换及清除通过，无结构告警。本地8000构建已更新；未做全蛋白/性能测试，未推送或公网部署。
+
+截图`output/playwright/backbone-illustrative-20260929/jsd.png`、`pesto.png`；验证摘要和本轮单文件增量回退位于`output/backbone-illustrative-20260929/verification.json`、`trial.patch`。回退前反向检查，再重新构建。
+
+
+## 2026-09-29QTL坐标轨道与互作入口精简
+
+状态更新：用户随后要求删除QTL轨道；该功能已撤除，下面的轨道实现与验证仅为历史记录。互作入口精简仍适用，当前配色见文末“QTL轨道撤除与配色统一”。
+
+按用户四条批注完成：
+
+- 互作继续使用上方IntAct/BioGRID来源卡片及集合卡片；删除下方重复Source/Collection下拉框，尚未选定集合时不显示空记录区。选定后保留相互作用类型、检测方法筛选和来源证据范围。
+- QTL类型按钮保留单层可点击外框，内部apaqtl/eqtl/sqtl改为纯文字；说明区由黄色底/边框改为项目浅中性灰、细边及12px圆角。科学P值和来源阈值保持原规则。
+- 增加QTL genomic distribution：读取PostgreSQL，覆盖当前来源、类型及组织的全部记录，不受表格已加载页数限制；同版本/染色体/坐标合并为一个点并保留记录计数。密集点仅在绘制时分组，点击分组放大后可选择单个坐标；点选后表格仅显示该坐标记录并获得焦点，Show all positions恢复全部记录。
+- 保留不同assembly和染色体，未提供有效坐标或assembly的记录不画点并明确计数、仍保留在原表。该视图是来源基因组坐标轨道，不画未经入库确认的基因边界、外显子或DNA碱基，不执行liftover。点颜色仅指示交互选择，不表示显著性。
+
+实现：`QtlPositionViewer.tsx`、`ContextPanels.tsx`、`qtl-tissue-browser.css`；API `GET /api/proteins/{accession}/qtl/positions`及现有QTL记录接口新增成组的chromosome/position/assembly筛选。坐标筛选在来源行排序编号后应用，保留原record_id；游标绑定坐标和版本，避免跨筛选复用。来源或组织/类型切换清除已选坐标。
+
+验证（2026-09-29）：5项定向测试通过，包括版本分轨/坐标缺失、完整范围与同坐标多记录、原record_id一致、点选后的cursor/offset、原跨dataset分页、组织筛选与空结果。EGFR GTEx为1,546条/700个坐标；apaQTL为39条/34坐标；皮下脂肪sQTL为11条/9坐标；QTLbase为29,113条/6,494坐标/21条染色体轨道，完整计数吻合。首次坐标查询分别约0.06–0.11秒（GTEx）和0.80秒（QTLbase）；此为EGFR局部实测。
+
+TypeScript/Vite构建通过，本地8000 API服务已重启更新。1414×827浏览器核对提示区实际背景rgb(245,245,247)、边框rgb(229,229,233)；点簇放大、点选至单条原始记录、清除位置回到39条、IntAct来源→Full collection进入10条分页且无重复Choose控件通过。浏览器无JS错误，仅既有Molstar截图触发WebGL性能提示。截图位于`output/playwright/qtl-navigation-20260929/{qtl,selected-position,interactions}.png`。不据此宣称完成全站或手机验收。
+
+
+## 2026-09-29QTL轨道撤除与配色统一
+
+用户要求删除轨道并跟随后续全站配色，本次替代上面的QTL轨道试行。已移除`QtlPositionViewer`、专用坐标API/辅助模块及其测试，原QTL接口恢复既有来源/组织/类型筛选与分页。前端自动清除旧URL的qtl_chromosome/qtl_position/qtl_assembly，避免残留位置筛选。互作来源/集合入口精简继续保留。
+
+QTL样式在`ios-surfaces.css`中按`#qtl`限定，复用当前全站surface/text/border/primary变量：去金色模块强调、彩色数量和绿色P值底块；白底、浅灰说明区、细灰边、柔和蓝色组织统计条和蓝色交互状态。类型文字不套彩色框，来源卡片/类型按钮明确标示选中态；身体示意图原有解剖区域色保留。原来源阈值和自定义P值比较逻辑、全部记录及临床含义不变。
+
+验证：TypeScript/Vite构建与原QTL跨dataset分页测试通过；1414×827实页确认轨道0、旧坐标参数已清除、apaQTL完整39条；P值命中文字为rgb(0,102,204)且底色透明，说明区为rgb(245,245,247)、组织条rgb(144,189,235)。自定义参考1e-6产生24条命中/15条其他，仍为39条。记录和组织面板截图在`output/playwright/qtl-restyle-20260929/`（截图时仅临时隐藏悬浮导航遮挡，不修改页面功能）。本地8000服务及构建已更新。

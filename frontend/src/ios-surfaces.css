@@ -1,0 +1,395 @@
+/* memVar Apple-inspired interface: grouped reading surfaces and floating controls.
+   Scientific fills are defined in lib/palette.ts and remain separate from UI states. */
+html:root {
+ --blue-1:#fbfdff; --blue-2:#f3f8ff; --blue-3:#eaf3ff; --blue-4:#ddeeff;
+ --blue-5:#cce4ff; --blue-6:#b6d7fb; --blue-7:#90bdeb; --blue-8:#639bd6;
+ --blue-9:#0071e3; --blue-10:#005bb8; --blue-11:#0066cc; --blue-12:#163c65;
+ --primary:var(--blue-11); --primary-foreground:#fff; --focus:var(--blue-11);
+ --canvas:#f5f5f7; --background:var(--canvas); --card:#fff; --surface:#fff;
+ --surface-subtle:#f5f5f7; --secondary:var(--surface-subtle); --surface-selected:var(--blue-3);
+ --foreground:#1d1d1f; --text:var(--foreground); --text-secondary:#60616a;
+ --text-tertiary:#6e6e73; --muted:var(--text-secondary); --muted-foreground:var(--text-secondary);
+ --border:#e5e5e9; --border-strong:#c7c8ce;
+ --panel-line:#dedee4; --panel-radius:18px; --group-radius:12px;
+ --shell-smart-blue:var(--primary); --shell-sapphire:var(--primary); --shell-navy:var(--text);
+ --shell-ink:var(--text); --shell-secondary:var(--text-secondary); --shell-muted:var(--text-tertiary);
+ --shell-cerulean:var(--primary); --portal-heading:var(--text); --portal-focus:var(--focus);
+ --portal-canvas:var(--canvas); --portal-tint:var(--surface-subtle); --portal-line:var(--border);
+ --portal-selected:var(--surface-selected); --portal-hover:var(--blue-4);
+ --ios-blue:var(--primary); --ios-line:var(--border);
+ --ios-font:-apple-system,BlinkMacSystemFont,Inter,"Segoe UI",sans-serif;
+ --ios-settle:cubic-bezier(.2,.8,.2,1); --ios-press:80ms; --ios-release:160ms;
+ --shadow-surface:0 2px 8px #1d1d1f04; --shadow-floating:0 24px 80px #1d1d1f26,0 4px 16px #1d1d1f0f;
+ --shadow-menu:0 12px 36px #1d1d1f1c,0 2px 8px #1d1d1f0a;
+ --control-height:36px;
+}
+body{font-family:var(--ios-font);background:var(--canvas);color:var(--text);-webkit-font-smoothing:antialiased}
+.site-header nav a,.section-nav a,[data-slot=dialog-content]>.dialog-heading h2{font-family:var(--ios-font)}
+.site-header,.home-header.site-header{background:#fff;border-color:var(--border);box-shadow:none}
+.section-nav{background:#fff;border:1px solid #dedee4b3;border-radius:18px;margin:14px 0 24px;top:12px;padding:7px;gap:3px;box-shadow:0 1px 3px #1d1d1f05;scrollbar-width:none;transition:box-shadow 180ms ease,background-color 180ms ease}
+.section-nav[data-floating=true]{box-shadow:0 8px 28px #1d1d1f12,0 1px 4px #1d1d1f08}
+@supports(backdrop-filter:blur(16px)){
+ .site-header,.home-header.site-header,.section-nav{background:#ffffffd9;backdrop-filter:blur(24px) saturate(140%);-webkit-backdrop-filter:blur(24px) saturate(140%)}
+}
+.section-nav a[class*="nav-"]{position:relative;isolation:isolate;flex-shrink:0;min-height:36px;padding:7px 13px;border-radius:11px;color:var(--text-secondary);text-decoration:none;font-size:13px;font-weight:500}
+.section-nav a[class*="nav-"].active{background:transparent;color:var(--primary);box-shadow:none}
+.section-nav-indicator{position:absolute;inset:0;z-index:-1;border-radius:11px;background:var(--surface-selected);border:1px solid #cce4ff99;pointer-events:none}
+.section-nav a[class*="nav-"].active svg{color:var(--primary)}
+.panel,.cx-panel,#overview .ov-section{border:0;border-radius:0;background:var(--surface);box-shadow:none}
+#overview .ov-section>header{background:transparent;border-radius:16px 16px 0 0}
+#overview .ov-section-action{border-radius:0 0 16px 16px}
+#overview .ov-identity .ov-identity-fields>div{border-radius:9px;background:var(--surface-subtle)}
+#overview .ov-source-launchers>button,#membrane-association .mov-compact-sources>button{border-radius:11px;background:var(--surface-subtle);box-shadow:none}
+#overview .fc-category{border-radius:9px}
+#overview .fc-category[data-state=active]{background:var(--surface-selected);color:var(--primary);box-shadow:none}
+#expression .cx-assay-overview{border:1px solid var(--border);border-radius:14px;background:#fafbfd;box-shadow:none}
+#expression .cx-assay-overview>header{border-color:var(--border)}
+#expression .cx-expression-database{border:0;border-radius:10px;background:var(--surface-subtle)}
+#expression .cx-expression-collections button{border:1px solid var(--border);border-radius:11px;background:var(--surface);box-shadow:none}
+#expression .cx-expression-collections button:hover{background:var(--blue-2);border-color:var(--border-strong)}
+#expression .cx-expression-collections button.is-selected{background:var(--surface-selected);border-color:var(--blue-7);box-shadow:none;color:var(--blue-12)}
+#expression .cx-expression-collections button.is-selected>svg{color:var(--primary)}
+#diseases .cx-disease-sources .cx-disease-card:not(:disabled){border-radius:12px;border:1px solid var(--border);border-top:3px solid var(--cx-source);background:var(--surface);box-shadow:none}
+#diseases .cx-disease-sources .cx-disease-card:not(:disabled):hover{background:var(--blue-2);box-shadow:none}
+#diseases .cx-disease-sources .cx-disease-card.is-selected{background:var(--surface-selected);border-color:var(--blue-7)}
+#variants .vc-category-panel{border-radius:12px;border-color:var(--border);background:var(--surface)}
+#variants .vc-catalog .vc-filter-group{background:transparent;border:0;border-radius:10px}
+#variants .vc-catalog .vc-filters{border:0;border-radius:0;background:transparent;padding:12px 0;gap:20px}
+#variants .vc-catalog .vc-filter-group legend,#variants .vc-catalog .vc-filter-group legend svg{color:var(--text-secondary)}
+#variants .vc-catalog .vc-filter-group .vc-search>button{background:var(--surface-selected);color:var(--primary);border:0;border-radius:0 8px 8px 0}
+/* Apple HIG-inspired grouping; dimensions and motion remain memVar choices. */
+.mode-toggle-group,#expression .cx-expression-types{background:#f3f5f8;border:0;border-radius:11px;padding:3px;box-shadow:none}
+.mode-toggle-group .mode-toggle-item{--touch-scale:1;border:0;border-radius:8px;min-height:32px;color:var(--text-secondary);background:transparent}
+.mode-toggle-group .mode-toggle-item[data-state=on]{color:var(--blue-12);background:transparent;font-weight:600}
+.mode-toggle-group .mode-toggle-item:disabled{opacity:.45;cursor:not-allowed}
+.mode-toggle-group .mode-toggle-indicator{border-radius:8px;background:#fff;border:0;box-shadow:0 1px 3px #233d6015}
+.mode-toggle-group[data-equal-width]{display:inline-grid;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);align-items:stretch;max-width:100%}
+.mode-toggle-group[data-equal-width] .mode-toggle-item{min-width:0}
+#expression .cx-assay-overview .cx-expression-types{width:320px;max-width:100%;gap:3px;padding:4px;border-radius:13px;margin-bottom:18px}
+#expression .cx-assay-overview .cx-expression-types .mode-toggle-item{--touch-radius:9px;min-height:40px;padding:7px 12px;border-radius:9px;font-size:14px;line-height:1.4}
+#expression .cx-expression-types .mode-toggle-indicator{border-radius:9px}
+#expression .cx-expression-types .mode-toggle-label{justify-content:center;text-align:center}
+:where(.toolbar,.viewer-search,.vc-filter-group) :is(input:not([type=checkbox]),select){border-radius:8px;border-color:var(--border-strong);background:var(--surface)}
+button[data-slot=button],.toolbar button[data-slot=button],:where(#expression,#qtl,#interactions,#diseases,.dialog-body) .toolbar button[data-slot=button]{--touch-radius:10px;border-radius:10px;font-weight:500}
+button[data-slot=button][data-variant=default]{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:inset 0 1px 0 #ffffff26,0 1px 2px #1d1d1f14}
+button[data-slot=button][data-variant=default]:not(:disabled):hover{background:var(--blue-10)}
+button[data-slot=button][data-variant=default]:not(:disabled):active{background:var(--blue-12)}
+button[data-slot=button][data-variant=outline]{background:var(--surface);border-color:var(--border-strong);color:var(--text);box-shadow:0 1px 2px #1d1d1f05}
+button[data-slot=button][data-variant=outline]:not(:disabled):hover{background:var(--blue-2)}
+[data-slot=dialog-overlay]{background:#1d1d1f40;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+[data-slot=dialog-content]:has(>.dialog-heading){border-radius:22px;border:1px solid #ffffffa0;background:var(--surface);box-shadow:var(--shadow-floating)}
+[data-slot=dialog-content]>.dialog-heading{background:#fafafc;border-color:var(--border);padding:18px 24px}
+[data-slot=dialog-content]>.dialog-heading h2{font-weight:600;letter-spacing:-.025em;color:var(--text)}
+[data-slot=dialog-content]>.dialog-heading button{border:0;border-radius:50%;width:36px;height:36px;background:#eaeaec;color:var(--text-secondary)}
+[data-slot=dialog-content]>.dialog-heading button:hover{background:var(--blue-4)}
+[data-slot=dialog-content]>.dialog-body{background:var(--surface)}
+[data-slot=dialog-content] .field-grid>div{border-radius:9px;background:var(--surface-subtle)}
+:is(button,a,input,select):focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+
+/* Typography and reading hierarchy. Scientific labels and marks keep their own styles. */
+.report .section-heading h2,.report .cx-heading h2,#overview .ov-section>header h3,
+.report .ov-identity-heading h1,.db-intro h1,.page-intro h1,.home-hero h1{
+ font-family:var(--ios-font);color:var(--text);font-weight:600;letter-spacing:-.025em;
+}
+.report .section-heading h2,.report .cx-heading h2{font-size:23px;line-height:1.25}
+#overview .ov-section>header h3{font-size:19px;line-height:1.3}
+.report .section-heading p,.report .cx-heading p,.header-description,.db-intro>p,.page-intro>p{color:var(--text-secondary);line-height:1.6}
+.report :is(.section-heading,.cx-heading) .heading-icon{background:var(--surface-subtle);color:var(--primary);border-radius:12px;box-shadow:none}
+#overview .ov-section>header .ov-section-icon{background:var(--surface-subtle);color:var(--primary);border-radius:9px}
+.report>.panel,.report>.cx-panel{margin-bottom:24px}
+.catalog-search-page .panel{border:1px solid var(--panel-line);border-radius:var(--panel-radius);background:#fff;box-shadow:var(--shadow-surface)}
+.site-footer{color:var(--text-secondary);border-color:var(--border);font-size:13px}
+.site-footer a{color:var(--primary)}
+.home-page{background:var(--surface);color:var(--text)}
+.home-header .home-header-nav a{background:transparent;color:var(--text-secondary);border-radius:9px;font-weight:500}
+.home-header .home-header-nav a:hover{background:var(--surface-subtle);color:var(--primary)}
+.home-subtitle,.home-count,.home-example-card p{color:var(--text-secondary)}
+.db-section,.db-doc-section,.db-metric-card,.home-example-card,.catalog-filters{border-color:var(--panel-line);border-radius:var(--panel-radius);box-shadow:var(--shadow-surface)}
+
+/* Search is one field with a clear control and one primary action. */
+.site-header .header-search{min-height:40px;padding:4px 5px 4px 12px;gap:8px;background:#ededf0;border:1px solid transparent;border-radius:12px;color:var(--text-tertiary)}
+.site-header .header-search:focus-within{background:#fff;border-color:var(--primary);box-shadow:0 0 0 3px #0066cc1a}
+.site-header .header-search input{flex:1;min-width:0;width:100%;padding:2px 0;font-size:13px;color:var(--text);outline:none}
+.site-header .header-search input::placeholder{color:var(--text-tertiary)}
+.site-header .header-search button{display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;padding:0;border:0;border-radius:8px;transition:background-color 140ms ease,transform 100ms ease}
+.site-header .header-search .header-search-clear{background:transparent;color:var(--text-secondary);flex-basis:24px;width:24px;height:24px;border-radius:50%}
+.site-header .header-search .header-search-clear:hover{background:#dcdce1}
+.site-header .header-search .header-search-submit{background:var(--primary);color:#fff}
+.site-header .header-search .header-search-submit:disabled{background:#dddde3;color:#777781;opacity:1;cursor:default}
+.site-header .header-search button:active:not(:disabled){transform:scale(.95)}
+.site-header .database-nav>a{min-height:36px;display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border-radius:9px;color:var(--text-secondary);font-size:13px;text-decoration:none}
+.site-header .database-nav>a:hover{background:var(--surface-subtle);color:var(--primary)}
+.home-search{border:1px solid var(--border-strong);border-radius:16px;box-shadow:0 6px 24px #1d1d1f08;background:#fff}
+.home-search:focus-within{border-color:var(--primary);box-shadow:0 0 0 4px #0066cc14,0 6px 24px #1d1d1f08}
+.home-search>button{border-radius:11px;background:var(--primary);font-weight:500}
+
+/* Compact desktop controls; no appearance reset on scientific canvases or checkboxes. */
+:is(.toolbar,.viewer-search,.catalog-filters,.ov-location-controls,.vc-filter-fields) :is(input:not([type=checkbox]):not([type=range]),select),.page-jump input{
+ min-height:var(--control-height);border:1px solid var(--border-strong);border-radius:9px;background:var(--surface);color:var(--text);font-size:13px;
+ transition:border-color 140ms ease,box-shadow 140ms ease;
+}
+:is(.toolbar,.viewer-search,.catalog-filters,.ov-location-controls,.vc-filter-fields) :is(input:not([type=checkbox]):not([type=range]),select):focus-visible,.page-jump input:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.toolbar .filter>label,.toolbar .filter>span{font-size:12px;font-weight:500;color:var(--text-secondary)}
+.toolbar .filter{gap:6px}
+#variants .vc-catalog .vc-filter-group .vc-search{border-radius:10px;border-color:var(--border-strong);min-height:36px;background:#fff}
+#variants .vc-catalog .vc-filter-group .vc-search>button{border-radius:0 9px 9px 0}
+.toolbar button[data-slot=button][data-variant=outline],:where(#expression,#qtl,#interactions,#diseases,.dialog-body) .toolbar button[data-variant=outline]{color:var(--text);border-color:var(--border-strong);background:#fff}
+
+/* Portaled menus share the floating surface, with native keyboard/type-ahead behavior. */
+.filter-select-trigger{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:36px;max-width:100%;padding:7px 10px;border:1px solid var(--border-strong);border-radius:9px;background:#fff;color:var(--text);font-family:inherit;font-size:13px;text-align:left;box-shadow:0 1px 2px #1d1d1f05;transition:border-color 140ms,box-shadow 140ms,background-color 140ms}
+.filter-select-trigger>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.filter-select-trigger>span:last-child{display:flex;flex:none;color:var(--text-secondary)}
+.filter-select-trigger:hover{background:var(--surface-subtle);border-color:#a4a5ae}
+.filter-select-trigger[data-state=open]{border-color:var(--primary);box-shadow:0 0 0 3px #0066cc14}
+.filter-select-trigger:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.filter-select-content{z-index:70;min-width:var(--radix-select-trigger-width);max-width:min(440px,calc(100vw - 24px));max-height:min(360px,var(--radix-select-content-available-height));padding:5px;border:1px solid #d9d9df;border-radius:12px;background:#fffffff5;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:var(--shadow-menu);color:var(--text);transform-origin:var(--radix-select-content-transform-origin);animation:ios-menu-in 130ms var(--ios-settle)}
+.filter-select-viewport{padding:0}
+.filter-select-option{position:relative;display:flex;align-items:center;gap:12px;min-height:34px;padding:7px 32px 7px 10px;border-radius:7px;font-size:13px;line-height:1.4;cursor:pointer;user-select:none;outline:none;overflow-wrap:anywhere}
+.filter-select-option[data-state=checked]{color:var(--primary);font-weight:600}
+.filter-select-option[data-highlighted]{background:var(--primary);color:#fff}
+.filter-select-check{position:absolute;right:9px;display:flex;align-items:center}
+.filter-select-scroll{display:flex;align-items:center;justify-content:center;height:22px;color:var(--text-secondary)}
+@keyframes ios-menu-in{from{opacity:0;transform:translateY(-3px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+/* Content cards remain opaque; elevation is reserved for actionable surfaces. */
+#expression .cx-expression-collections button,.cx-disease-sources .cx-disease-card,.cx-metrics .cx-metric{--touch-radius:var(--group-radius);--touch-shadow:0 3px 10px #1d1d1f09}
+#expression .cx-expression-database strong,#expression .cx-assay-overview>header h3,#diseases .cx-disease-source-title strong,#diseases .cx-disease-count strong{color:var(--text)}
+#expression .cx-expression-collections button strong{color:var(--text);font-weight:550}
+#expression .cx-expression-collections button.is-selected strong{color:var(--primary)}
+#expression .cx-expression-collections :is(button small,.cx-expression-method){color:var(--text-secondary)}
+#expression .cx-assay-overview>header p{color:var(--text-secondary)}
+#expression .cx-assay-overview>header{border-bottom-color:var(--border)}
+.report .state-loading{min-height:104px;border:1px solid var(--border);border-radius:12px;background:var(--surface-subtle);font-size:13px;color:var(--text-secondary);gap:10px}
+.state-loading>.spin{color:var(--primary)}
+[data-slot=tooltip-content]{background:#29292e;color:#fff;border:1px solid #ffffff1a;border-radius:9px;box-shadow:0 4px 14px #1d1d1f24;font:12px/1.5 var(--ios-font);padding:8px 11px}
+[data-slot=tooltip-content]>svg{background:#29292e;fill:#29292e}
+
+/* Catalog: open white table, horizontal rules, clear text and anchored identity. */
+#variants .vc-main-table.vc-scroll{border:0;border-radius:0;background:var(--surface);box-shadow:none;isolation:isolate}
+#variants .vc-main-table .data-table{border-collapse:separate;border-spacing:0}
+#variants .vc-main-table .data-table thead th{background:#f3f5f8;border:0;border-bottom:1px solid #dce2ea;padding:14px 12px;vertical-align:top;font-size:12px;font-weight:650;line-height:1.45;color:var(--text)}
+#variants .vc-main-table .data-table thead th>span{display:block}
+#variants .vc-main-table .data-table thead .vc-predictor-heading{font-size:12px;font-weight:650;color:var(--text)}
+#variants .vc-main-table .data-table thead :is(small,.vc-predictor-direction){display:block;font-size:11px;line-height:1.45;font-weight:400;color:var(--text-secondary);margin-top:4px}
+#variants .vc-main-table .data-table :is(th,td):is(:nth-child(2),:nth-child(6),:nth-child(8),:nth-child(9)){border-left:0}
+#variants .vc-main-table .data-table td{padding:10px 12px;line-height:1.45;border-bottom:1px solid #edf0f3;color:var(--text);font-size:13px;vertical-align:middle}
+#variants .vc-main-table .data-table tbody tr{--row-surface:#fff;background:var(--row-surface)}
+#variants .vc-main-table .data-table tbody tr:nth-child(even){--row-surface:#fafafa;background:var(--row-surface)}
+#variants .vc-main-table .data-table tbody tr:is(:hover,:focus-within){--row-surface:#f1f6fc;background:var(--row-surface)}
+#variants .vc-main-table .data-table :is(th,td):first-child{position:sticky;left:0;padding-left:16px;border-right:0}
+#variants .vc-main-table .data-table td:first-child{background:var(--row-surface);z-index:1}
+#variants .vc-main-table .data-table th:first-child{z-index:3}
+#variants .vc-main-table .data-table tbody tr:is(:hover,:focus-within) td:first-child{box-shadow:none}
+#variants .vc-main-table .vc-genomic{gap:5px}
+#variants .vc-main-table .vc-genomic strong{font-size:13px;font-weight:650;color:var(--primary);font-variant-numeric:tabular-nums;letter-spacing:-.015em}
+#variants .vc-main-table .vc-genomic>span{font-size:11px;letter-spacing:.03em;color:var(--text-secondary)}
+#variants .vc-main-table :is(.vc-position strong,.vc-af-value strong){font-size:13px;font-weight:550;font-variant-numeric:tabular-nums;color:var(--text)}
+#variants .vc-main-table .vc-aa{display:inline-grid;place-items:center;border-radius:6px;background:transparent;color:#52647b;min-width:26px;min-height:28px;font:600 12px ui-monospace,SFMono-Regular,Consolas,monospace}
+#variants .vc-main-table .vc-aa-alt{background:transparent;color:var(--primary)}
+#variants .vc-main-table .vc-effect{font-size:13px;font-weight:550;line-height:1.5;padding:0}
+#variants .vc-main-table .vc-transcript-label{font-size:11px;font-weight:400;color:var(--text-secondary);margin-top:4px}
+#variants .vc-main-table .vc-source-list{gap:3px 9px;align-items:flex-start}
+#variants .vc-main-table .vc-source{display:inline-flex;border:0;border-radius:4px;background:transparent;color:var(--primary);font-size:12px;font-weight:500;letter-spacing:0;padding:2px 0;line-height:1.25}
+#variants .vc-main-table .vc-source:hover{background:var(--blue-4);border-color:var(--blue-7)}
+#variants .vc-main-table .vc-clinical{font-size:13px;font-weight:550;line-height:1.4;padding:0;background:transparent}
+#variants .vc-main-table .vc-score-cell{padding:6px 7px;border-radius:7px}
+#variants .vc-main-table .vc-score-cell:hover{background:#dde8f780}
+#variants .vc-main-table .vc-prediction.is-compact>strong{display:flex;align-items:center;gap:7px;font-size:14px!important;font-weight:600;font-variant-numeric:tabular-nums;color:var(--text)}
+#variants .vc-main-table .vc-score-cell .vc-pred{font-size:12px;font-weight:400;margin-left:0;line-height:1.4}
+#variants .vc-main-table .vc-missing{color:#738198;font-size:13px}
+#variants .vc-main-table .vc-more{border-radius:7px;color:var(--primary);background:transparent}
+#variants .vc-main-table .vc-more:hover{background:var(--blue-4)}
+:is(.vc-catalog,.vc-detail) .vc-clinical-pathogenic,.vc-pred-damaging{color:var(--evidence-damaging)}
+:is(.vc-catalog,.vc-detail) .vc-clinical-benign,.vc-pred-tolerated{color:var(--evidence-tolerated)}
+:is(.vc-catalog,.vc-detail) .vc-clinical-uncertain,.vc-pred-uncertain{color:var(--evidence-uncertain)}
+:is(.vc-catalog,.vc-detail) .vc-clinical-conflicting{color:#285d9b}
+#variants .vc-main-table .ve-stars{color:#896f36}
+
+/* Atlas and track colours share one semantic palette with their legends. */
+.atlas-v3 .atlas-colour-key i.atlas-gradient{background:var(--sequence-jsd-gradient)}
+.atlas-v3 .atlas-boundary-key i.membrane-key{border-color:var(--sequence-membrane)}
+.atlas-v3 .atlas-boundary-key i.domain-key{border-color:var(--sequence-domain)}
+.atlas-v3 .atlas-source-entry,.atlas-legend-group,.atlas-overlay-group{border-radius:10px;background:var(--surface-subtle);border-color:var(--border)}
+.atlas-v3 .atlas-position-preview{border-radius:9px;color:var(--text-secondary);background:var(--blue-2)}
+.atlas-v3 .atlas-amino{border-radius:4px;transition:outline-color 120ms ease;box-shadow:inset 0 0 0 1px #233d600b}
+.atlas-v3 .atlas-amino:is(:hover,:focus-visible,:active){transform:none;outline-color:var(--primary)}
+.atlas-v3 .atlas-amino:is(:hover,:focus-visible) .atlas-ptm-dots i{transform:none}
+.atlas-v3 .atlas-amino.search-match{outline-color:var(--primary)}
+.atlas-preview-ptm{color:var(--evidence-damaging)}
+.composite-track-label strong,.compact-track-legend{color:var(--text-secondary)}
+
+/* Shared timing; only small controls scale. Dense scientific content stays still. */
+:is(button[data-slot=button],.mode-toggle-item,.section-nav a[class*="nav-"],#expression .cx-expression-collections button,[data-slot=dialog-content]>.dialog-heading button){
+ transition:transform var(--ios-release) var(--ios-settle),background-color var(--ios-release) ease,border-color var(--ios-release) ease,box-shadow var(--ios-release) ease;
+ -webkit-tap-highlight-color:transparent;
+}
+:is(button[data-slot=button],.mode-toggle-item,[data-slot=dialog-content]>.dialog-heading button):not(:disabled):not([aria-disabled=true]):active{transform:scale(.98);transition-duration:var(--ios-press)}
+.section-nav a[class*="nav-"],#expression .cx-expression-collections button{transform:none}
+#overview .mov-compact-sources>button,#overview .ov-source-launchers>button,.cx-metric,.cx-disease-card{transition:background-color var(--ios-release) ease,border-color var(--ios-release) ease,box-shadow var(--ios-release) ease}
+#overview .mov-compact-sources>button:is(:hover,:active),#overview .ov-source-launchers>button:is(:hover,:active),#overview .functional-context .fc-category:is(:hover,:focus-visible){transform:none;box-shadow:none}
+.help-trigger:is(:hover,:focus-visible)>svg{animation:none}
+[data-slot=dialog-content]:has(>.dialog-heading)[data-state=open]{animation:ios-dialog-in 200ms var(--ios-settle) both}
+[data-slot=dialog-content]:has(>.dialog-heading)[data-state=closed]{animation:ios-dialog-out 120ms ease-in both;pointer-events:none}
+[data-slot=dialog-overlay][data-state=open]{animation:ios-scrim-in 160ms ease-out both}
+[data-slot=dialog-overlay][data-state=closed]{animation:ios-scrim-out 120ms ease-in both}
+@keyframes ios-dialog-in{from{opacity:0;scale:.99}to{opacity:1;scale:1}}
+@keyframes ios-dialog-out{from{opacity:1;scale:1}to{opacity:0;scale:.99}}
+@keyframes ios-scrim-in{from{opacity:0}to{opacity:1}}
+@keyframes ios-scrim-out{from{opacity:1}to{opacity:0}}
+@media(pointer:coarse){
+ .filter-select-trigger,.filter-select-option{min-height:44px}
+ .section-nav a[class*="nav-"],.mode-toggle-group .mode-toggle-item,#expression .cx-assay-overview .cx-expression-types .mode-toggle-item{min-height:44px}
+ [data-slot=dialog-content]>.dialog-heading button{width:44px;height:44px}
+ button[data-slot=button]:not([data-size=xs]):not([data-size=icon-xs]){min-height:44px}
+}
+@media(max-width:760px){
+ .site-header:not(.home-header){display:grid;grid-template-columns:minmax(0,1fr) auto;height:auto;min-height:72px;gap:10px 8px;padding:12px 14px}
+ .site-header .header-description{display:none}
+ .site-header .header-search{grid-column:1 / -1;grid-row:2;width:100%;margin:0}
+ .site-header .database-nav{margin:0;gap:4px}
+ .site-header .database-nav>a{font-size:11px;padding:4px 3px;min-height:30px}
+ .site-header .brand-logo{width:140px}
+ .section-nav{top:8px;border-radius:14px;justify-content:flex-start}
+ .home-header.site-header{height:auto;min-height:66px;flex-wrap:wrap;padding:12px 14px;gap:10px}
+ .home-header .home-header-nav{flex-wrap:wrap;gap:4px}
+ .home-header .home-header-nav a{font-size:12px;padding:5px 7px}
+}
+@media(max-width:650px){.panel,.cx-panel,#overview .ov-section{border-radius:12px}[data-slot=dialog-content]:has(>.dialog-heading){border-radius:14px}[data-slot=dialog-content]>.dialog-heading{padding:14px 16px}}
+@media(prefers-reduced-motion:reduce){
+ .section-nav,.site-header .header-search button,.filter-select-trigger,.filter-select-content,.state-loading>.spin{animation:none;transition:none}
+ .site-header .header-search button:active:not(:disabled){transform:none}
+ :is(button[data-slot=button],.mode-toggle-item,.section-nav a[class*="nav-"],#expression .cx-expression-collections button,[data-slot=dialog-content]>.dialog-heading button,#overview .mov-compact-sources>button,#overview .ov-source-launchers>button,.cx-metric,.cx-disease-card,.atlas-v3 .atlas-amino){transition:none}
+ :is(button[data-slot=button],.mode-toggle-item):not(:disabled):active{transform:none}
+ [data-slot=dialog-content]:has(>.dialog-heading)[data-state],[data-slot=dialog-overlay][data-state]{animation:none}
+}
+@media(prefers-reduced-transparency:reduce),(prefers-contrast:more){
+ .site-header,.home-header.site-header,.section-nav,.filter-select-content{background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none}
+ [data-slot=dialog-overlay]{background:#1d1d1f66;backdrop-filter:none;-webkit-backdrop-filter:none}
+}
+@media(prefers-contrast:more){
+ .section-nav-indicator,.mode-toggle-group .mode-toggle-indicator{border:1px solid var(--text-secondary);background:#fff}
+ #expression .cx-expression-collections button.is-selected{border:2px solid var(--primary)}
+ #variants .vc-main-table .data-table td{border-bottom-color:var(--border-strong)}
+}
+#variants .vc-main-table .data-table :is(th,td):is(:nth-child(3),:nth-child(4)){padding-inline:4px;white-space:nowrap;text-align:center}
+#variants .vc-main-table .vc-pred-damaging{color:var(--evidence-damaging)}
+#variants .vc-main-table .vc-pred-tolerated{color:var(--evidence-tolerated)}
+#variants .vc-main-table .vc-pred-uncertain{color:var(--evidence-uncertain)}
+.atlas-v3 .atlas-subheading,.jsd-panel .jsd-heading strong{color:var(--primary)}
+.structure-legend-group .structure-gradient{background:var(--sequence-score-gradient)}
+.structure-legend-group .structure-gradient.is-jsd{background:var(--sequence-jsd-gradient)}
+
+
+/* Shared affordances: rest → hover → press; persistent selection is a separate state.
+   Only interface controls participate. Scientific tiles, plots and drag handles are excluded. */
+html:root{--touch-ease:cubic-bezier(.2,.8,.2,1);--touch-time:170ms;--touch-press:75ms;--touch-ring:var(--blue-7);--touch-hover:#f0f5fb;--touch-down:#dceaff;--touch-shadow:none}
+:is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#interactions,#diseases,#structure,.site-header,.section-nav,.dialog-body,.db-page) :is(button[data-slot=button],.button,.text-button,a.external-link,a.ov-browse,.details-trigger,.mode-toggle-item,.fc-category,.annotation-source-trigger,.cx-metric,.cx-disease-card,.vc-source,.vc-genomic,.vc-position,.vc-score-cell,.vc-af-button,.vc-clinical-button,.vc-more,.vc-tool-group,.vc-count-row,.vc-predictor-heading,.atlas-ptm-key>button,.atlas-source-options label,.ov-source-launchers>button,.mov-compact-sources>button,.cx-expression-collections button,.cx-clinical-key button,.vc-clinical-key button,.vc-consequence-chart button,.vc-active-filters button,.database-nav>a):not(:disabled):not([aria-disabled=true]):not(:has(:disabled)){cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:var(--touch-radius,8px);transition:background-color var(--touch-time) var(--touch-ease),box-shadow var(--touch-time) var(--touch-ease),border-color var(--touch-time) var(--touch-ease),transform var(--touch-time) var(--touch-ease);transform-origin:center}
+@media(hover:hover){
+ :is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#interactions,#diseases,#structure,.site-header,.section-nav,.dialog-body,.db-page) :is(button[data-slot=button],.button,.text-button,a.external-link,a.ov-browse,.details-trigger,.mode-toggle-item,.fc-category,.annotation-source-trigger,.cx-metric,.cx-disease-card,.vc-source,.vc-genomic,.vc-position,.vc-score-cell,.vc-af-button,.vc-clinical-button,.vc-more,.vc-tool-group,.vc-count-row,.vc-predictor-heading,.atlas-ptm-key>button,.atlas-source-options label,.ov-source-launchers>button,.mov-compact-sources>button,.cx-expression-collections button,.cx-clinical-key button,.vc-clinical-key button,.vc-consequence-chart button,.vc-active-filters button,.database-nav>a):not(:disabled):not([aria-disabled=true]):not(:has(:disabled)):hover{background-color:var(--touch-hover);box-shadow:var(--touch-shadow);border-color:var(--touch-ring)}
+}
+:is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#interactions,#diseases,#structure,.site-header,.section-nav,.dialog-body,.db-page) :is(button[data-slot=button],.button,.text-button,a.external-link,a.ov-browse,.details-trigger,.mode-toggle-item,.fc-category,.annotation-source-trigger,.cx-metric,.cx-disease-card,.vc-source,.vc-genomic,.vc-position,.vc-score-cell,.vc-af-button,.vc-clinical-button,.vc-more,.vc-tool-group,.vc-count-row,.vc-predictor-heading,.atlas-ptm-key>button,.atlas-source-options label,.ov-source-launchers>button,.mov-compact-sources>button,.cx-expression-collections button,.cx-clinical-key button,.vc-clinical-key button,.vc-consequence-chart button,.vc-active-filters button,.database-nav>a):not(:disabled):not([aria-disabled=true]):not(:has(:disabled)):active{background-color:var(--touch-down);box-shadow:none;transform:scale(var(--touch-scale,.985));transition-duration:var(--touch-press)}
+:is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#interactions,#diseases,#structure,.site-header,.section-nav,.dialog-body,.db-page) :is(button[data-slot=button],.button,.text-button,a.external-link,a.ov-browse,.details-trigger,.mode-toggle-item,.fc-category,.annotation-source-trigger,.cx-metric,.cx-disease-card,.vc-source,.vc-genomic,.vc-position,.vc-score-cell,.vc-af-button,.vc-clinical-button,.vc-more,.vc-tool-group,.vc-count-row,.vc-predictor-heading,.atlas-ptm-key>button,.atlas-source-options label,.ov-source-launchers>button,.mov-compact-sources>button,.cx-expression-collections button,.cx-clinical-key button,.vc-clinical-key button,.vc-consequence-chart button,.vc-active-filters button,.database-nav>a):not(:disabled):not([aria-disabled=true]):not(:has(:disabled)):focus-visible{outline:2px solid var(--primary);outline-offset:3px;box-shadow:var(--touch-shadow)}
+:is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#interactions,#diseases,#structure,.site-header,.section-nav,.dialog-body,.db-page) :is(button[data-slot=button],.button,.text-button,a.external-link,a.ov-browse,.details-trigger,.mode-toggle-item,.fc-category,.annotation-source-trigger,.cx-metric,.cx-disease-card,.vc-source,.vc-genomic,.vc-position,.vc-score-cell,.vc-af-button,.vc-clinical-button,.vc-more,.vc-tool-group,.vc-count-row,.vc-predictor-heading,.atlas-ptm-key>button,.atlas-source-options label,.ov-source-launchers>button,.mov-compact-sources>button,.cx-expression-collections button,.cx-clinical-key button,.vc-clinical-key button,.vc-consequence-chart button,.vc-active-filters button,.database-nav>a):not(:disabled):not([aria-disabled=true]):not(:has(:disabled)):is([aria-pressed=true],[aria-selected=true],[data-state=on],[data-state=active],.is-selected){background-color:var(--surface-selected);border-color:var(--touch-ring);box-shadow:none}
+
+/* Large targets compress very slightly; inline links use an underline and tint without reflow. */
+:is(.ov-source-launchers,.mov-compact-sources,.cx-expression-collections)>button,.fc-category,.cx-metric,.cx-disease-card,.details-trigger{--touch-scale:.996}
+:is(.text-button,.external-link,.ov-browse){text-underline-offset:3px;text-decoration-thickness:1px}
+a.external-link,.text-button{text-decoration-line:underline;text-decoration-color:color-mix(in srgb,currentColor 30%,transparent)}
+:is(a.external-link,.text-button,.ov-browse):hover{text-decoration-color:currentColor}
+.section-nav a[class*="nav-"]{transition:background-color var(--touch-time) var(--touch-ease),box-shadow var(--touch-time) var(--touch-ease),transform var(--touch-time) var(--touch-ease)}
+@media(hover:hover){.section-nav a[class*="nav-"]:hover{background:var(--touch-hover);box-shadow:var(--touch-shadow)}}
+.section-nav a[class*="nav-"]:active{transform:scale(.985);background:var(--touch-down);box-shadow:none;transition-duration:var(--touch-press)}
+.section-nav a[class*="nav-"].active{background:transparent;box-shadow:none}
+/* Preserve the primary action's strong fill and readable white label. */
+html body :is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#interactions,#diseases,#structure,.site-header,.section-nav,.dialog-body,.db-page) button[data-slot=button][data-variant=default]:not(:disabled):not([aria-disabled=true]):hover{background:var(--blue-10);color:#fff}
+html body :is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#interactions,#diseases,#structure,.site-header,.section-nav,.dialog-body,.db-page) button[data-slot=button][data-variant=default]:not(:disabled):not([aria-disabled=true]):active{background:var(--blue-12);color:#fff}
+/* The sliding indicator itself represents selection; do not paint a second plate. */
+html body :is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#interactions,#diseases,#structure,.site-header,.section-nav,.dialog-body,.db-page) .mode-toggle-group .mode-toggle-item[data-state=on]:not(:disabled):not([aria-disabled=true]){background:transparent;box-shadow:none}
+
+/* Predictions: colour in the text only; no marker, tile or nested label background. */
+#variants .vc-main-table .vc-score-cell{min-height:40px;border-radius:5px;padding:4px 5px}
+#variants .vc-main-table .vc-prediction.is-compact{padding:0;border-radius:0;background:transparent}
+#variants .vc-main-table .vc-prediction.is-compact>strong{color:var(--score-color);font-size:15px!important;gap:7px}
+#variants .vc-main-table .vc-score-cell .vc-pred{display:inline-flex;width:fit-content;max-width:100%;padding:0;margin:3px 0 0;border-radius:0;color:var(--score-color);background:transparent;font-size:12px;font-weight:500;line-height:1.4}
+#variants .vc-main-table .vc-score-cell .vc-no-call{display:block;color:var(--text-secondary);font-size:10px;margin:3px 0 0;line-height:1.4}
+@media(prefers-reduced-motion:reduce){
+ :is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#interactions,#diseases,#structure,.site-header,.section-nav,.dialog-body,.db-page) :is(button[data-slot=button],.button,.text-button,a.external-link,a.ov-browse,.details-trigger,.mode-toggle-item,.fc-category,.annotation-source-trigger,.cx-metric,.cx-disease-card,.vc-source,.vc-genomic,.vc-position,.vc-score-cell,.vc-af-button,.vc-clinical-button,.vc-more,.vc-tool-group,.vc-count-row,.vc-predictor-heading,.atlas-ptm-key>button,.atlas-source-options label,.ov-source-launchers>button,.mov-compact-sources>button,.cx-expression-collections button,.cx-clinical-key button,.vc-clinical-key button,.vc-consequence-chart button,.vc-active-filters button,.database-nav>a):not(:disabled):not([aria-disabled=true]):not(:has(:disabled)),.section-nav a[class*="nav-"]{transition:none}
+ :is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#interactions,#diseases,#structure,.site-header,.section-nav,.dialog-body,.db-page) :is(button[data-slot=button],.button,.text-button,a.external-link,a.ov-browse,.details-trigger,.mode-toggle-item,.fc-category,.annotation-source-trigger,.cx-metric,.cx-disease-card,.vc-source,.vc-genomic,.vc-position,.vc-score-cell,.vc-af-button,.vc-clinical-button,.vc-more,.vc-tool-group,.vc-count-row,.vc-predictor-heading,.atlas-ptm-key>button,.atlas-source-options label,.ov-source-launchers>button,.mov-compact-sources>button,.cx-expression-collections button,.cx-clinical-key button,.vc-clinical-key button,.vc-consequence-chart button,.vc-active-filters button,.database-nav>a):not(:disabled):not([aria-disabled=true]):not(:has(:disabled)):active,.section-nav a[class*="nav-"]:active{transform:none;transition:none}
+}
+@media(prefers-contrast:more){:is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#interactions,#diseases,#structure,.site-header,.section-nav,.dialog-body,.db-page) :is(button[data-slot=button],.button,.text-button,a.external-link,a.ov-browse,.details-trigger,.mode-toggle-item,.fc-category,.annotation-source-trigger,.cx-metric,.cx-disease-card,.vc-source,.vc-genomic,.vc-position,.vc-score-cell,.vc-af-button,.vc-clinical-button,.vc-more,.vc-tool-group,.vc-count-row,.vc-predictor-heading,.atlas-ptm-key>button,.atlas-source-options label,.ov-source-launchers>button,.mov-compact-sources>button,.cx-expression-collections button,.cx-clinical-key button,.vc-clinical-key button,.vc-consequence-chart button,.vc-active-filters button,.database-nav>a):not(:disabled):not([aria-disabled=true]):not(:has(:disabled)):hover{outline:1px solid var(--primary);outline-offset:1px}}
+
+
+/* White reading surfaces with a thin frame around each meaningful module. */
+.report>.panel,.report>:is(#sequence,#structure,#expression,#qtl,#interactions,#diseases,#alphagenome),#overview .ov-identity.panel,#overview .ov-section{border:1px solid var(--panel-line);border-radius:var(--panel-radius);box-shadow:var(--shadow-surface);background:#fff}
+.report>.panel,.report>:is(#sequence,#structure,#expression,#qtl,#interactions,#diseases,#alphagenome){padding-top:24px}
+#overview .ov-identity .ov-identity-fields>div,[data-slot=dialog-content] .field-grid>div{background:transparent;border:0;border-radius:0}
+#overview .ov-source-launchers>button,#membrane-association .mov-compact-sources>button{background:transparent;border:0;box-shadow:none;border-radius:6px}
+#variants .vc-category-panel{border:1px solid var(--panel-line);border-radius:var(--group-radius);box-shadow:none}
+#variants .vc-catalog .vc-filters{background:transparent;border:0;box-shadow:none}
+#variants .vc-main-table .data-table :is(th,td){border-left:0;border-right:0}
+#variants .vc-main-table .data-table tbody tr:is(:hover,:focus-within) td:first-child{box-shadow:none}
+#variants .vc-main-table .vc-more{border:0;box-shadow:none}
+#expression .cx-assay-overview{background:#fff;border:1px solid var(--panel-line);border-radius:var(--panel-radius)}
+#expression .cx-expression-database{background:transparent;border:0;border-radius:0}
+#expression .cx-expression-collections button{border-color:var(--panel-line);box-shadow:none;border-radius:var(--group-radius)}
+#expression .cx-expression-collections button:not(:disabled):hover{border-color:var(--blue-7)}
+#expression .cx-expression-collections button.is-selected{border-color:var(--blue-7);background:var(--surface-selected)}
+#diseases .cx-disease-sources .cx-disease-card{border:1px solid var(--panel-line);border-top:3px solid var(--cx-source);border-radius:var(--group-radius);box-shadow:none;background:#fff}
+#diseases .cx-disease-sources .cx-disease-card:not(:disabled){border:1px solid var(--panel-line);border-top:3px solid var(--cx-source);border-radius:var(--group-radius);box-shadow:none;background:#fff}
+#diseases .cx-disease-sources .cx-disease-card:not(:disabled):hover{border-color:var(--blue-7);border-top-color:var(--cx-source);background:var(--blue-2)}
+#diseases .cx-disease-sources .cx-disease-card.is-selected{border-color:var(--blue-7);border-top-color:var(--cx-source);background:var(--surface-selected)}
+:is(#expression,#qtl,#interactions) .cx-metrics .cx-metric{background:#fff;border-color:var(--panel-line);border-radius:var(--group-radius);box-shadow:none}
+#sequence .composite-source-controls,#sequence .viewer-search,#structure>.toolbar,:where(#expression,#qtl,#interactions,#diseases,.dialog-body) .toolbar{background:transparent;border:0;border-radius:0;padding-inline:0}
+.atlas-v3.full-sequence{border:0;border-radius:0;padding-inline:0}
+.atlas-v3 .atlas-source-entry,.atlas-v3 .atlas-legend-group,.atlas-v3 .atlas-overlay-group{background:transparent;border:0;padding-inline:0}
+/* Saturated text accents, without the previous navy blend or coloured badge backgrounds. */
+:is(.vc-catalog,.vc-detail) .vc-effect-missense{color:#b85b00}
+:is(.vc-catalog,.vc-detail) .vc-effect-synonymous{color:#008047}
+:is(.vc-catalog,.vc-detail) .vc-effect-start-lost{color:#c04419}
+:is(.vc-catalog,.vc-detail) .vc-effect-stop-gained{color:#cf264d}
+:is(.vc-catalog,.vc-detail) .vc-effect-stop-lost{color:#b9570c}
+:is(.vc-catalog,.vc-detail) .vc-effect-splice{color:#336dcc}
+:is(.vc-catalog,.vc-detail) .vc-effect-frameshift{color:#986c00}
+:is(.vc-catalog,.vc-detail) .vc-effect-inframe{color:#077b9e}
+:is(.vc-catalog,.vc-detail) .vc-effect-other{color:#007e7b}
+
+/* QTL uses the shared neutral surfaces and blue interaction palette. */
+#qtl{--cx-accent:var(--primary);--cx-dark:var(--text);--cx-tint:var(--surface-selected);--cx-line:var(--border);--context-bar-color:var(--blue-7)}
+#qtl .cx-heading-icon{background:var(--surface-selected);color:var(--primary);border-color:var(--border)}
+#qtl :is(.cx-heading h2,.cx-metric-top strong,.cx-body-intro h3,.cx-chart-title h3,.cx-bar-label,.cx-bar-row strong,.cx-record-heading h3){color:var(--text)}
+#qtl :is(.cx-heading p,.cx-eyebrow,.cx-body-caption,.cx-chart-title>span,.cx-metric-value>span,.cx-metric-secondary,.cx-tissue-search>span,.cx-qtl-types h3,.cx-qtl-types>button>span,.cx-back,.cx-scope){color:var(--text-secondary)}
+#qtl .cx-metrics .cx-metric{background:var(--surface);border:1px solid var(--panel-line);border-radius:var(--group-radius);box-shadow:none}
+#qtl .cx-metrics .cx-metric-top{border-bottom:0;padding-bottom:0}
+#qtl .cx-metrics .cx-metric-value{color:var(--text);font-size:22px}
+#qtl .cx-metrics .cx-metric:not(:disabled):hover{background:var(--blue-2);border-color:var(--blue-7)}
+#qtl .cx-metrics .cx-metric.is-selected{background:var(--surface-selected);border-color:var(--blue-7);box-shadow:none}
+#qtl .cx-body-browser{background:var(--surface);border-color:var(--panel-line);border-radius:var(--group-radius)}
+#qtl .cx-region-buttons button{background:var(--surface);color:var(--text-secondary);border-color:var(--border)}
+#qtl .cx-region-buttons button.is-selected{background:var(--surface-selected);color:var(--primary);border-color:var(--blue-7)}
+#qtl .cx-region-buttons button:hover{border-color:var(--blue-7)}
+#qtl .cx-tissue-search label{border-color:var(--border);color:var(--text-secondary);background:var(--surface)}
+#qtl .cx-tissue-search input{color:var(--text)}
+#qtl .cx-bar-track{background:var(--surface-subtle)}
+#qtl .cx-bar-row:hover{background:var(--blue-2)}
+#qtl .cx-qtl-types>button{background:var(--surface);color:var(--text);border-color:var(--border);box-shadow:none}
+#qtl .cx-qtl-types>button:hover{background:var(--blue-2);border-color:var(--blue-7)}
+#qtl .cx-qtl-types>button[aria-pressed=true]{background:var(--surface-selected);color:var(--primary);border-color:var(--blue-7)}
+#qtl .cx-record-heading{background:transparent;padding-inline:0}
+#qtl .cx-record-area>.toolbar{background:transparent;border:0;padding-inline:0}
+#qtl .cx-tissue-scroll:focus-visible{outline-color:var(--focus)}
+#qtl .cx-hint{background:var(--surface);border-color:var(--border);color:var(--text-secondary)}
+#qtl .qtl-reading-note{background:var(--surface-subtle);border-color:var(--border);color:var(--text)}
+#qtl .qtl-reading-note :is(input,select){border-color:var(--border);border-radius:8px;color:var(--text);background:var(--surface)}
+#qtl :is(.qtl-reading-note small,.qtl-statistic small,.qtl-scroll-status){color:var(--text-secondary)}
+#qtl .qtl-record-scroll{border-color:var(--panel-line);border-radius:var(--group-radius)}
+#qtl .data-table thead th{background:var(--surface-subtle);color:var(--text-secondary);border-color:var(--border)}
+#qtl .data-table tbody tr{background:var(--surface)}
+#qtl .data-table tbody tr:nth-child(even){background:color-mix(in srgb,var(--surface-subtle) 50%,var(--surface))}
+#qtl .data-table tbody tr:is(:hover,:focus-within){background:var(--blue-2)}
+#qtl .data-table td{color:var(--text);border-bottom-color:var(--border)}
+#qtl .data-table :is(strong,.mono,.qtl-type-label){color:var(--text)}
+#qtl .data-table :is(.text-button,.external-link,.cx-measured-value){color:var(--primary)}
+#qtl .qtl-pvalue{background:transparent;padding:0;border:0;color:var(--text-secondary)}
+#qtl .qtl-pvalue-within{color:var(--primary)}
+#qtl .qtl-reference-dot{background:var(--primary)}
+#qtl .qtl-scroll-status{background:var(--surface-subtle)}

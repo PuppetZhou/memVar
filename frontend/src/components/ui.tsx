@@ -7,10 +7,11 @@ import { Dialog, DialogContent, DialogTitle } from './ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible';
 import { CollapseRegion, Reveal } from '@/lib/motion';
 import { cn } from '@/lib/utils';
+import { FilterSelect } from './ui/filter-select';
 
 export function Badge({children,tone='neutral'}:{children:ReactNode;tone?:string}){return <span className={`badge badge-${tone}`}>{children}</span>;}
 export function Status({loading,error,empty,children}:{loading?:boolean;error?:Error|null;empty?:boolean;children?:ReactNode}){
- if(loading)return <div className="state" role="status"><LoaderCircle className="spin" size={19}/> Loading data…</div>;
+ if(loading)return <div className="state state-loading" role="status" aria-live="polite"><LoaderCircle className="spin" size={19} aria-hidden="true"/><span>Loading data…</span></div>;
  if(error)return <div className="state error" role="alert"><AlertCircle size={19}/><span>{error.message}</span></div>;
  if(empty)return <div className="empty-state">No matching records are available in the current data release.</div>;
  return <>{children}</>;
@@ -61,5 +62,6 @@ export function DetailFields({items}:{items:unknown}){if(!Array.isArray(items))r
 export function SelectFilter({label:labelText,value,onChange,options,all='All',allowAll=true}:{label:string;value:string;onChange:(value:string)=>void;options?:unknown[];all?:string;allowAll?:boolean}){
  const choices=(options??[]).map(option=>{const item=typeof option==='object'&&option?option as RecordData:{value:option,label:option};return {value:String(item.value??item.name??''),label:String(item.label??item.value??item.name??'').replaceAll('_',' ')};});
  if(value&&!choices.some(option=>option.value===value))choices.unshift({value,label:value.replaceAll('_',' ')});
- return <label className="filter"><span>{labelText}</span><select value={value} onChange={e=>onChange(e.target.value)}>{allowAll&&<option value="">{all}</option>}{choices.map(option=><option key={option.value} value={option.value}>{option.label}</option>)}</select></label>;
+ const menuChoices=allowAll?[{value:'',label:all},...choices.filter(option=>option.value!=='')]:choices;
+ return <FilterSelect label={labelText} value={value} onChange={onChange} choices={menuChoices}/>;
 }

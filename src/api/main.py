@@ -33,6 +33,9 @@ from .evidence import router as evidence_router
 from .structures import router as structures_router
 
 app.include_router(evidence_router)
+
+from .disease_classification import router as classification_router
+app.include_router(classification_router)
 app.include_router(structures_router)
 
 from .interface_predictions import router as interface_router

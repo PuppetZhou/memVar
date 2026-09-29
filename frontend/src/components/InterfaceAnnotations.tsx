@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react';
+import { palette, sequenceScoreColor } from '../lib/palette';
+import { useEffect, useId, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Network } from 'lucide-react';
 import { PageJump, Status } from './ui';
 import { ResidueAxis, type Range } from './SequenceAnnotations';
 import './sequence-refinement.css';
+import { ScoreColorKey, ScoreGradient } from './ScoreColorKey';
 export const bindingLabels:Record<string,string>={p_protein:'Protein binding',p_nucleic_acid:'Nucleic-acid binding',p_ion:'Ion binding',p_ligand:'Ligand binding',p_lipid:'Lipid binding'};
 export type InterfaceStructure={structure_id:string;fragment:string;start:number;end:number;model:string};
 export type InterfaceSummary={status:string;sequence_id:string;pesto_structures:InterfaceStructure[];sppider_partners:number;notes:string[]};
@@ -12,7 +14,7 @@ export type InterfaceScores={items?:PredictionRow[];receptor_probability?:number
 export async function interfaceFetch<T>(path:string,signal?:AbortSignal):Promise<T>{const r=await fetch('/api'+path,{signal});if(!r.ok)throw new Error('Interface annotations could not be loaded.');return r.json();}
 export function useInterfaceSummary(accession:string){return useQuery({queryKey:['interface-summary',accession],queryFn:({signal})=>interfaceFetch<InterfaceSummary>(`/proteins/${accession}/interface/summary`,signal)});}
 export function useInterfaceScores(accession:string,method:string,structure:string,partner:string,enabled=true){return useQuery({queryKey:['interface-scores',accession,method,structure,partner],enabled:enabled&&(method==='pesto'?!!structure:method==='sppider'&&!!partner),queryFn:({signal})=>interfaceFetch<InterfaceScores>(`/proteins/${accession}/interface/${method}?${method==='pesto'?'structure_id='+encodeURIComponent(structure):'partner='+encodeURIComponent(partner)}`,signal)});}
-export function ScoreBar({value}:{value:unknown}){return typeof value==='number'?<span className="interface-score"><strong>{value.toPrecision(3)}</strong><i><b style={{width:`${value*100}%`}}/></i></span>:<span className="muted">—</span>;}
+export function ScoreBar({value}:{value:unknown}){return typeof value==='number'?<span className="interface-score"><strong>{value.toPrecision(3)}</strong><i><b style={{width:`${value*100}%`,background:sequenceScoreColor(value, 'interface')}}/></i></span>:<span className="muted">—</span>;}
 export function PartnerPicker({accession,value,onChange,onLabel}:{accession:string;value:string;onChange:(p:string)=>void;onLabel?:(label:string)=>void}){
  const [search,setSearch]=useState(''),[queryText,setQueryText]=useState(''),[offset,setOffset]=useState(0);
  useEffect(()=>{const id=setTimeout(()=>{setQueryText(search);setOffset(0);},250);return()=>clearTimeout(id);},[search,accession]);
@@ -26,6 +28,7 @@ export function InterfaceSiteEvidence({accession,position}:{accession:string;pos
  return <details className="interface-site"><summary>Predicted interface evidence at residue {position}</summary><Status loading={query.isPending} error={query.error}>{query.data&&<>{query.data.pesto.length>0&&<><h3>PeSTo · each structure fragment</h3><div className="table-wrap"><table className="data-table"><thead><tr><th>Structure</th>{Object.values(bindingLabels).map(label=><th key={label}>{label}</th>)}</tr></thead><tbody>{query.data.pesto.map(row=><tr key={row.structure_id}><td>{row.structure_id}</td>{Object.keys(bindingLabels).map(key=><td key={key}><ScoreBar value={row[key]}/></td>)}</tr>)}</tbody></table></div></>}{query.data.sppider.length>0&&<><h3>SPPIDER-seq · each partner</h3><div className="table-wrap"><table className="data-table"><thead><tr><th>Partner sequence</th><th>Query as receptor</th><th>Query as peptide</th></tr></thead><tbody>{query.data.sppider.map(row=><tr key={row.partner_sequence_key}><td>{row.partner_sequence_key}</td><td><ScoreBar value={row.receptor_probability}/></td><td><ScoreBar value={row.peptide_probability}/></td></tr>)}</tbody></table></div></>}{(query.data.sppider.length>0||offset>0)&&<div className="interface-partners"><button className="button" disabled={!offset} onClick={()=>setOffset(Math.max(0,offset-5))}>Previous partners</button><PageJump page={offset/5} onJump={page=>setOffset(page*5)} loading={query.isFetching} label="Residue interface evidence page"/><button className="button" disabled={!query.data?.has_more} onClick={()=>setOffset(offset+5)}>More partners</button></div>}{offset>0&&!query.data.sppider.length&&<p>No partner records on this page. Choose an earlier page.</p>}{!offset&&!query.data.pesto.length&&!query.data.sppider.length&&<p>No published prediction mapped to this residue.</p>}</>}</Status><p className="interface-site-note">Continuous source predictions. Fragment and partner contexts are retained; no score threshold or combined interface label.</p></details>;
 }
 export function InterfaceTrack({accession,sequence,range,onRange,selectedPosition,onSelect,compact=false}:{accession:string;sequence:string;range:Range;onRange:(r:Range)=>void;selectedPosition?:number|null;onSelect:(p:number)=>void;compact?:boolean}){
+ const gradientId=useId();
  const summary=useInterfaceSummary(accession);
  const [partnerLabel,setPartnerLabel]=useState('');
  const [method,setMethod]=useState('pesto'),[structure,setStructure]=useState(''),[partner,setPartner]=useState(''),[score,setScore]=useState('p_protein'),[head,setHead]=useState<'receptor_probability'|'peptide_probability'>('receptor_probability'),[hover,setHover]=useState<number|null>(null);
@@ -34,8 +37,8 @@ export function InterfaceTrack({accession,sequence,range,onRange,selectedPositio
  useEffect(()=>{setStructure('');setPartner('');setHover(null);},[accession]);
  useEffect(()=>{setHover(null);},[range[0],range[1]]);
  const values=new Map<number,number>();
- if(method==='pesto')data.data?.items?.forEach(r=>{if(typeof r[score]==='number')values.set(r.position,r[score] as number);});
- else data.data?.[head]?.forEach((value,i)=>values.set(i+1,value));
+ if(method==='pesto')data.data?.items?.forEach(r=>{if(typeof r[score]==='number'&&Number.isFinite(r[score]))values.set(r.position,r[score] as number);});
+ else data.data?.[head]?.forEach((value,i)=>{if(Number.isFinite(value))values.set(i+1,value);});
  const span=range[1]-range[0]+1,visible=[...values].filter(([p])=>p>=range[0]&&p<=range[1]).sort((a,b)=>a[0]-b[0]);
  let previous=-1;const path=visible.map(([p,v])=>{const command=p===previous+1?'L':'M';previous=p;return `${command}${(p-range[0]+.5)/span*1000},${70-v*60}`;}).join(' ');
  const candidate=hover??selectedPosition;
@@ -51,9 +54,12 @@ export function InterfaceTrack({accession,sequence,range,onRange,selectedPositio
  {(summary.isError||data.isError)&&<p role="alert">{summary.error?.message??data.error?.message} <button className="text-button" onClick={()=>{void summary.refetch();if(method==='pesto'?!!selectedStructure:!!partner)void data.refetch();}}>Retry</button></p>}
  {!compact&&<div className="interface-track-caption"><span>{label}</span><span>{loading?'Loading predictions…':`${visible.length.toLocaleString()} scored residues in ${range[0]}–${range[1]}`}</span></div>}
  <div className="interface-plot"><span className="interface-y-top">1</span><span className="interface-y-bottom">0</span><svg viewBox="0 0 1000 80" preserveAspectRatio="none" role="slider" aria-label="Interface score by residue" aria-valuemin={range[0]} aria-valuemax={range[1]} aria-valuenow={current} aria-valuetext={`Residue ${current}, score ${values.get(current)??'unavailable'}`} tabIndex={0} onFocus={()=>setHover(current)} onPointerMove={e=>setHover(position(e))} onPointerLeave={()=>setHover(null)} onClick={e=>{const box=e.currentTarget.getBoundingClientRect();onSelect(Math.max(range[0],Math.min(range[1],range[0]+Math.floor((e.clientX-box.left)/box.width*span))));}} onKeyDown={e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();setHover(Math.max(range[0],Math.min(range[1],current+(e.key==='ArrowLeft'?-1:1))));}if(e.key==='Enter'||e.key===' '){e.preventDefault();onSelect(current);}}}>
+ <ScoreGradient scale="interface" id={gradientId} bottom={70} top={10}/>
+ <rect x="0" y="74" width="1000" height="6" fill={palette.missing}/>
+ {visible.map(([p,v])=><rect key={p} x={(p-range[0])/span*1000} y="74" width={1000/span} height="6" fill={sequenceScoreColor(v, 'interface')}/>)}
  {[0,.5,1].map(v=><g key={v}><line x1="0" x2="1000" y1={70-v*60} y2={70-v*60} stroke="#dfe8f5" strokeDasharray={v===.5?'3 4':undefined}/></g>)}
- <path d={path} fill="none" stroke={method==='pesto'?'#2563eb':'#7c3aed'} strokeWidth="1.6" vectorEffect="non-scaling-stroke"/>{visible.length===1&&<circle cx={(visible[0][0]-range[0]+.5)/span*1000} cy={70-visible[0][1]*60} r="3" fill="#2563eb"/>}
- {active&&active>=range[0]&&active<=range[1]&&<line x1={(active-range[0]+.5)/span*1000} x2={(active-range[0]+.5)/span*1000} y1="5" y2="74" stroke="#db2777" strokeWidth="1"/>}</svg></div>
- <div className="interface-track-readout" role="status">{active?<><strong>{sequence[active-1]}{active}</strong><span>{label}: {activeValue===undefined?'No prediction at this residue':activeValue.toPrecision(4)}</span><span>Click / Enter for site evidence</span></>:<span>{!loading&&!visible.length?'No prediction for this context in the selected window.':compact?'Hover for score · click for site evidence':'Hover or use arrow keys to inspect · click a residue to open evidence and highlight the structure'}</span>}</div>
+ <path d={path} fill="none" stroke="#334155" strokeOpacity=".28" strokeWidth="3.2" vectorEffect="non-scaling-stroke"/><path d={path} fill="none" stroke={`url(#${gradientId})`} strokeWidth="2" vectorEffect="non-scaling-stroke"/>{visible.length===1&&<circle cx={(visible[0][0]-range[0]+.5)/span*1000} cy={70-visible[0][1]*60} r="3" fill={sequenceScoreColor(visible[0][1], 'interface')}/>}
+ {active&&active>=range[0]&&active<=range[1]&&<line x1={(active-range[0]+.5)/span*1000} x2={(active-range[0]+.5)/span*1000} y1="5" y2="74" stroke={palette.rose} strokeWidth="1"/>}</svg></div>
+ <div className="interface-track-readout" role="status"><ScoreColorKey scale="interface" compact/>{active?<><strong>{sequence[active-1]}{active}</strong><span>{label}: {activeValue===undefined?'No prediction at this residue':activeValue.toPrecision(4)}</span><span>Click / Enter for site evidence</span></>:<span>{!loading&&!visible.length?'No prediction for this context in the selected window.':compact?'Hover for score · click for site evidence':'Hover or use arrow keys to inspect · click a residue to open evidence and highlight the structure'}</span>}</div>
  {!compact&&<><ResidueAxis sequence={sequence} range={range} onRange={onRange}/><p className="interface-track-note">Scores retain the selected fragment or partner. No threshold, partner averaging, or experimental interaction claim.</p></>}</div>;
 }

@@ -1,0 +1,5 @@
+data_version: q7_multiaxis_v1
+schema: web_classification
+source_config: config/sources.yaml
+source_key: analysis_q7_multiaxis_v1
+clinvar_dataset_id: clinvar_20260906

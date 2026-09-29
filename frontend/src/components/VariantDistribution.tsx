@@ -1,3 +1,4 @@
+import { clinicalColors } from '../lib/palette';
 import { useMemo, useRef, useState } from 'react';
 import { RotateCcw } from 'lucide-react';
 import { Button } from './ui/button';
@@ -7,12 +8,12 @@ import './distribution-v2.css';
 export type ClinicalCounts = Partial<Record<'pathogenic'|'uncertain'|'benign'|'conflicting'|'other'|'unclassified',number>>;
 export type DistributionSite = {position:number;variant_count?:number;count?:number;clinical_counts?:ClinicalCounts};
 const categories = [
- {key:'pathogenic',label:'Pathogenic / likely pathogenic',color:'#ef4444'},
- {key:'uncertain',label:'VUS',color:'#f59e0b'},
- {key:'benign',label:'Benign / likely benign',color:'#10b981'},
- {key:'conflicting',label:'Conflicting labels',color:'#a855f7'},
- {key:'other',label:'Other labels',color:'#38bdf8'},
- {key:'unclassified',label:'Unclassified',color:'#cbd5e1'},
+ {key:'pathogenic',label:'Pathogenic / likely pathogenic',color:clinicalColors.pathogenic},
+ {key:'uncertain',label:'VUS',color:clinicalColors.uncertain},
+ {key:'benign',label:'Benign / likely benign',color:clinicalColors.benign},
+ {key:'conflicting',label:'Conflicting labels',color:clinicalColors.conflicting},
+ {key:'other',label:'Other labels',color:clinicalColors.other},
+ {key:'unclassified',label:'Unclassified',color:clinicalColors.unclassified},
 ] as const;
 export function VariantDistribution({sites,length,onRange,onClear,selected}:{sites:DistributionSite[];length:number;onRange:(range:[number,number])=>void;onClear?:()=>void;selected?:[number,number]|null}) {
  const [size,setSize]=useState(0);const [hover,setHover]=useState<number|null>(null);
