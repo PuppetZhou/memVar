@@ -1,3 +1,4 @@
+import { membranePalette } from '../lib/membrane-palette';
 import { palette, sequenceScoreColor, bindingSiteColor } from '../lib/palette';
 export type Feature = { id?: string; start: number; end: number; label?: string; type?: string; source?: string; source_type?: string; description?: string; group?: string; record_ids?: string[]; [key: string]: unknown };
 export type Track = { id: string; label: string; type?: string; color?: string; features: Feature[] };
@@ -72,7 +73,7 @@ export function featureStyle(f: Feature, track: string): {name:string;color:stri
   const name = `${f.source_type??f.type??''} ${f.label??''}`;
   if(track==='ptm') {if(f.source==='GlyGen'&&/^[NO]-linked$/i.test(f.source_type??''))return {name:'Glycosylation',color:palette.sage};return featurePalette.find(p=>p.match.test(name))!;}
   if(track==='secondary') return /helix/i.test(name)?{name:'Helix',color:palette.rose}:/strand|sheet/i.test(name)?{name:'Beta strand',color:palette.blue}:{name:'Turn / loop',color:palette.sage};
-  if(track==='membrane') {const type=membraneName(f);return /transmembrane|intramembrane/i.test(type)?{name:'Membrane segment',color:palette.blue}:/extra|outside|non-cyto/i.test(type)?{name:'Non-cytoplasmic / outside',color:palette.cyan}:/cyto|inside/i.test(type)?{name:'Cytoplasmic / inside',color:palette.sage}:/signal/i.test(type)?{name:'Signal region',color:palette.butter}:{name:'Topology',color:'#64748b'};}
+  if(track==='membrane') {const type=membraneName(f);return /transmembrane|intramembrane/i.test(type)?{name:'Membrane segment',color:membranePalette.membrane}:/extra|outside|non-cyto/i.test(type)?{name:'Non-cytoplasmic / outside',color:membranePalette.outside}:/cyto|inside/i.test(type)?{name:'Cytoplasmic / inside',color:membranePalette.inside}:/signal/i.test(type)?{name:'Signal region',color:membranePalette.signal}:{name:'Topology',color:membranePalette.other};}
   if(track==='domains') return f.source==='Pfam'?{name:'Pfam domain',color:palette.apricot}:/domain/i.test(name)?{name:'UniProt domain',color:palette.peach}:{name:'Region / processing',color:palette.leaf};
   if(/binding/i.test(`${f.source_type??''} ${f.type??''} ${f.label??''}`))return {name:'Binding site',color:bindingSiteColor};
   return {name:'Functional site',color:palette.rose};

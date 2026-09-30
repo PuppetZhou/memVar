@@ -848,3 +848,14 @@ JSD及PeSTo曲线下的逐位色带和横向0–1图例删除，保留曲线、�
 ## 2026-09-30本批GitHub发布
 
 用户授权提交当前网站改动：结构位点邻域/悬停、默认Illustrated backbone与Confidence修复、预测器参考标尺/PHRED排名、SPPIDER坐标轴标记及来源卡片。本批前端构建、定向接口/坐标分组测试和真实浏览器验证见上述各节。数据、凭据及运行截图不随代码发布；独立DuckDB＋Parquet迁移规划保持本地未提交。
+
+
+## 2026-09-30膜拓扑来源选择
+
+用户澄清扩展Membrane topology来源，而不是新增domain板块。Sequence Viewer把Topology选择移至Membrane行侧边，默认UniProt；共享TopologySourcePicker提供按来源分组的来源/方法勾选、搜索和重置。来源取既有sequence API的已映射topology options：DeepTMHMM2、HTP各预测方法/整合结果、TOPDB及TmAlphaFold等按实际蛋白可用项展示。多选沿用独立纵向lane和同一SVG横坐标，侧栏与整轨宽度不增加；菜单区分prediction/source annotation/experimental/integrated/structure-derived，不合并来源事实。
+
+StructureViewer新增Topology by source单选，取所选topology_id的现有序列位置着色，移除仅UniProt的硬编码过滤。不同来源的3D结果逐项切换，不构建跨来源共识；切换来源时不保留旧来源数据作为新来源颜色。沿用模型exact_current_canonical映射门槛、位点选中覆盖与Confidence基础主题；API、数据库和预测均不修改。
+
+用户最终选择浅色方案，替代大片深靛配色：membrane-palette.ts集中五色，跨膜区#f28482、胞内#f5cac3、胞外#84a59d、信号区#f6bd60、其他拓扑类型#f7ede2。sequence-model和MembraneTrack共用，三维图及图例随之同步；分类规则和缺失灰色保留，页面继续白底。
+
+验证：TypeScript/Vite和diff检查通过。EGFR Sequence Viewer默认UniProt，双选DeepTMHMM2、三选HTP/Hmmtop后宽度均为1376px，重置恢复UniProt。真实结构默认来源UniProt，DeepTMHMM2着色覆盖1210残基（含其signal/Extracellular/TMhelix/Cytoplasmic四段），HTP/Hmmtop切换、切回Confidence通过；实际Mol* overpaint核对四类新颜色与图例一致。第一次自动化用check等待已自动关闭的radio弹层而超时，改为click并核对最终渲染状态后通过；三lane文字检索因含序号导致exact定位超时，DOM复核及重置操作通过。截图output/playwright/topology-sequence-sources.png、topology-structure-deeptmhmm2.png（改色前交互）及topology-warm-palette.png（上一版配色；后续按用户要求更新为浅色，重新通过构建与diff检查）。8000构建已更新；本批按用户要求提交GitHub，独立DuckDB＋Parquet迁移规划保留本地。

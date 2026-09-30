@@ -1,5 +1,9 @@
 # 01 公网预览后优化：当前计划
 
+## 膜拓扑来源选择（2026-09-30，已完成）
+
+用户指定扩展既有Membrane topology，不另开结构feature板块。Sequence Viewer在Membrane行侧边提供来源/方法勾选，默认UniProt，多来源保持共用横坐标和固定宽度；结构查看器增加Topology by source，按单个已映射来源/方法着色。复用现有sequence API和正式拓扑位置，不重跑预测、不推断缺失映射，也不形成跨来源共识。按追加要求同步采用浅珊瑚/浅玫瑰/柔和绿/蜜金/亚麻色的膜拓扑色板（替代深靛等前版色）；构建及实际页面多选等宽、3D来源切换、颜色验证通过。[实施记录](../../record/01_preview_optimization/20260922_ui_toolkit.md#2026-09-30膜拓扑来源选择)。
+
 ## 默认骨架Confidence修复（2026-09-30，已完成）
 
 修复backbone类型切换时遗漏颜色主题而退回按链单色的问题。初次加载、Ribbon往返及其他注释切回Confidence已在真实渲染器验证四档pLDDT颜色，构建已更新。[验证记录](../../record/01_preview_optimization/20260922_ui_toolkit.md#2026-09-30默认骨架confidence着色修复)。

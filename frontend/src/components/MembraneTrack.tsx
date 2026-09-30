@@ -1,7 +1,8 @@
+import { membranePalette } from '../lib/membrane-palette';
 import { useId, useState } from 'react';
 
 export type TrackInterval = { id: string; start: number; end: number; name: string; description?: string; color?: string };
-export const membraneColor = (name: string) => /transmembrane|^membrane$|^M$|TMhelix|TMbeta/i.test(name) ? '#c47c13' : /signal|^s$/.test(name.toLowerCase()) ? '#9470af' : /intramembrane/i.test(name) ? '#a855c7' : /cytoplasmic|^Inside$|^I$/.test(name) ? '#598d87' : '#7891ab';
+export const membraneColor = (name: string) => /transmembrane|^membrane$|^M$|TMhelix|TMbeta/i.test(name) ? membranePalette.membrane : /signal|^s$/.test(name.toLowerCase()) ? membranePalette.signal : /intramembrane/i.test(name) ? membranePalette.membrane : /cytoplasmic|^Inside$|^I$/.test(name) ? membranePalette.inside : membranePalette.outside;
 
 /** Intervals supplied by the caller must share the explicitly labelled sequence coordinate system. */
 export default function MembraneTrack({ title, length, intervals, onSelect }: { title: string; length: number; intervals: TrackInterval[]; onSelect?: (interval: TrackInterval) => void }) {

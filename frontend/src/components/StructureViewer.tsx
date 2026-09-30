@@ -9,6 +9,7 @@ import { ModeToggleGroup } from './ui/mode-toggle-group';
 import { ContentTransition } from '@/lib/motion';
 import StructureSequenceSelector from './StructureSequenceSelector';
 import StructureSiteInspector from './StructureSiteInspector';
+import TopologySourcePicker from './TopologySourcePicker';
 import molstarScript from 'pdbe-molstar/build/pdbe-molstar-plugin.js?url';
 import { bindingLabels, interfaceFetch, PartnerPicker, useInterfaceScores, useInterfaceSummary } from './InterfaceAnnotations';
 import { annotationSourceGuide, continuousScoreColor, featureStyle, jsdScoreColor, missingAnnotationColor, sequenceLensLabels, variantCountBins, variantCountColorNote, variantFill } from './sequence-model';
@@ -71,6 +72,8 @@ export default function StructureViewer({ accession, selectedPosition, onSelectP
   const [appearances,setAppearances]=useState<Record<string,string>>({ribbon:'shaded',surface:'shaded',backbone:'outlined'});
   const appearance=appearances[renderStyle];
   const appliedStyle=useRef<{viewer:Viewer;style:string}|null>(null);
+  const [topologyChoice,setTopologyChoice]=useState({accession,id:'uniprot'});
+  const topologySource=topologyChoice.accession===accession?topologyChoice.id:'uniprot';
   const [domainSource,setDomainSource]=useState('UniProt'),[ptmSources,setPtmSources]=useState<string[]>(['dbPTM']),[ptmType,setPtmType]=useState('all');
   const [committedRange,setCommittedRange]=useState<[number,number]|null>(selectedPosition?[selectedPosition,selectedPosition]:null);
   const [binding,setBinding]=useState('p_protein'),[partner,setPartner]=useState(''),[head,setHead]=useState<'receptor_probability'|'peptide_probability'>('receptor_probability');
@@ -81,6 +84,8 @@ export default function StructureViewer({ accession, selectedPosition, onSelectP
   const chains=model?.chains??[];const activeChain=chains.find(c=>c.id===chain)??chains[0];
   useEffect(()=>setChain(''),[model?.id,accession]);
   const sequence=useQuery<{sequence:string;length:number;tracks:Track[];conservation:Score[];annotation_source_options?:AnnotationSourceOptions}>({queryKey:['sequence',accession,'uniprot'],queryFn:({signal})=>interfaceFetch(`/proteins/${accession}/sequence?topology=uniprot`,signal)});
+  const topology=useQuery<{tracks:Track[]}>({queryKey:['sequence',accession,[topologySource]],enabled:lens==='membrane'&&topologySource!=='uniprot',queryFn:({signal})=>interfaceFetch(`/proteins/${accession}/sequence?${new URLSearchParams({topology:topologySource})}`,signal)});
+  const topologyFeatures=(topologySource==='uniprot'?sequence.data:topology.data)?.tracks.find(track=>track.id==='membrane')?.features;
   const variants=useQuery<VariantSummary>({queryKey:['sequence-variant-summary',accession],enabled:lens==='variants',queryFn:({signal})=>interfaceFetch(`/proteins/${accession}/variants/summary`,signal)});
   const summary=useInterfaceSummary(accession);
   const pestoStructure=summary.data?.pesto_structures.find(s=>s.fragment===`F${model?.id}`);
@@ -99,7 +104,7 @@ export default function StructureViewer({ accession, selectedPosition, onSelectP
       const features=(sequence.data?.tracks.find(t=>t.id==='domains')?.features??[]).filter(f=>f.source===domainSource&&(domainSource==='Pfam'||/domain/i.test(String(f.source_type??f.type??f.label))));
       fillFeatures(features,f=>featureStyle(f,'domains'));
     }
-    if(lens==='membrane')fillFeatures((sequence.data?.tracks.find(t=>t.id==='membrane')?.features??[]).filter(f=>f.source==='UniProt'),f=>featureStyle(f,'membrane'));
+    if(lens==='membrane')fillFeatures(topologyFeatures??[],f=>featureStyle(f,'membrane'));
     if(lens==='ptm')fillFeatures(ptmFeatures.filter(f=>ptmType==='all'||featureStyle(f,'ptm').name===ptmType),f=>featureStyle(f,'ptm'));
     if(lens==='binding')fillFeatures((sequence.data?.tracks.find(t=>t.id==='function')?.features??[]).filter(f=>/binding/i.test(`${f.source_type??''} ${f.type??''} ${f.label??''}`)),f=>featureStyle(f,'function'));
     if(lens==='variants'&&variants.data){const counts=new Map(variants.data.canonical_sites.map(s=>[s.position,s.variant_count]));model?.residue_mapping.forEach(r=>colors.set(r.position,variantFill(counts.get(r.position)??0)));variantCountBins.forEach(bin=>legend.set(bin.label,bin.color));}
@@ -107,7 +112,7 @@ export default function StructureViewer({ accession, selectedPosition, onSelectP
     if(lens==='pesto')predictions.data?.items?.forEach(r=>{if(typeof r[binding]==='number')colors.set(r.position,continuousScoreColor(r[binding] as number));});
     if(lens==='sppider')predictions.data?.[head]?.forEach((v,i)=>colors.set(i+1,continuousScoreColor(v)));
     return {colors,legend};
-  },[lens,sequence.data,variants.data,predictions.data,model,domainSource,ptmFeatures,ptmType,binding,head]);
+  },[lens,sequence.data,variants.data,predictions.data,model,domainSource,ptmFeatures,ptmType,binding,head,topologyFeatures]);
   useEffect(() => {setSelected('');setPartner('');setDomainSource('UniProt');setPtmSources(['dbPTM']);setPtmType('all');setCommittedRange(null);setLens('plddt');lastFocus.current=null;}, [accession]);
   useEffect(()=>{if(selectedPosition==null){setCommittedRange(null);return;}const keepOrSelect=(current:[number,number]|null):[number,number]=>current&&selectedPosition>=current[0]&&selectedPosition<=current[1]?current:[selectedPosition,selectedPosition];setCommittedRange(keepOrSelect);},[selectedPosition]);
   useEffect(() => {
@@ -259,9 +264,9 @@ export default function StructureViewer({ accession, selectedPosition, onSelectP
     return()=>{cancelled=true;};
   },[ready,model,coloring,lens,mappedResidue,committedSelection,selectedPosition,renderStyle,appearance,selectionKey]);
   const continuous=['jsd','pesto','sppider'].includes(lens);
-  const annotationLoading=(sequence.isFetching||predictions.isFetching||variants.isFetching)&&lens!=='plddt';
+  const annotationLoading=(sequence.isFetching||predictions.isFetching||variants.isFetching||(lens==='membrane'&&topologySource!=='uniprot'&&topology.isFetching))&&lens!=='plddt';
   const displayStatus=lens==='sppider'&&!partner?'Choose a partner to color this query sequence':paintStatus;
-  const dataError=sequence.error??(lens==='variants'?variants.error:null)??(lens==='pesto'||lens==='sppider'?predictions.error??summary.error:null);
+  const dataError=sequence.error??(lens==='membrane'&&topologySource!=='uniprot'?topology.error:null)??(lens==='variants'?variants.error:null)??(lens==='pesto'||lens==='sppider'?predictions.error??summary.error:null);
   return <section className="panel structure-section" id="structure">
     <div className="section-heading"><span className="viewer-icon structure-icon"><Box size={23} /></span><div><h2>Protein structure <HelpButton title="Structure guide"><p>Illustrated backbone is the default: discrete residue colours, rounded segments, orthographic projection and light grey outlines. Ribbon is available for secondary structure with soft depth shading. Molecular surface uses a fine solvent-excluded mesh. Studio lighting restores progressive illumination for softer depth and shadows (GPU-dependent; otherwise standard shading). Residue backbone uses a CATVariant-inspired illustration style: rounded tubes, muted outlines and local occlusion to separate overlaps. Each render style remembers its appearance choice. Clear colours preserves score colours without directional highlights. All views retain the same coordinates and score colours.</p><p>Residue linking requires an exact match to the current canonical sequence. Binding interface scores are predictions for the selected fragment or partner, not experimental interactions.</p></HelpButton></h2><p>3D annotations & predicted interfaces</p></div><span className="badge">Predicted structure</span></div>
     {query.isPending ? <p className="empty-state">Loading structure catalogue…</p> : query.isError ? <div className="empty-state"><p>{query.error.message}</p><Button variant="outline" size="sm" onClick={() => query.refetch()}>Retry</Button></div> : !models.length ? <p className="empty-state">No local structure is available for this protein. Sequence annotations remain accessible above.</p> : <>
@@ -276,6 +281,7 @@ export default function StructureViewer({ accession, selectedPosition, onSelectP
       </div>
       {sequence.data?.sequence?<StructureSequenceSelector key={accession} sequence={sequence.data.sequence} mapping={model?.mapping_status==='exact_current_canonical'?model.residue_mapping:[]} value={committedRange} focusedPosition={selectedPosition} onCommit={commitRange} onClear={clearRange}/>:<p className="muted small">Canonical sequence is not available for local selection.</p>}
       <ModeToggleGroup className="structure-lens-controls" aria-label="Structure coloring" value={lens} onValueChange={setLens} options={Object.entries(lenses).map(([value,label])=>({value,label,disabled:value!=='plddt'&&model?.mapping_status!=='exact_current_canonical'}))}/><ContentTransition transitionKey={lens}>
+      {lens==='membrane'&&<div className="structure-topology-controls"><TopologySourcePicker options={sequence.data?.annotation_source_options?.topology??[]} selected={[topologySource]} onChange={ids=>setTopologyChoice({accession,id:ids[0]??'uniprot'})}/><span>{sequence.data?.annotation_source_options?.topology.find(option=>option.id===topologySource)?.label} · mapped to canonical sequence</span>{topologySource!=='uniprot'&&topology.isError&&<button className="text-button" onClick={()=>topology.refetch()}>Retry topology</button>}</div>}
       {lens==='domains'&&<div className="interface-controls"><label>Domain source<select aria-label="Structure domain source" value={domainSource} onChange={e=>setDomainSource(e.target.value)}><option>UniProt</option><option>Pfam</option></select></label></div>}
       {lens==='ptm'&&<div className="interface-controls structure-source-controls"><span>Verified canonical PTM positions</span><fieldset><legend>PTM sources</legend>{ptmOptions.map(option=>{const guide=annotationSourceGuide(option.source,option.kind);return <label key={option.id} title={guide.description}><Checkbox checked={ptmSources.includes(option.id)} disabled={option.available===false} onCheckedChange={()=>setPtmSources(current=>current.includes(option.id)?current.filter(source=>source!==option.id):[...current,option.id])}/>{option.label} <small>{option.count??'—'}</small></label>;})}</fieldset><label>Modification<select aria-label="Structure PTM type" value={ptmType} onChange={e=>setPtmType(e.target.value)}><option value="all">All types</option>{ptmTypes.map(t=><option key={t}>{t}</option>)}</select></label></div>}
       {lens==='binding'&&<div className="interface-controls"><span>Coloured sticks mark UniProt binding-site residues mapped to the canonical sequence. This view does not predict pockets.</span></div>}
