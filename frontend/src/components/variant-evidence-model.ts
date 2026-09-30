@@ -1,4 +1,4 @@
-import { consequenceColors, frequencyColors, interpolateColor, evidenceInk, predictionCalls, predictionPalette, predictionRamp, predictionTextColor } from '../lib/palette';
+import { consequenceColors, frequencyColors, interpolateColor, predictionRamp, predictionTextColor } from '../lib/palette';
 import { label, number, type RecordData } from '../api';
 export interface Predictor extends RecordData {
   field: string; tool: string; group?: string; scope?: string; value?: unknown;
@@ -54,6 +54,7 @@ const DT_CALLS={D:DAMAGING,T:TOLERATED};
 const POLYPHEN_CALLS:Record<string,SourceCall>={D:{label:'Probably damaging',tone:'damaging'},P:{label:'Possibly damaging',tone:'uncertain'},B:{label:'Benign',tone:'tolerated'}};
 // Interpret only an existing, matched source call. Never derive calls from score cutoffs.
 const SOURCE_CALLS:Record<string,Record<string,SourceCall>>={
+  ESM1b_score:{D:{label:"Deleterious",tone:"damaging"},T:TOLERATED},
   SIFT_score:DT_CALLS,SIFT4G_score:DT_CALLS,MetaSVM_score:DT_CALLS,MetaLR_score:DT_CALLS,MetaRNN_score:DT_CALLS,
   'M-CAP_score':DT_CALLS,PrimateAI_score:DT_CALLS,DEOGEN2_score:DT_CALLS,ClinPred_score:DT_CALLS,'LIST-S2_score':DT_CALLS,
   BayesDel_addAF_score:DT_CALLS,BayesDel_noAF_score:DT_CALLS,
@@ -125,14 +126,14 @@ export function frequencyStyle(value:unknown){
 export function scoreVisual(item:Predictor){
  const tone=predTone(item),scale=SCORE_SCALES[item.field],v=Number(item.value);
  const paint=(fill:string,caption:string)=>({fill,color:predictionTextColor(fill),caption});
- const categorical:Record<string,string>=predictionCalls;
- if(categorical[tone])return {...paint(categorical[tone],'Color follows the original source call'),color:evidenceInk[tone as keyof typeof evidenceInk]};
+ const categorical:Record<string,string>={damaging:"#b5293b",tolerated:"#216a9e",uncertain:"#866019"};
+ if(categorical[tone])return {...paint(categorical[tone],'Color follows the original source call'),color:categorical[tone]};
  const valid=!missing(item.value)&&scale&&Number.isFinite(v)&&v>=0&&v<=1;
- if(!valid)return paint(predictionPalette.blue,'Original score; no matched source call');
+ if(!valid)return paint('#64748b','Original score; no matched source call');
  const directional=/predicted damaging effect|predicted pathogenicity|predicted functional change/.test(scale.direction);
  if(!directional)return paint(predictionRamp(v,false),'Color follows this native score, not pathogenicity');
  const effect=scale.direction.startsWith('Lower')?1-v:v;
- return paint(predictionRamp(effect),`Continuous score tint. ${scale.direction} No categorical call is inferred.`);
+ return paint(interpolateColor("#216a9e","#b5293b",effect),`Continuous score tint. ${scale.direction} No categorical call is inferred.`);
 }
 export function sourceFieldMap(row:RecordData){return Object.fromEntries(records(row.fields).map(f=>[String(f.label),f.value]));}
 export function decodedHGVS(value:unknown){try{return decodeURIComponent(String(value??'')).split(':').at(-1)||'—';}catch{return String(value??'—');}}

@@ -773,3 +773,78 @@ QTL样式在`ios-surfaces.css`中按`#qtl`限定，复用当前全站surface/tex
 `PaxDbBrowser.tsx`复用同一丰度表渲染，`QtlTissueNavigator`新增可选列表内容槽，默认QTL/单项研究仍为原计数导航。整合值续页自动加载并保留失败重试，避免区域筛选只看到首个API页；后端API、来源记录、数值及分类不变。显示量尺取API当前context type的maximum；区域/搜索只筛选行，不重算maximum。`paxdb.css`处理内嵌表头、单滚动区及共享蓝色丰度条。
 
 验证：TypeScript/Vite构建至`/tmp/memvar-pax-inline-build`及diff空白检查通过。EGFR实页整合组织37行、仅1张表；Brain/spinal cord筛选4行，搜索cerebral为1行，120 ppm原值及条宽前后一致，数据集详情可开关。Cells/Fluids各5行且重复筛选容器均为0；Cells原值14.0、0.011、58.4、53.2、8.25，Fluids原值17.6、7.34、17.4、3.17、0.749保持。Individual studies组织选择仍出现原数据集名和Clear selection，QTL仍渲染原导航（本页32行）。截图：科研工作区`output/playwright/pax-inline-{tissues,fluids}.png`。5173开发预览已更新；本批未覆盖8000静态版或重启后端，未验证用户61290端口转发。
+
+
+## 2026-09-30结构位点邻域与变异悬停
+
+选中位点同时在主链表示和球棍表示上使用洋红色；切换及清除选择恢复原注释配色。取消单残基默认紧贴镜头，使用 Mol* focusLoci 的 minRadius=20、extraRadius=12 保留空间邻域；这是结构浏览邻域，不是计算或确认的结合口袋。
+
+`StructureViewer.tsx` 处理三维拾取事件、选中颜色和邻域镜头，`StructureSiteInspector.tsx` 独立读取已有位点变异 API。只对 exact_current_canonical 映射开放位点关联；替换来自匹配位置的 canonical_positions，ClinVar classification 与 oncogenicity 保留来源含义，缺失标为 Not classified。面板最多显示8条注释并提供完整证据入口，不生成突变后的结构。样式由 structure-site.css 维护。
+
+验证：TypeScript/Vite 构建通过；EGFR P00533 真实浏览器验证10项，包括 L858 选中及20 Å最小镜头半径、主链/球棍着色、L858M/L858R不同临床注释、实际三维残基悬停与点击、切换后旧高亮消除、W898C缺失临床证据、390px窄屏面板边界，以及清除后恢复原色与移除标记。Mol* 原生点击会创建额外邻域表示，核对各表示的高亮均对应同一新位点而非以表示数量判断。截图保存在本地忽略目录 output/playwright/structure-pocket-{after,inspector,mobile}.png。无后端、数据或科学阈值改动；本轮未提交 GitHub。
+
+
+## 2026-09-30预测器分数阅读优化
+
+预测主表和详情复用 PredictionScale：原生0–1轴保留数值方向，蓝色表示较低预测影响、红色表示较高预测影响，SIFT等反向工具的颜色轴反转；黑色刻度显示原始数值位置。表头直接标明 Higher/Lower = more effect/impact。有来源分类的分数与标签按来源分类着色（红：damaging类；蓝：tolerated类；琥珀：uncertain类）。连续轴仅表达原始分数方向，不是来源分类分段，也不是工具间可比的校准概率；因此某些分数的位置与来源二分类颜色不同是预期行为。无来源分类不生成标签，未审查方向或无界分数不生成0–1轴；缺失无标尺，真实零保留。
+
+CADD和AVI PHRED显示来源参考分布的近似上尾排名，Top百分比=100×10^(−PHRED/10)，保持原始PHRED数值；不是当前页面变异排名或患病概率。ESM1b只把已匹配来源类别D/T展开为Deleterious/Tolerated，不按−7.5重新分类。依据：[dbNSFP5.4a字段字典](https://dist.genos.us/release/dbNSFP5.4a_variant.columns.txt)、[SIFT说明](https://sift.bii.a-star.edu.sg/www/SIFT_help.html)、[CADD原始/PHRED尺度说明](https://cadd.bihealth.org/info)，AVI沿用已确认predictor-guides来源解释。
+
+本次局部替代预测面板此前绿/红及多色色阶；ClinVar、consequence、review stars与序列配色不改变。不添加ACMG证据强度或稳定性结论。实现位于PredictionScale.tsx、prediction-scale.css、PredictionValue和scoreVisual；主表方向组件共用。TypeScript/Vite构建通过；真实EGFR位点3检查正反方向标尺、来源分类、PHRED参考排名、缺失无条、表头无文本溢出，点击分数可打开预测详情。截图为本地output/playwright/prediction-scales.png。未变更后端数据，未提交GitHub。
+
+2026-09-30排名强调补充：CADD/AVI共用PredictionValue中的Top百分比改为独立一行、14px加粗深色，reference rank保持次级说明；主表及预测详情同步生效，换算与来源含义不变。
+
+2026-09-30后续视觉调整（替代本节红/蓝文字及分类框）：分数、方向提示和来源分类统一为中性深色，去掉方向底框与分类边框。颜色集中在0–1原生标尺、来源分类小圆点及PHRED排名填充条；Top百分比仍加粗。PHRED采用固定0–40显示轴（40+封顶），连续蓝→红插值、填充长度与原PHRED线性对应，用于展示不同上尾排名的差异；40不是科学分类阈值，也不是分数上限，悬停及端点明确说明。排名百分比公式不变，无阈值分类及后端改动。构建通过，真实页面确认无底框/边框、不同PHRED产生不同填充颜色，截图prediction-refined.png。
+
+
+## 2026-09-30精细表面与原始预测分数参考
+
+结构surface由coarse-surface改为Mol* molecular-surface（resolution 0.7 Å、probeRadius 1.4 Å、高质量、哑光材质），显式保留plddt-confidence主题以避免预设强制单色。Appearance新增Studio lighting · progressive（渐进光照、去噪、32次迭代），支持时使用GPU光照；不支持时Mol*回退标准绘制。Depth shading仍默认，插画骨架保留。未改坐标、来源分数或映射。
+
+原始分数逐字段审查依据[dbNSFP5.4a官方字段字典](https://dist.genos.us/release/dbNSFP5.4a_variant.columns.txt)。维护位置predictor-references.ts和PredictionReference.tsx，虚线参考点＋实线当前值；说明和链接在预测详情展开。参考点：ESM1b −7.5/0（测试集参考/模型等偏好）；PROVEAN −2.5；BayesDel +AF 0.0692655、−AF −0.0570105；MetaSVM 0；MutationAssessor 0.8/1.935/3.5；GPN-MSA −7；popEVE −5.056/−4.617；MisFit S 0.0001噪声参考；bStatistic 0/1000。MPC、VARITY R/ER LOO、GERP++ RS只标来源范围，无临床界线。共14个字段配置。
+
+ESM1b、PROVEAN、BayesDel、MetaSVM、MutationAssessor、GPN-MSA等轴范围取字典报告范围，仅作为绘图上下文，异常范围值扩展轴而不截掉。popEVE字典范围段误写ESM1b名称，本轮不引用该范围，采用包含当前值和参考点的局部视窗，并明确说明；不将其作为官方范围。bStatistic和MisFit使用定义范围；保守性/选择强度单独蓝色轴，不使用致病红蓝。CADD raw、Eigen raw/PC raw、GERP NR/92 mammals、phyloP17、AVI raw、AlphaGenome splicing等没有本轮可用通用分类参考，明确显示No established reference cutoff，不捏造分界。PHRED保留已实现排名视图。不按这些参考重新生成D/T或临床等级。
+
+
+验证：TypeScript/Vite构建、git diff --check、14个参考配置有效值/范围检查通过；真实EGFR L858原始分数展示了ESM1b/PROVEAN参考线，预测详情能展开来源说明及链接。实际Mol*状态确认molecular-surface与plddt-confidence主题，Studio照明开/关正常，surface/backbone切换保留L858选择，悬停信息可用。第一轮悬停检查被同时打开的预测详情遮挡而超时，关闭详情后顺序复验通过。软件浏览器中精细表面重建和着色耗时明显高于旧粗表面，未承诺全蛋白性能，Ribbon默认不变。截图output/playwright/studio-surface.png、predictor-references.png；构建已更新，未推送GitHub。
+
+
+## 2026-09-30插画骨架优化并设为默认
+
+按用户明确要求，StructureViewer初始表示改为Illustrated backbone，默认Clear colours · outlined；替代前述Ribbon默认决定。骨架sizeFactor由0.55增至0.65、径向分段32，保留离散残基颜色colorMode=default与圆柱/球形接头。插画模式使用正交投影，灰轮廓#78828d，局部遮蔽半径4→2.4、bias 0.8→1.2、遮蔽色改为浅灰#b2bac3；减弱阴影对颜色的干扰。Ribbon/Surface及其他外观仍可选；来源颜色映射、坐标、位点关联不变。
+
+验证：TypeScript/Vite构建及git diff --check通过；浏览器刷新后默认backbone，实际表示sizeFactor=0.65，膜注释着色与L858选中/悬停面板正常。截图output/playwright/illustrated-default.png。仅本地预览构建更新，未提交GitHub。
+
+
+## 2026-09-30SPPIDER伙伴位点轨道
+
+此处分行方案已由下方“坐标轴标记与悬停卡片”替代，阈值依据继续有效。
+
+用户要求Binding interface下新增SPPIDER预测位点，并明确授权查作者/analysis阈值后采用阈值标记。科学定义与来源证据统一维护于科研工作区`modules/PPI/docs/rules.md`的“SPPIDER-seq网站位点标记”：≥0.5，默认query-as-receptor、可切换query-as-peptide，伙伴和两个head独立，不做Q6分析中的跨伙伴并集，不加FDR过滤。正式Parquet、PostgreSQL原值和API未改。
+
+`SppiderPartnerTrack.tsx`调用既有伙伴及逐伙伴分数API，每页4个伙伴，支持accession搜索及分页；标签保留同序列accession别名，悬停说明其共享伙伴序列。每行用一种颜色区分伙伴，孤立达标位点为圆点、相邻达标位点合并条带，空缺/低于阈值打断。`sppider-sites.ts`集中维护显示判定和连续段；原分数、角色和是否达标在悬停展示。点击与键盘选择沿用残基证据面板；最低绘图宽度的小标记按自身残基范围拾取，避免全长缩放时误选相邻位置。
+
+JSD及PeSTo曲线下的逐位色带和横向0–1图例删除，保留曲线、纵轴、原值悬停与位点操作；不改既有连续配色。此次展示更新补充此前保留逐残基色带的要求。
+
+验证：TypeScript/Vite构建、diff空白检查通过；`node --experimental-strip-types --test frontend/tests/sppider-sites.test.mjs`两项通过，覆盖阈值等号、缺失/非法值、间隔、窗口裁剪及空结果。EGFR实页首4伙伴receptor达标位点为15/16/17/13；首伙伴peptide为1，与API逐值计数一致；搜索Q9Y5S9、下一页、角色切换和键盘读取正常。悬停F287显示原值0.50417066（显示0.5042）与伙伴；点击圆点打开F287残基证据。首次点击测试发现像素取整可选邻位，已按标记范围修复并刷新构建后复验通过。截图`output/playwright/sppider-sites.png`、`sppider-hover.png`。已更新8000静态预览；未提交GitHub，未进行全库性能测试。
+
+
+## 2026-09-30SPPIDER坐标轴标记与悬停卡片
+
+用户明确不要独立伙伴轨道，改为原坐标轴圆点及悬停展开。删除SppiderPartnerTrack和对应CSS，在Binding interface下的既有ResidueAxis上叠加SppiderSiteMarkers；不增加独立行、顶部重复标记、伙伴搜索或常驻分页。点放大与卡片淡入/缩放支持reduced motion，Portal和边缘避让避免被轨道裁切；鼠标可进入卡片操作。同坐标多个伙伴只画一个标记，12px内相邻坐标收拢并在卡片提供具体残基选择，屏幕分组不生成代表分数或合并科学记录。
+
+新增只读sppider-markers与逐位伙伴接口，查询全部当前query预测，不再只显示首4个伙伴；严格沿用PPI规则的receptor≥0.5，旧连续曲线的两个query head仍可切换。原始分数、accession别名及direction_evidence→context_dataset的数据库来源在卡片逐伙伴显示，来源查全不使用原先LIMIT 20证据截断；每页6个伙伴。颜色仅用于卡片伙伴识别，不能解释为结合强度。数据表与原始分数不修改。
+
+验证：前端两项屏幕分组测试保留全部坐标/计数且缩放可分离；后端两项实库测试核对F287全量78个伙伴与marker计数一致、原分数一致、来源dataset集合一致、角色和坐标参数验证。EGFR查询有595个receptor达标坐标，查询实测约0.13秒（仅此样本）。真实浏览器确认旧轨道行数为0，悬停出现来源IntAct/BioGRID及分数，进入卡片后可切换近邻F150并打开对应位点证据。TypeScript/Vite与diff检查通过。截图output/playwright/sppider-axis-card.png。更新8000服务与静态构建，未提交GitHub。
+
+
+## 2026-09-30默认骨架Confidence着色修复
+
+用户报告Illustrated backbone在Confidence下整链单色。实页状态确认实际colorTheme为chain-id；Ribbon→backbone回归断言在修复前稳定失败。单独恢复plddt-confidence后clearSelection不会破坏主题，定位为representation type切换时未指定colorTheme，Mol*重置为该表示默认chain-id。StructureViewer的backbone updateRepresentations显式携带plddt-confidence，与surface已采用的处理一致；注释和选中位点仍在该基础主题上overpaint。
+
+验证：TypeScript/Vite、diff检查通过；真实浏览器首次加载默认backbone、Ribbon→backbone、Membrane topology→Confidence均保留plddt-confidence。实际残基颜色采样得到#0053d6/#65cbf3/#ffdb13/#ff7d45，与pLDDT图例一致。截图output/playwright/backbone-confidence-fixed.png。回归在真实渲染器完成，没有引入仅匹配源码文本的伪单元测试；未加产品调试代码。8000构建已更新，未提交GitHub。
+
+
+## 2026-09-30本批GitHub发布
+
+用户授权提交当前网站改动：结构位点邻域/悬停、默认Illustrated backbone与Confidence修复、预测器参考标尺/PHRED排名、SPPIDER坐标轴标记及来源卡片。本批前端构建、定向接口/坐标分组测试和真实浏览器验证见上述各节。数据、凭据及运行截图不随代码发布；独立DuckDB＋Parquet迁移规划保持本地未提交。

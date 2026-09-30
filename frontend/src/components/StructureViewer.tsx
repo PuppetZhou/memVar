@@ -8,6 +8,7 @@ import { Checkbox } from './ui/checkbox';
 import { ModeToggleGroup } from './ui/mode-toggle-group';
 import { ContentTransition } from '@/lib/motion';
 import StructureSequenceSelector from './StructureSequenceSelector';
+import StructureSiteInspector from './StructureSiteInspector';
 import molstarScript from 'pdbe-molstar/build/pdbe-molstar-plugin.js?url';
 import { bindingLabels, interfaceFetch, PartnerPicker, useInterfaceScores, useInterfaceSummary } from './InterfaceAnnotations';
 import { annotationSourceGuide, continuousScoreColor, featureStyle, jsdScoreColor, missingAnnotationColor, sequenceLensLabels, variantCountBins, variantCountColorNote, variantFill } from './sequence-model';
@@ -22,11 +23,12 @@ type RepresentationRef = { cell: { transform: { params: { type: { name: string; 
 type ComponentRef = { representations: RepresentationRef[] };
 type Viewer = {
   render: (el: HTMLElement, options: object) => Promise<void>;
+  getLociForParams: (selection: object[]) => unknown;
   events: { loadComplete: { subscribe: (callback: (success: boolean) => void) => { unsubscribe: () => void } } };
   plugin?: {
     dispose: () => void;
     canvas3d?: { setProps: (props: object) => void };
-    managers: { structure: {
+    managers: { camera: { focusLoci: (loci: unknown, options: {minRadius: number; extraRadius: number; durationMs: number}) => void }; structure: {
       hierarchy: { current: { structures: { components: ComponentRef[] }[] } };
       component: {
         state: { options: Record<string, unknown> };
@@ -58,8 +60,13 @@ function loadMolstar() {
 const lenses: Record<string,string> = {plddt:'Confidence',domains:sequenceLensLabels.domains,membrane:sequenceLensLabels.membrane,ptm:sequenceLensLabels.ptm,variants:sequenceLensLabels.variants,jsd:sequenceLensLabels.jsd,binding:sequenceLensLabels.binding,pesto:'PeSTo interfaces',sppider:'SPPIDER-seq interfaces'};
 export default function StructureViewer({ accession, selectedPosition, onSelectPosition }: { accession: string; selectedPosition?: number | null; onSelectPosition?: (position:number|null)=>void }) {
   const query = useQuery<{ items: Model[] }>({ queryKey: ['structures', accession], queryFn: ({signal})=>interfaceFetch(`/proteins/${accession}/structures`,signal) });
+  const [inspectedPosition,setInspectedPosition]=useState<number|null>(null),[pinnedInspector,setPinnedInspector]=useState(false);
+  const inspectorTimer=useRef<ReturnType<typeof setTimeout>|undefined>(undefined);
+  const holdInspector=()=>{clearTimeout(inspectorTimer.current);};
+  const closeInspector=()=>{holdInspector();setInspectedPosition(null);setPinnedInspector(false);};
+  const leaveInspector=()=>{holdInspector();if(!pinnedInspector)inspectorTimer.current=setTimeout(()=>setInspectedPosition(null),180);};
   const [selected, setSelected] = useState('');const [lens,setLens]=useState('plddt');
-  const [renderStyle,setRenderStyle]=useState('ribbon');const [chain,setChain]=useState('');
+  const [renderStyle,setRenderStyle]=useState('backbone');const [chain,setChain]=useState('');
   // Each representation keeps its own appearance during this viewer session.
   const [appearances,setAppearances]=useState<Record<string,string>>({ribbon:'shaded',surface:'shaded',backbone:'outlined'});
   const appearance=appearances[renderStyle];
@@ -106,7 +113,8 @@ export default function StructureViewer({ accession, selectedPosition, onSelectP
   useEffect(() => {
     let cancelled = false; let instance: Viewer | null = null;
     let loadSubscription: { unsubscribe: () => void } | undefined;
-    setReady(false); setError('');setPaintStatus('Loading model…');
+    setReady(false); setError('');setPaintStatus('Loading model…');lastFocus.current=null;
+    setInspectedPosition(null);setPinnedInspector(false);
     if (!model?.url || !container.current) return;
     const host = container.current;
     (async () => {
@@ -129,32 +137,63 @@ export default function StructureViewer({ accession, selectedPosition, onSelectP
   }, [accession, model?.url]);
   const mappedResidue = model?.mapping_status==='exact_current_canonical'?model.residue_mapping.find(r => r.position === selectedPosition):undefined;
   const committedSelection=useMemo(()=>model?.mapping_status==='exact_current_canonical'&&committedRange?model.residue_mapping.filter(r=>r.position>=committedRange[0]&&r.position<=committedRange[1]):[],[model,committedRange]);
-  const appliedColors=useRef<{viewer:Viewer;colors:Map<number,string>;lens:string;style:string}|null>(null);
+  useEffect(()=>{closeInspector();},[accession,model?.id,selectedPosition]);
+  const selectionKey=committedSelection.map(r=>`${r.chain_id}:${r.auth_residue_number}:${r.insertion_code}`).join('|');
+  const appliedColors=useRef<{viewer:Viewer;colors:Map<number,string>;lens:string;style:string;selectionKey:string}|null>(null);
+  useEffect(()=>{
+    const host=container.current;if(!ready||!host||model?.mapping_status!=='exact_current_canonical')return;
+    const residueFrom=(event:Event)=>{
+      const detail=(event as Event & {eventData?:{auth_asym_id?:string;auth_seq_id?:number;ins_code?:string}}).eventData;
+      return detail&&model.residue_mapping.find(r=>r.chain_id===detail.auth_asym_id&&r.auth_residue_number===detail.auth_seq_id&&(r.insertion_code||'')===(detail.ins_code||''));
+    };
+    const over=(event:Event)=>{if(!pinnedInspector){holdInspector();setInspectedPosition(residueFrom(event)?.position??null);}};
+    const click=(event:Event)=>{const residue=residueFrom(event);if(residue){setCommittedRange([residue.position,residue.position]);onSelectPosition?.(residue.position);}};
+    host.addEventListener('PDB.molstar.mouseover',over);host.addEventListener('PDB.molstar.mouseout',leaveInspector);host.addEventListener('PDB.molstar.click',click);
+    return()=>{host.removeEventListener('PDB.molstar.mouseover',over);host.removeEventListener('PDB.molstar.mouseout',leaveInspector);host.removeEventListener('PDB.molstar.click',click);holdInspector();};
+  },[ready,model,pinnedInspector,onSelectPosition]);
   function residueLabel(position:number){return `${sequence.data?.sequence[position-1]??'?'}${position}`;}
   function commitRange(range:[number,number],focusPosition=range[1]){setCommittedRange(current=>current?.[0]===range[0]&&current[1]===range[1]?current:range);onSelectPosition?.(focusPosition);}
-  function clearRange(){setCommittedRange(null);onSelectPosition?.(null);}
+  function clearRange(){closeInspector();setCommittedRange(null);onSelectPosition?.(null);}
   useEffect(()=>{
     if(!ready||!viewer.current)return;
     const instance=viewer.current;let cancelled=false;
     setPaintStatus('Applying colors…');
     paintQueue.current=paintQueue.current.catch(()=>{}).then(async()=>{
       if(cancelled)return;
-      const keepColors=appliedColors.current?.viewer===instance&&appliedColors.current.colors===coloring.colors&&appliedColors.current.lens===lens&&appliedColors.current.style===`${renderStyle}:${appearance}`;
+      const keepColors=appliedColors.current?.viewer===instance&&appliedColors.current.colors===coloring.colors&&appliedColors.current.lens===lens&&appliedColors.current.style===`${renderStyle}:${appearance}`&&appliedColors.current.selectionKey===selectionKey;
       if(appliedStyle.current?.viewer!==instance||appliedStyle.current.style!==`${renderStyle}:${appearance}`){
         await instance.visual.clearSelection();if(cancelled)return;
         const plugin=instance.plugin;
         if(!plugin)throw new Error('Structure renderer unavailable');
         await plugin.managers.structure.component.applyPreset(plugin.managers.structure.hierarchy.current.structures,
-          renderStyle==='surface'?'coarse-surface':'polymer-cartoon',
-          {ignoreHydrogens:true,ignoreLight:appearance==='outlined',quality:'medium',theme:{globalName:'plddt-confidence'}});
+          renderStyle==='surface'?'molecular-surface':'polymer-cartoon',
+          {ignoreHydrogens:true,ignoreLight:appearance==='outlined',quality:renderStyle==='surface'?'high':'medium',theme:{globalName:'plddt-confidence'}});
+        if(renderStyle==='surface'){
+          for(const structure of plugin.managers.structure.hierarchy.current.structures){
+            for(const component of structure.components){
+              for(const repr of component.representations){
+                if(repr.cell.transform.params.type.name!=='molecular-surface')continue;
+                await plugin.managers.structure.component.updateRepresentations([component],repr,{
+                  colorTheme:{name:'plddt-confidence',params:{}},
+                  type:{name:'molecular-surface',params:{...repr.cell.transform.params.type.params,
+                    resolution:.7,probeRadius:1.4,ignoreLight:appearance==='outlined',
+                    material:{metalness:0,roughness:.65,bumpiness:0},}},
+                });
+              }
+            }
+          }
+        }
         if(renderStyle==='backbone'){
           for(const structure of plugin.managers.structure.hierarchy.current.structures){
             for(const component of structure.components){
               for(const repr of component.representations){
                 if(repr.cell.transform.params.type.name!=='cartoon')continue;
                 await plugin.managers.structure.component.updateRepresentations([component],repr,{
+                  // Changing representation type resets omitted themes to chain-id.
+                  // Preserve the confidence base beneath annotation/selection overpaint.
+                  colorTheme:{name:'plddt-confidence',params:{}},
                   type:{name:'backbone',params:{...repr.cell.transform.params.type.params,
-                    sizeFactor:.55,sizeAspectRatio:1,radialSegments:24,
+                    sizeFactor:.65,sizeAspectRatio:1,radialSegments:32,
                     material:{metalness:0,roughness:1,bumpiness:0},
                     visuals:['polymer-backbone-cylinder','polymer-backbone-sphere','polymer-gap'],
                     colorMode:'default',ignoreLight:appearance==='outlined',}},
@@ -165,15 +204,16 @@ export default function StructureViewer({ accession, selectedPosition, onSelectP
         }
         const outlined=appearance==='outlined',illustrative=renderStyle==='backbone';
         plugin.canvas3d?.setProps({
-          // Soft local occlusion retains overlap depth even in the optional flat-colour view.
-          illumination:{enabled:false},cameraFog:{name:'off',params:{}},
+          // Flat, discrete residue colours with a light overlap cue for annotation reading.
+          camera:{mode:illustrative?'orthographic':'perspective'},
+          illumination:{enabled:appearance==='studio',maxIterations:5,denoise:true},cameraFog:{name:'off',params:{}},
           renderer:{backgroundColor:0xffffff,ambientIntensity:illustrative?.7:.55,
             light:[{inclination:150,azimuth:320,color:0xffffff,intensity:illustrative?.3:.45}]},
           postprocessing:{
-            outline:outlined?{name:'on',params:{scale:1,color:illustrative?0x697582:0x85909c,threshold:.33,includeTransparent:true}}:{name:'off',params:{}},
+            outline:outlined?{name:'on',params:{scale:1,color:illustrative?0x78828d:0x85909c,threshold:.33,includeTransparent:true}}:{name:'off',params:{}},
             occlusion:{name:'on',params:{samples:32,multiScale:{name:'off',params:{}},
-              radius:illustrative?4:3,bias:illustrative?.8:1,blurKernelSize:15,blurDepthBias:.5,resolutionScale:1,
-              color:illustrative?0x798797:0x8c96a3,transparentThreshold:.4}},
+              radius:illustrative?2.4:3,bias:illustrative?1.2:1,blurKernelSize:15,blurDepthBias:.5,resolutionScale:1,
+              color:illustrative?0xb2bac3:0x8c96a3,transparentThreshold:.4}},
             shadow:{name:'off',params:{}},
           },
         });
@@ -184,12 +224,12 @@ export default function StructureViewer({ accession, selectedPosition, onSelectP
       const colored=mapped.filter(r=>coloring.colors.has(r.position));
       const data:object[]=keepColors||lens==='plddt'?[]:colored.map(r=>({auth_asym_id:r.chain_id,auth_seq_id:r.auth_residue_number,pdbx_PDB_ins_code:r.insertion_code||undefined,color:coloring.colors.get(r.position)}));
       // Single-residue annotations can disappear on a ribbon. Keep the exact
-      // annotated residues visible as sticks, with selected residues in blue.
+      // annotated residues visible as sticks; selected sites have a distinct overlay.
       if(lens==='binding')colored.filter(r=>!committedSelection.includes(r)).forEach(r=>data.push({
         auth_asym_id:r.chain_id,auth_seq_id:r.auth_residue_number,pdbx_PDB_ins_code:r.insertion_code||undefined,
         color:null,representation:'ball-and-stick',representationColor:coloring.colors.get(r.position),
       }));
-      // PDBe Mol* color:null keeps the scientific scale on the main representation.
+      // Repaint the base when selection changes so old selected-site colour is removed.
       // Group only consecutive mapped residues without insertion codes; this keeps
       // long selections compact without selecting across unmapped positions.
       const segments:{first:Residue;last:Residue}[]=[];
@@ -198,8 +238,7 @@ export default function StructureViewer({ accession, selectedPosition, onSelectP
         if(segment&&last&&!last.insertion_code&&!residue.insertion_code&&last.chain_id===residue.chain_id&&last.position+1===residue.position&&last.auth_residue_number+1===residue.auth_residue_number)segment.last=residue;
         else segments.push({first:residue,last:residue});
       }
-      segments.forEach(({first,last})=>data.push({auth_asym_id:first.chain_id,...(first===last?{auth_seq_id:first.auth_residue_number,pdbx_PDB_ins_code:first.insertion_code||undefined}:{beg_auth_seq_id:first.auth_residue_number,end_auth_seq_id:last.auth_residue_number}),color:null,representation:'ball-and-stick',representationColor:'#0d74ce'}));
-      if(mappedResidue&&committedSelection.some(r=>r===mappedResidue)&&lastFocus.current!==mappedResidue.position)data.push({auth_asym_id:mappedResidue.chain_id,auth_seq_id:mappedResidue.auth_residue_number,pdbx_PDB_ins_code:mappedResidue.insertion_code||undefined,color:null,focus:true});
+      segments.forEach(({first,last})=>data.push({auth_asym_id:first.chain_id,...(first===last?{auth_seq_id:first.auth_residue_number,pdbx_PDB_ins_code:first.insertion_code||undefined}:{beg_auth_seq_id:first.auth_residue_number,end_auth_seq_id:last.auth_residue_number}),color:'#c02678',representation:'ball-and-stick',representationColor:'#c02678'}));
       if(data.length||(!keepColors&&lens!=='plddt'))await instance.visual.select({data,keepColors,keepOpacity:keepColors,...(keepColors||lens==='plddt'?{}:{nonSelectedColor:missingAnnotationColor})});
       else await instance.visual.clearSelection(undefined,{keepColors,keepOpacity:keepColors});
       // Apply to the selected/binding-site sticks created by visual.select as well.
@@ -207,26 +246,30 @@ export default function StructureViewer({ accession, selectedPosition, onSelectP
         const manager=instance.plugin.managers.structure.component;
         await manager.setOptions({...manager.state.options,ignoreLight:appearance==='outlined'});
       }
-      appliedColors.current={viewer:instance,colors:coloring.colors,lens,style:`${renderStyle}:${appearance}`};
+      appliedColors.current={viewer:instance,colors:coloring.colors,lens,style:`${renderStyle}:${appearance}`,selectionKey};
       if(cancelled)return;
+      if(mappedResidue&&committedSelection.includes(mappedResidue)&&lastFocus.current!==mappedResidue.position){
+        const loci=instance.getLociForParams([{auth_asym_id:mappedResidue.chain_id,auth_seq_id:mappedResidue.auth_residue_number,pdbx_PDB_ins_code:mappedResidue.insertion_code||undefined}]);
+        instance.plugin?.managers.camera.focusLoci(loci,{minRadius:20,extraRadius:12,durationMs:250});
+      }
       lastFocus.current=mappedResidue?.position??null;
       setError('');
       setPaintStatus('');
     }).catch(()=>{if(!cancelled){setError('Residue coloring could not be applied.');setPaintStatus('Coloring failed');}});
     return()=>{cancelled=true;};
-  },[ready,model,coloring,lens,mappedResidue,committedSelection,selectedPosition,renderStyle,appearance]);
+  },[ready,model,coloring,lens,mappedResidue,committedSelection,selectedPosition,renderStyle,appearance,selectionKey]);
   const continuous=['jsd','pesto','sppider'].includes(lens);
   const annotationLoading=(sequence.isFetching||predictions.isFetching||variants.isFetching)&&lens!=='plddt';
   const displayStatus=lens==='sppider'&&!partner?'Choose a partner to color this query sequence':paintStatus;
   const dataError=sequence.error??(lens==='variants'?variants.error:null)??(lens==='pesto'||lens==='sppider'?predictions.error??summary.error:null);
   return <section className="panel structure-section" id="structure">
-    <div className="section-heading"><span className="viewer-icon structure-icon"><Box size={23} /></span><div><h2>Protein structure <HelpButton title="Structure guide"><p>Ribbon shows secondary structure with soft depth shading by default. Molecular surface shows the envelope. Residue backbone uses a CATVariant-inspired illustration style: rounded tubes, muted outlines and local occlusion to separate overlaps. Each render style remembers its appearance choice. Clear colours preserves score colours without directional highlights. All views retain the same coordinates and score colours.</p><p>Residue linking requires an exact match to the current canonical sequence. Binding interface scores are predictions for the selected fragment or partner, not experimental interactions.</p></HelpButton></h2><p>3D annotations & predicted interfaces</p></div><span className="badge">Predicted structure</span></div>
+    <div className="section-heading"><span className="viewer-icon structure-icon"><Box size={23} /></span><div><h2>Protein structure <HelpButton title="Structure guide"><p>Illustrated backbone is the default: discrete residue colours, rounded segments, orthographic projection and light grey outlines. Ribbon is available for secondary structure with soft depth shading. Molecular surface uses a fine solvent-excluded mesh. Studio lighting restores progressive illumination for softer depth and shadows (GPU-dependent; otherwise standard shading). Residue backbone uses a CATVariant-inspired illustration style: rounded tubes, muted outlines and local occlusion to separate overlaps. Each render style remembers its appearance choice. Clear colours preserves score colours without directional highlights. All views retain the same coordinates and score colours.</p><p>Residue linking requires an exact match to the current canonical sequence. Binding interface scores are predictions for the selected fragment or partner, not experimental interactions.</p></HelpButton></h2><p>3D annotations & predicted interfaces</p></div><span className="badge">Predicted structure</span></div>
     {query.isPending ? <p className="empty-state">Loading structure catalogue…</p> : query.isError ? <div className="empty-state"><p>{query.error.message}</p><Button variant="outline" size="sm" onClick={() => query.refetch()}>Retry</Button></div> : !models.length ? <p className="empty-state">No local structure is available for this protein. Sequence annotations remain accessible above.</p> : <>
       <div className="toolbar"><label>Model <select aria-label="Structure model" value={model?.id ?? ''} onChange={e => setSelected(e.target.value)}>{models.map(m => <option key={m.id} value={m.id}>{m.label} · {m.start ?? '?'}–{m.end ?? '?'}</option>)}</select></label>
         <label>Chain <select aria-label="Structure chain" value={activeChain?.id??''} disabled={!chains.length} onChange={e=>{setChain(e.target.value);if(ready)void viewer.current?.visual.focus([{auth_asym_id:e.target.value}]);}}>{chains.length?chains.map(c=><option key={c.id} value={c.id}>{c.id||'(blank ID)'} · {c.residue_count.toLocaleString()} residues{chains.length===1?' · single chain':''}</option>):<option value="">Unavailable</option>}</select></label>
         <Button variant="outline" size="sm" disabled={!ready||!activeChain} onClick={()=>{if(activeChain)void viewer.current?.visual.focus([{auth_asym_id:activeChain.id}]);}}>Focus chain</Button>
-        <label>Render style <select aria-label="Structure render style" value={renderStyle} onChange={e=>setRenderStyle(e.target.value)}><option value="ribbon">Ribbon</option><option value="surface">Molecular surface</option><option value="backbone">Residue backbone</option></select></label>
-        <label>Appearance <select aria-label="Structure appearance" value={appearance} onChange={e=>{const value=e.target.value;setAppearances(current=>({...current,[renderStyle]:value}));}}><option value="shaded">Depth shading</option><option value="outlined">Clear colours · outlined</option></select></label>
+        <label>Render style <select aria-label="Structure render style" value={renderStyle} onChange={e=>setRenderStyle(e.target.value)}><option value="backbone">Illustrated backbone</option><option value="ribbon">Ribbon</option><option value="surface">Molecular surface · smooth</option></select></label>
+        <label>Appearance <select aria-label="Structure appearance" value={appearance} onChange={e=>{const value=e.target.value;setAppearances(current=>({...current,[renderStyle]:value}));}}><option value="shaded">Depth shading</option><option value="studio">Studio lighting · progressive</option><option value="outlined">Clear colours · outlined</option></select></label>
         <Button variant="outline" size="sm" disabled={!ready} onClick={() => { viewer.current?.visual.reset({ camera: true }); }}><RotateCcw size={15} /> Reset camera</Button>
         {model?.url && <Button asChild variant="outline" size="sm"><a href={model.url} download={`${accession}-F${model.id}.pdb`}><Download size={15} /> PDB</a></Button>}
         {selectedPosition&&<ContentTransition transitionKey={selectedPosition} className="muted structure-selection-status" role="status">{selectedPosition ? `Shared residue focus: ${residueLabel(selectedPosition)}${mappedResidue ? ` → chain ${mappedResidue.chain_id}, ${mappedResidue.auth_residue_number}` : ' · not mapped in this model'}` : ''}</ContentTransition>}
@@ -241,8 +284,14 @@ export default function StructureViewer({ accession, selectedPosition, onSelectP
       </ContentTransition>{(displayStatus||annotationLoading)&&<div className="structure-colour-note" role="status">{displayStatus}{annotationLoading?`${displayStatus?' · ':''}Loading annotation data…`:''}</div>}
       {model?.mapping_status !== 'exact_current_canonical' && <p className="viewer-warning">Canonical sequence match unverified · residue linking disabled.</p>}
       {(error||dataError)&&<p role="alert" className="viewer-warning">{error||dataError?.message}</p>}
-      <div className="molstar-frame" ref={container} aria-label="Interactive three-dimensional protein structure" aria-busy={!ready||paintStatus==='Applying colors…'} />
-      <div className="structure-legend-group"><div className="atlas-legend-heading"><Palette size={15}/><strong>{lenses[lens]}</strong>{lens==='variants'&&<span>Mapped DNA variants per residue</span>}</div><div className="viewer-legend">{lens==='plddt'?<><span>AlphaFold confidence (pLDDT)</span><span><i style={{background:'#0053d6'}}/> ≥90</span><span><i style={{background:'#65cbf3'}}/> 70–90</span><span><i style={{background:'#ffdb13'}}/> 50–70</span><span><i style={{background:'#ff7d45'}}/> &lt;50</span></>:continuous?<><span>{lens==='jsd'?'JSD conservation':lens==='pesto'?bindingLabels[binding]:head==='receptor_probability'?'Query as receptor':'Query as peptide'}</span><ScoreColorKey scale={lens==='jsd'?'jsd':'interface'}/></>:[...coloring.legend].map(([name,color])=><span key={name}><i style={{background:color,border:color==='#ffffff'?'1px solid var(--slate-7)':undefined}}/>{name}</span>)}{lens!=='plddt'&&<span><i style={{background:missingAnnotationColor}}/>{lens==='jsd'||lens==='pesto'||lens==='sppider'?'No score in this view':'No annotation in this view'}</span>}{committedRange&&<span><i className="structure-selection-key"/>Blue sticks · selected {committedRange[0]===committedRange[1]?`residue ${committedRange[0]}`:`range ${committedRange[0]}–${committedRange[1]}`}</span>}</div>{(lens==='pesto'||lens==='sppider'||lens==='variants')&&<p className="structure-legend-note">{lens==='variants'?<>Unique mapped variants, not population frequency. {variantCountColorNote}</>:'Model scores, 0–1; not clinical pathogenicity or verified contacts. No threshold or aggregation across partners / fragments.'}</p>}</div>
+      <div className="structure-stage" onMouseLeave={leaveInspector}>
+        <div className="molstar-frame" ref={container} aria-label="Interactive three-dimensional protein structure" aria-busy={!ready||paintStatus==='Applying colors…'} />
+        {ready&&mappedResidue&&<button className="structure-site-chip" aria-label={`Inspect selected residue ${residueLabel(mappedResidue.position)}`} aria-expanded={inspectedPosition===mappedResidue.position}
+          onMouseEnter={()=>{holdInspector();if(!pinnedInspector)setInspectedPosition(mappedResidue.position);}} onFocus={()=>{holdInspector();setInspectedPosition(mappedResidue.position);}}
+          onClick={()=>{holdInspector();setInspectedPosition(mappedResidue.position);setPinnedInspector(true);}}><i/><strong>{residueLabel(mappedResidue.position)}</strong><span>Selected site · inspect variants</span></button>}
+        {inspectedPosition!==null&&model?.mapping_status==='exact_current_canonical'&&<StructureSiteInspector key={`${accession}:${model.id}:${inspectedPosition}`} accession={accession} position={inspectedPosition} residue={sequence.data?.sequence[inspectedPosition-1]??'?'} chain={model.residue_mapping.find(r=>r.position===inspectedPosition)?.chain_id??'—'} onClose={closeInspector} onEnter={holdInspector} onLeave={leaveInspector}/>}
+      </div>
+      <div className="structure-legend-group"><div className="atlas-legend-heading"><Palette size={15}/><strong>{lenses[lens]}</strong>{lens==='variants'&&<span>Mapped DNA variants per residue</span>}</div><div className="viewer-legend">{lens==='plddt'?<><span>AlphaFold confidence (pLDDT)</span><span><i style={{background:'#0053d6'}}/> ≥90</span><span><i style={{background:'#65cbf3'}}/> 70–90</span><span><i style={{background:'#ffdb13'}}/> 50–70</span><span><i style={{background:'#ff7d45'}}/> &lt;50</span></>:continuous?<><span>{lens==='jsd'?'JSD conservation':lens==='pesto'?bindingLabels[binding]:head==='receptor_probability'?'Query as receptor':'Query as peptide'}</span><ScoreColorKey scale={lens==='jsd'?'jsd':'interface'}/></>:[...coloring.legend].map(([name,color])=><span key={name}><i style={{background:color,border:color==='#ffffff'?'1px solid var(--slate-7)':undefined}}/>{name}</span>)}{lens!=='plddt'&&<span><i style={{background:missingAnnotationColor}}/>{lens==='jsd'||lens==='pesto'||lens==='sppider'?'No score in this view':'No annotation in this view'}</span>}{committedRange&&<span><i className="structure-selection-key"/>Magenta · selected {committedRange[0]===committedRange[1]?`residue ${committedRange[0]}`:`range ${committedRange[0]}–${committedRange[1]}`}</span>}</div>{(lens==='pesto'||lens==='sppider'||lens==='variants')&&<p className="structure-legend-note">{lens==='variants'?<>Unique mapped variants, not population frequency. {variantCountColorNote}</>:'Model scores, 0–1; not clinical pathogenicity or verified contacts. No threshold or aggregation across partners / fragments.'}</p>}</div>
     </>}
   </section>;
 }

@@ -1,0 +1,31 @@
+.prediction-direction-chip{display:inline-flex;margin-top:6px;padding:0;background:transparent;color:#48576c;font-size:11px;font-weight:650;line-height:1.5;white-space:normal;max-width:132px;text-align:left}
+.prediction-native-scale{display:flex;align-items:center;gap:6px;width:112px;max-width:100%;margin:7px 0;color:#536176;font-size:11px;line-height:1}
+.prediction-native-scale>i{position:relative;display:block;flex:1;height:7px;border-radius:5px;margin:0 2px}
+.prediction-native-scale b{position:absolute;top:-3px;width:3px;height:13px;background:#172333;border:1px solid white;border-radius:2px;transform:translateX(-50%);box-shadow:0 0 0 1px #17233330}
+.vc-prediction .prediction-source-call{display:inline-block;margin-top:5px;padding:0;border:0;background:transparent;color:#48576c;font-size:12px;font-weight:600;line-height:1.35;max-width:150px}
+
+
+
+
+.prediction-reading-key{display:flex;gap:8px 18px;flex-wrap:wrap;align-items:center;font-size:12px;color:#475569;margin:12px 0}
+.prediction-reading-key b{font-weight:650}.prediction-reading-key .low{color:#216a9e}.prediction-reading-key .high{color:#b5293b}
+
+.prediction-rank-note{display:block;margin-top:6px;color:#48576c;font-size:11px;line-height:1.4;max-width:140px}
+
+.prediction-rank-note>b{display:block;color:#243b58;font-size:14px;font-weight:750;line-height:1.5;white-space:nowrap;font-variant-numeric:tabular-nums}
+.prediction-rank-note>span{display:block;margin-top:1px;font-size:11px;font-weight:400;color:#536176}
+
+.vc-prediction .prediction-source-call::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;background:#64748b;vertical-align:1px}
+.vc-prediction .prediction-call-damaging::before{background:#c73748}
+.vc-prediction .prediction-call-tolerated::before{background:#2774ac}
+.vc-prediction .prediction-call-uncertain::before{background:#b78a35}
+.prediction-rank-scale>i{background:#e9edf2}
+.prediction-rank-scale em{display:block;height:100%;border-radius:5px}
+
+.prediction-reference{max-width:150px;text-align:left}
+.prediction-reference .prediction-native-scale{width:140px}
+.prediction-reference-tick{position:absolute;top:-4px;height:15px;border-left:1px dashed #25354b;transform:translateX(-50%)}
+.prediction-reference-note{display:block;font-size:11px;color:#536176;line-height:1.5;margin-top:4px;overflow-wrap:anywhere}
+.prediction-reference-info{font-size:11px;color:#536176;margin-top:4px}
+.prediction-reference-info summary{cursor:pointer;color:#276493}
+.prediction-reference-info p{font-size:11px;line-height:1.5}

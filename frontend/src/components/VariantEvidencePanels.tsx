@@ -1,5 +1,6 @@
+import PredictionReference from './PredictionReference';
 import EvidenceNumber from './EvidenceNumber';
-import { palette, predictionCalls } from '../lib/palette';
+import { palette } from '../lib/palette';
 import { DiseaseTypeLabels } from './DiseaseClassification';
 import { useMemo, useState } from 'react';
 import { ArrowDown, ArrowUp, FlaskConical, Search, ShieldCheck, Star } from 'lucide-react';
@@ -7,6 +8,7 @@ import { display, label, number, type RecordData } from '../api';
 import { HelpButton } from './HelpGuide';
 import { DetailFields, Disclosure, Fields, LinkOut } from './ui';
 import { record, records, missing, clinicalTone, clinicalLabel, sourceCall, predTone, SCORE_SCALES, DBNSFP_COLUMNS, consequenceCategory, afPercent, reviewStars, frequencyStyle, scoreVisual, sourceFieldMap, decodedHGVS, type Predictor } from './variant-evidence-model';
+import { PredictionScale, PredictionRank } from './PredictionScale';
 import { PREDICTOR_GUIDES } from './predictor-guides';
 
 export function ClinicalBadge({value}:{value:unknown}){return <span className={`vc-clinical vc-clinical-${clinicalTone(value)}`}>{clinicalLabel(value)}</span>;}
@@ -15,8 +17,17 @@ export function ReviewStars({value,compact=false}:{value:unknown;compact?:boolea
 }
 export function PredictionValue({item,compact=false}:{item?:Predictor;compact?:boolean}){
  if(!item||missing(item.value))return <span className="vc-missing" title={label(item?.status)}>—</span>;
- const guide=PREDICTOR_GUIDES[item.field],value=Number(item.value),bar=guide?.scale==='0–1'&&Number.isFinite(value)&&value>=0&&value<=1,visual=scoreVisual(item);
- return <div className={`vc-prediction vc-prediction-${predTone(item)} ${compact?'is-compact':''}`} title={visual.caption} style={{'--score-color':visual.color,'--score-fill':visual.fill} as React.CSSProperties}><strong style={{color:visual.color}}><EvidenceNumber text={typeof item.value==='number'?number(item.value,4):display(item.value)}/></strong>{bar&&!compact&&<div className="vc-score-scale" title={`Native 0–1. ${visual.caption}`}><span>0</span><i><b style={{width:`${value*100}%`,background:visual.fill}}/></i><span>1</span></div>}{item.source_pred?<span className={`vc-pred vc-pred-${predTone(item)}`} title={`Original source code: ${item.source_pred}`}>{sourceCall(item)?.label??item.source_pred_label??item.source_pred}</span>:null}</div>;
+ const value=Number(item.value),visual=scoreVisual(item),tone=predTone(item);
+ const color='#36465c';
+ return <div className={`vc-prediction vc-prediction-${tone} ${compact?'is-compact':''}`} title="Original score and source call; color indicators show score direction or source category." style={{'--score-color':color,'--score-fill':visual.fill} as React.CSSProperties}>
+   <strong style={{color}}><EvidenceNumber text={typeof item.value==='number'?number(item.value,4):display(item.value)}/></strong>
+   <PredictionScale field={item.field} value={value}/>
+   <PredictionRank field={item.field} value={value}/>
+   <PredictionReference field={item.field} value={value} compact={compact}/>
+   {item.source_pred&&<span className={`prediction-source-call prediction-call-${tone}`} title={`Original source call: ${item.source_pred}`}>
+     {sourceCall(item)?.label??item.source_pred_label??item.source_pred}
+   </span>}
+ </div>;
 }
 export function ConsequencePills({value}:{value:unknown}){const terms=String(value??'').split('&').filter(Boolean);return <div className="vc-consequence-pills">{terms.length?terms.map((term,i)=><span key={`${term}:${i}`} className={`vc-effect vc-effect-${consequenceCategory(term)}`}>{label(term)}</span>):<span className="vc-missing" title="Consequence unavailable">—</span>}</div>;}
 const POPULATION_NAMES:Record<string,string>={overall:'Overall exomes',afr:'African / African American',amr:'Admixed American',asj:'Ashkenazi Jewish',eas:'East Asian',fin:'Finnish',mid:'Middle Eastern',nfe:'Non-Finnish European',remaining:'Remaining individuals',sas:'South Asian',grpmax:'Maximum ancestry-group AF'};
@@ -48,7 +59,7 @@ export function ClinvarEvidence({rows,hasMore}:{rows:RecordData[];hasMore:boolea
 }
 
 const CALL_LABELS:Record<string,string>={damaging:'Damaging / pathogenic call',tolerated:'Tolerated / benign call',uncertain:'Uncertain / ambiguous call',other:'Score without interpreted call',missing:'No score'};
-const CALL_COLORS:Record<string,string>={...predictionCalls,other:palette.blue,missing:palette.missing};
+const CALL_COLORS:Record<string,string>={damaging:"#b5293b",tolerated:"#216a9e",uncertain:"#866019",other:"#64748b",missing:palette.missing};
 export function PredictionDashboard({groups}:{groups:RecordData[]}){
  const [group,setGroup]=useState(''),[call,setCall]=useState(''),[search,setSearch]=useState(''),[availability,setAvailability]=useState<'scored'|'unmatched'|'missing'|'all'>('scored');
  const all=useMemo(()=>groups.flatMap(g=>records(g.items).map(p=>({...p,group:String(g.name)} as Predictor))),[groups]);

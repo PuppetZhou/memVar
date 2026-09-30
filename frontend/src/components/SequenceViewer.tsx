@@ -1,3 +1,4 @@
+import SppiderSiteMarkers from './SppiderSiteMarkers';
 import { palette } from '../lib/palette';
 import { useEffect, useId, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -172,7 +173,7 @@ export default function SequenceViewer({ accession, selectedPosition, onSelectPo
        {featureRow('domains')}{featureRow('membrane')}{featureRow('function')}{featureRow('ptm')}{featureRow('secondary')}
        {!hidden.includes('jsd')&&alignedRow('jsd',<ConservationPlot compact scores={data.conservation??[]} sequence={data.sequence} range={range} onSelect={select}/>,'Conservation · 0–1')}
        {!hidden.includes('interface')&&alignedRow('interface',<InterfaceTrack compact accession={accession} sequence={data.sequence} range={range} onRange={setRange} selectedPosition={selectedPosition} onSelect={p=>{select(p);setAtlasLens('interface');setSiteOpen(true);}}/>,'Original score · 0–1')}
-       <div className="composite-track-row composite-ruler-row bottom"><div className="composite-track-label"><strong>Residues</strong></div><div className="composite-track-body"><ResidueAxis sequence={data.sequence} range={range} onRange={setRange}/></div></div>
+       <div className="composite-track-row composite-ruler-row bottom"><div className="composite-track-label"><strong>Residues</strong><small className="sppider-axis-key">SPPIDER sites</small></div><div className="composite-track-body"><div className="sppider-axis-host"><ResidueAxis sequence={data.sequence} range={range} onRange={setRange}/><SppiderSiteMarkers accession={accession} sequence={data.sequence} range={range} onSelect={p=>{select(p);setAtlasLens('interface');setSiteOpen(true);}}/></div></div></div>
        {coordinatePosition!=null&&coordinatePosition>=range[0]&&coordinatePosition<=range[1]&&<div className="composite-guide-area" aria-hidden="true"><i style={{left:`${(coordinatePosition-range[0]+.5)/(range[1]-range[0]+1)*100}%`} as CSSProperties}/>{hoverPosition!=null&&<span className="composite-residue-readout" style={{left:`clamp(60px, ${(coordinatePosition-range[0]+.5)/(range[1]-range[0]+1)*100}%, calc(100% - 60px))`,top:Math.max(4,hoverTrackY-32)} as CSSProperties}>Residue {data.sequence[coordinatePosition-1]}{coordinatePosition.toLocaleString()}</span>}</div>}
       </div>
       

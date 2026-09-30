@@ -15,7 +15,7 @@
 .structure-section .structure-source-controls fieldset label:has([data-state=checked]){border-color:var(--blue-8);background:var(--blue-2);color:var(--blue-12)}
 .structure-section .structure-source-controls fieldset label:has([data-disabled]){opacity:.5;cursor:not-allowed}
 .structure-section .structure-colour-note{background:var(--slate-2);border-radius:8px;color:var(--slate-11);line-height:1.6}
-.structure-section .viewer-legend .structure-selection-key{border:2px solid var(--blue-11);background:transparent;box-sizing:border-box}
+.structure-section .viewer-legend .structure-selection-key{border:0;background:#c02678;box-sizing:border-box}
 @media(prefers-reduced-motion:reduce){.structure-section .structure-source-controls fieldset label{transition:none}}
 
 .structure-section .structure-source-controls legend{font-size:13px}

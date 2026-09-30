@@ -1,4 +1,5 @@
 """Published interface scores, with exact Web sequence links and explicit contexts."""
+from typing import Literal
 from fastapi import APIRouter, HTTPException, Query
 from .db import one, query
 from .sequence import sequence_params
@@ -85,3 +86,57 @@ def site(accession:str,position:int,partner:str=Query('',max_length=100),offset:
     return {'status':'available' if available else 'not_imported','sequence_id':p['sequence_id'],'position':position,
             'pesto':pesto_rows,'sppider':sppider_rows[:limit],'has_more':len(sppider_rows)>limit,
             'scope':'Separate structure fragments and separate partners; raw continuous scores, no threshold.'}
+
+
+# Author CLI collect_sites cutoff; applies only to Web markers, never stored scores.
+SPPIDER_SITE_CUTOFF = 0.5
+
+
+@router.get('/{accession}/interface/sppider-markers')
+def sppider_markers(accession: str, role: Literal['receptor', 'peptide'] = 'receptor'):
+    _, p, _, _, exact = context(accession)
+    if 'SPPIDER-seq' not in exact:
+        return {'items': [], 'sequence_id': p['sequence_id'], 'role': role, 'cutoff': SPPIDER_SITE_CUTOFF}
+    # The column comes exclusively from the validated role enum.
+    column = 'receptor_probability' if role == 'receptor' else 'peptide_probability'
+    rows = query(f'''SELECT s.position::integer, count(*)::integer AS partner_count
+      FROM web_interface.sppider_prediction v
+      CROSS JOIN LATERAL unnest(v.{column}) WITH ORDINALITY s(score,position)
+      WHERE v.query_sequence_key=:key AND s.score >= :cutoff AND s.score <= 1
+      GROUP BY s.position ORDER BY s.position''',
+      {'key': exact['SPPIDER-seq']['source_key'], 'cutoff': SPPIDER_SITE_CUTOFF})
+    return {'items': rows, 'sequence_id': p['sequence_id'], 'role': role, 'cutoff': SPPIDER_SITE_CUTOFF}
+
+
+@router.get('/{accession}/interface/sppider-markers/{position}')
+def sppider_marker_partners(accession: str, position: int,
+                           role: Literal['receptor', 'peptide'] = 'receptor',
+                           offset: int = Query(0, ge=0), limit: int = Query(6, ge=1, le=50)):
+    _, p, _, _, exact = context(accession)
+    length = one('SELECT length FROM web.protein_sequence WHERE sequence_id=:sequence_id', p)['length']
+    if not 1 <= position <= length:
+        raise HTTPException(422, 'Position is outside the current sequence')
+    if 'SPPIDER-seq' not in exact:
+        return {'items': [], 'has_more': False, 'position': position, 'role': role}
+    column = 'receptor_probability' if role == 'receptor' else 'peptide_probability'
+    args = {'key': exact['SPPIDER-seq']['source_key'], 'position': position,
+            'cutoff': SPPIDER_SITE_CUTOFF, 'offset': offset, 'limit': limit + 1}
+    rows = query(f'''SELECT v.partner_sequence_key, v.{column}[:position] AS score,
+      COALESCE((SELECT array_agg(r.canonical_accession ORDER BY r.canonical_accession)
+        FROM web_interface.canonical_reference r WHERE r.sequence_key=v.partner_sequence_key), ARRAY[]::text[]) AS accessions
+      FROM web_interface.sppider_prediction v WHERE v.query_sequence_key=:key
+      AND v.{column}[:position] >= :cutoff AND v.{column}[:position] <= 1
+      ORDER BY v.partner_sequence_key LIMIT :limit OFFSET :offset''', args)
+    items = rows[:limit]
+    if items:
+        evidence = query('''SELECT DISTINCT e.partner_sequence_key, e.ppi_dataset_id, d.provider
+          FROM web_interface.direction_evidence e
+          LEFT JOIN web_context.context_dataset d ON d.dataset_id=e.ppi_dataset_id
+          WHERE e.query_sequence_key=:key AND e.partner_sequence_key=ANY(:partners)
+          ORDER BY e.partner_sequence_key, e.ppi_dataset_id''',
+          {'key': args['key'], 'partners': [r['partner_sequence_key'] for r in items]})
+        for row in items:
+            row['sources'] = [dict(dataset_id=e['ppi_dataset_id'], provider=e['provider'])
+                              for e in evidence if e['partner_sequence_key'] == row['partner_sequence_key']]
+    return {'items': items, 'has_more': len(rows) > limit, 'position': position, 'role': role,
+            'cutoff': SPPIDER_SITE_CUTOFF, 'sequence_id': p['sequence_id']}
