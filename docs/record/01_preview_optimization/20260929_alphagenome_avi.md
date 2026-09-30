@@ -2,6 +2,85 @@
 
 核对：2026-09-30（香港时间）。新版参考轨道与AVI总分、18列归因均已接入本地8000。新下载AVI包完成mapping、正式Parquet发布及PostgreSQL导入，真实贡献页面验收通过。此前旧ZIP故障保留在末节，已解除当前阻塞。
 
+## 恢复清爽配色与当前网站版本提交
+
+2026-09-30：用户反馈米色背景不合适，要求恢复12:57提供两组新颜色之前一版的清爽配色并提交GitHub。已完整撤销这一轮品牌色、来源入口装饰色与互作类别色变更；全站白底/冷灰、蓝色交互态、AlphaGenome原操作/选中颜色恢复。未回退此前完成的功能、排版、科研分类或评分颜色。
+
+本次提交覆盖`a7f7c68`之后已完成的网站工作：独立GTEx组织的QTL共轴轨道和API、MANE外显子/CDS/UTR结构及服务表导入、浮层portal避让、AVI密集绘图修复、选择器精简、全站文字清晰度和科研星级配色。下文“未提交GitHub”描述各项完成当时的状态，此批统一纳入网站版本。上游正式Parquet及PostgreSQL数据仍保留本地，未随网站代码上传。
+
+验证：22项既有AVI、AlphaGenome和QTL测试通过，TypeScript/Vite构建与`git diff --check`通过；新构建CSS/JS产物恢复至试色前的同一版本，浏览器确认背景`#f5f6f8`、阅读面白色、AlphaGenome操作蓝`#075bd8`及中性绘图区。仓库提交仅含源码、配置与文档。截图保存在本地`output/playwright/palette-reverted-alphagenome.png`。
+
+## AVI密集绘图去除黑块遮挡
+
+2026-09-30用户指出AVI总分与贡献叠成黑块。实际EGFR全基因窗口223,659bp包含4,096个SNV、2,709个位点；在850px有效绘图区中只占39个像素列，一列最多248条。旧版5.6px直径总分菱形、逐条常驻竖梗和117px有效高度放大了遮挡。参考截图不能证明其窗口跨度与当前全基因视野相同。
+
+`AlphaGenomeAvi.tsx`修复为200px有效高度（Canvas总高246px）；贡献先画、总分后画，菱形半径按所在像素列的记录数调整为0.65/0.95/1.5px，并在一个路径中绘制，避免重复抗锯齿加深。去掉逐SNV常驻灰梗，仅悬停/选中保留定位线和放大标记。贡献保留原正负堆叠，真实零不填0.4px伪高度，小贡献按真实亚像素高度绘制。当前类别色与默认仅Total不变。密集视野提示拖拽放大，悬停显示同坐标ALT数；所有记录保留原始x/y和值，无最大值/均值替代、抽样或横向抖动。
+
+验收：构建和git diff检查通过；真实EGFR全基因仍4,096/4,096条，局部200bp（55,019,222–55,019,421）仍206/206条，Canvas密度状态从dense变为resolved，彩色贡献与总分小标记可分辨。多选类别、逐等位键盘/详情、Raw/PHRED仍沿用原语义。此修复不承诺在全基因有限屏幕宽度上分开每个SNV，局部需放大。
+
+本地8000已更新，未提交GitHub。截图：[原始全基因绘图](../../../output/playwright/avi-density-before.png)、[调整后全基因](../../../output/playwright/avi-density-after.png)、[调整后200bp局部](../../../output/playwright/avi-density-local.png)。
+
+## 变异表恢复科研语义配色
+
+2026-09-30用户进一步明确：变异表的star、consequence、不同评分程度继续沿用既有科研配色。撤除前一轮`VariantCatalog`的表内7.5对比度token覆盖，以及compact评分/AF的二次压暗；主表与详情回到同一`scientificCssVariables`、`scoreVisual()`和`frequencyStyle()`，不回退此前已废弃的独立八色。字体尺寸、来源字重和清晰中性背景保留。
+
+星级此前被`.ve-stars .filled`绑定到frameshift色，现改为`palette.ts`独立reviewColors（实心#b88210、空心#7b8490），表格和详情共用；星级只表示ClinVar review status。ClinVar红/绿/黄/蓝分别沿用致病/良性/不确定/冲突分类；consequence保持各类型原颜色。评分优先来源分类，没有来源分类时仅按既有方向连续着色；SIFT反向、REVEL正向逻辑不变。AF蓝色深浅仅为频率幅度；零与缺失仍区分。无数据重跑或规则/阈值更改。
+
+验证：TypeScript/Vite构建与git diff检查通过；真实EGFR表格核对金色实心星、红色Damaging、绿色Tolerated、consequence和连续评分色值。截图[科研配色恢复](../../../output/playwright/variants-scientific-colors.png)。本地8000已更新，未提交GitHub。下节7.5:1为已撤回的视觉试行记录，不再作为当前颜色要求。
+
+## 转录本结构、选择器溢出与变异表文字
+
+2026-09-30：根据用户NAGS参考截图，新增真实MANE转录本结构显示。先从同一MANE1.5原始GTF补充来源exon/UTR/transcript，经foundation正式发布与Web投影后导入PostgreSQL；当前`web_mane.gene_cds`模型保持原API和segments，追加exons/utrs与transcript端点。快照`20260930_mane_structure_02`；上游原值、负链和缺失核对见[验证报告](../../../../modules/foundation/runs/20260930_mane_structure_02/validation.json)，未更改代表选择和既有CDS/stop_codon。
+
+- 同轴中心线：exon薄轮廓、UTR灰色14px、CDS蓝色24px，独立stop_codon绘于最上层；方向箭头仅在内含子处。各片段hover显示来源范围，点击或键盘Enter/Space放大；Explore CDS仍专门定位编码段。没有来源CDS的模型不把exon涂为CDS/UTR。
+- 下拉统一留出38px右侧空间并使用内置箭头；不再让原生箭头贴着圆角边缘。长选项保持原始完整文字供展开选择，收起时省略；选择底色保留明确浅青色。
+- 变异表局部文字使用同色相较深色：评分、AF、分类/后果/来源及REF/缺失标记。评分渐变各101点最小白底对比度7.500、hover底6.923；来源标签13px/600。原评分、阈值、关联、图条填充色均未变。
+
+验收：TypeScript/Vite构建、git diff空白检查通过。真实EGFR API返回28个exon与2个UTR，transcript chr7:55,019,017–55,211,628；CDS exon1显示55,019,278–55,019,365，定位窗口仍为200bp。外显子、UTR、CDS中心均在SVG y=66；点击UTR得到418bp窗口55,018,938–55,019,355，滚轮平移后55,019,008–55,019,425，跨度不变；拖拽能放大到55,190,001–55,212,500并显示末端8个exon。桌面最长biosample选项peripheral blood mononuclear cell正常；390px选择控件client/scroll均304px，容器均334px。实际表格link为rgb(49,87,111)、零AF为rgb(73,85,101)。浏览器0错误，仅原蛋白查看器WebGL性能warning。鼠标拖拽后SVG默认黑色focus框已移除，键盘focus-visible仍保留蓝框。
+
+本地页面已更新，未提交GitHub。截图：[转录本局部](../../../output/playwright/mane-transcript-structure.png)、[CDS/UTR交界](../../../output/playwright/mane-cds-focus.png)、[桌面选择器](../../../output/playwright/mane-selector-long-desktop.png)、[窄屏选择器](../../../output/playwright/mane-selector-mobile.png)、[变异表](../../../output/playwright/variants-stronger-ink.png)。
+
+## Atlas式清晰度：AlphaGenome优先与全站视觉整理
+
+2026-09-30用户明确授权替代旧配色/界面要求，以截图中坐标、数值和操作的清晰度为目标。实施的是呈现与样式架构调整，不重跑数据、不修改值、阈值或关联规则。
+
+- AlphaGenome/QTL选择器由大块卡片列表改为紧凑圆角下拉。AlphaGenome仍先biosample后modality，GTEx tissue仍独立；禁用、未选、已选区分。默认选择区域约162px高，选中后显示实际信号列表及可往返Add按钮。
+- 白色轨道标题列、浅中性灰绘图区、深色12px坐标与数值标签、6px轨道间隔；合并重复说明，科学解释集中Guide，缺失/不完整数据提示保留。参考曲线同色系加深以增强辨认，CDS蓝块与色标同步；AVI总分改深色菱形，贡献分组与原始值不变。
+- 全站UI token集中`design-system.css`，删除refined/ios中的旧重复根定义；正文#202124、辅助#4b515a、操作蓝#0757c9、选中底#cce8ff。导航、菜单、弹窗背景不透明；没有重写各科学图形颜色。移除SectionNav跨栏目滑动的背景层，当前项直接着色，避免动画经过其他文字时遮挡。
+- `alphagenome-expression.css`重整为基础/选择器/坐标/轨道/AVI/浮层/响应式分段，删除旧卡片选择器和多轮覆盖；保留实际共用GenomeInspector的portal/视口定位，未引入假设性数据抽象。
+
+验证：TypeScript/Vite构建与git diff检查通过。1414×827真实EGFR页选择skeletal muscle/CAGE并添加双链，同时添加Adipose Subcutaneous eQTL37条；浮层BODY独立层完整显示两链Mean/Maximum（top560.2,bottom731.2），CDS exon1仍定位55,019,222–55,019,421（200bp），删除QTL不影响参考轨道。坐标/AVI类别实测12px；选择下拉有明确浅青选中背景。390px视口workspace364px/scroll364px、选择器334px/scroll334px，无区域横向溢出。概览、变异、表达、互作桌面宽度与scrollWidth一致；首页1414px无横向溢出，导航最终active底色rgb(204,232,255)，无滑动遮字。浏览器无console error；蛋白页曾记录WebGL GPU ReadPixels性能warning，未出现交互错误。未扩大为全站全部数据状态的验收。
+
+本地8000已更新，未提交GitHub。截图：[选择器](../../../output/playwright/atlas-clear-selected.png)、[轨道](../../../output/playwright/atlas-clear-tracks.png)、[数值浮层](../../../output/playwright/atlas-clear-signal-inspector.png)、[窄屏](../../../output/playwright/atlas-clear-mobile.png)、[互作](../../../output/playwright/site-clear-interactions.png)、[首页](../../../output/playwright/site-clear-home.png)。旧截图中导航的移动色块已由最终静态选中态替代。
+
+## iOS选择器与基因/CDS信息层级
+
+2026-09-30：biosample改为边框卡片、hover反馈、浅蓝选中背景与勾号；步骤标题15px，候选名称14px，模态与Add按钮强化蓝色操作态。QTL组织选择沿用同一层级。基因名称22px深蓝突出，CDS图例与实际蓝色块呼应，Explore CDS选择器强调可操作；链方向/转录本/方法说明降为辅助。保留键盘焦点与减少动态效果偏好。未更改任何来源数值或坐标比例。
+
+已检查Figma工具，设计库查询需要具体fileKey，本次未提供Figma文件；依据用户网页截图和现有站点样式直接修改代码，未创建或写入Figma文件。TypeScript/Vite构建、git diff空白检查通过；1414×827真实EGFR页核对biosample唯一选中态、基因22px、CDS exon1定位200bp（55,019,222–55,019,421）。浏览器console error为0。截图：[选择器](../../../output/playwright/agx-hierarchy-picker.png)、[基因与CDS](../../../output/playwright/agx-hierarchy-cds.png)。本地8000已更新，尚未提交GitHub。
+
+## GTEx QTL共轴轨道与字体调整
+
+2026-09-30用户授权同时展示QTL与AlphaGenome，独立选择GTEx组织。新增Add QTL入口、组织搜索和eQTL/sQTL/apaQTL添加/取消；每条轨道明确显示类型、完整tissue、GTEx v11及关联证据属性。模态15px、组织14px、主要辅助信息12px，深蓝主标题/深灰蓝正文；独立来源配色使用专属palette。
+
+`AlphaGenomeQtl.tsx`绘制各条来源关联，横轴为variant坐标（1-based显示），纵轴−log10(P)，原始P/slope及phenotype保留在浮层与明细。同位点关联不合并、不按项目SNV/CDS筛选；零/缺失/非法P不伪造成有限log值，明确计数且保留原始明细。按gene/组织数据集/区间查询`web_context.gtex_qtl_pair`，复用已有gene/dataset索引，参数绑定，验证当前protein→gene及数据集关联。每页2,000条来源顺序记录，显式计数与翻页；纵轴依当前页原值显示。没有重跑科研流程或修改数据库原值。
+
+验证：EGFR当前视野Adipose Subcutaneous eQTL37条、sQTL3条，Skin Not Sun Exposed Suprapubic apaQTL5条；三类型单碱基区间边界正确，反向区间422。较大数据集P10321/皮肤sQTL共90,884条，两页各2,000条且source_row无重叠，查询约0.69/0.13秒。1176×827真实浏览器验证三类添加、独立组织、浮层原值、放大后eQTL变29条/其他两类当前区间空、恢复gene视野、移除sQTL保留其他选择。AlphaGenome cortex of kidney RNA-seq同时添加并实际读出；首次外置盘读取较慢，未将其视作QTL查询失败。构建、差异空白检查通过，浏览器无console error。
+
+当前仅展示所选模型窗口中的QTL，轨道明确提示范围；未做全QTL范围扩展、下方列表定位联动或自动GTEx→AlphaGenome组织对应，未建立AVI等位基因匹配。已更新本地8000，未推送GitHub。截图：[三类QTL](../../../output/playwright/qtl-three-tracks.png)、[QTL与AlphaGenome并列](../../../output/playwright/qtl-with-alphagenome.png)。
+
+## AVI悬停面板排版修订
+
+2026-09-30：用户反馈贡献名称和值拼接成段落、换行错乱。已改为320px面板，坐标与REF→ALT同一行；总分标明尺度，原始特征按名称/数值两列展示，保留类别色点。零值压缩成数量提示、缺失单列提示；已选类别最多显示绝对贡献值最大的6项非零特征，超出明确标注，详情仍保留完整18项。本轮仅更改悬停摘要，不改变原值、轨道或数据库。
+
+TypeScript/Vite构建通过。1176×827真实EGFR验证：单类Protein impact显示Protein termination 1.546与3个零值提示；多类显示Total与6项贡献，各数值右边界均为1093px，面板320×334px，完整详情18项。截图：[单类别](../../../output/playwright/avi-tooltip-protein-aligned.png)、[多类别](../../../output/playwright/avi-tooltip-multiple-aligned.png)。已更新本地8000；此修订发生于a7f7c68发布之后，尚未提交GitHub。
+
+## 参考轨道与AVI浮层裁剪修复
+
+2026-09-30：真实CAGE双链叠加轨道复现浮层超出轨道容器23.5px，被`overflow: hidden`裁剪。共享GenomeTooltip改用body portal和fixed定位，按实际面板尺寸限制视口边界，底部空间不足时向上显示；滚动、缩放及面板尺寸变化后重新定位。参考信号、junction、contact与AVI共用此定位层，保留轨道容器边界及原始数值。
+
+TypeScript/Vite构建、差异空白检查通过。1176×827真实EGFR页面验证CAGE双链面板完整展示；靠近底部时面板自动上移至y=534.25–691.75。AVI多类别333.6px高面板同样位于视口内且无裁剪祖先，移出轨道后正常消失；浏览器console无error或warning。截图：[常规位置](../../../output/playwright/genome-tooltip-unclipped-400.png)、[底部自动上移](../../../output/playwright/genome-tooltip-unclipped-700.png)。已更新本地8000，尚未提交GitHub；未扩大为全站或所有轨道数量的回归。
+
 ## GitHub当前版本发布检查
 
 用户授权提交当前网站版本至`PuppetZhou/memVar`的`main`，包括AlphaGenome/AVI、MANE CDS和工作区已完成的界面优化。发布前18项AlphaGenome/AVI测试及TypeScript/Vite构建通过；补齐新部署只读账号初始化时对`web_mane`的授权。原始数据、数据库、凭据、构建输出、Atlas调研导出和本地`.agents`工具不纳入提交。本次仅发布网站源码、配置与文档，不执行数据库迁移或云端部署。

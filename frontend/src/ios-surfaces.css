@@ -1,39 +1,13 @@
-/* memVar Apple-inspired interface: grouped reading surfaces and floating controls.
-   Scientific fills are defined in lib/palette.ts and remain separate from UI states. */
-html:root {
- --blue-1:#fbfdff; --blue-2:#f3f8ff; --blue-3:#eaf3ff; --blue-4:#ddeeff;
- --blue-5:#cce4ff; --blue-6:#b6d7fb; --blue-7:#90bdeb; --blue-8:#639bd6;
- --blue-9:#0071e3; --blue-10:#005bb8; --blue-11:#0066cc; --blue-12:#163c65;
- --primary:var(--blue-11); --primary-foreground:#fff; --focus:var(--blue-11);
- --canvas:#f5f5f7; --background:var(--canvas); --card:#fff; --surface:#fff;
- --surface-subtle:#f5f5f7; --secondary:var(--surface-subtle); --surface-selected:var(--blue-3);
- --foreground:#1d1d1f; --text:var(--foreground); --text-secondary:#60616a;
- --text-tertiary:#6e6e73; --muted:var(--text-secondary); --muted-foreground:var(--text-secondary);
- --border:#e5e5e9; --border-strong:#c7c8ce;
- --panel-line:#dedee4; --panel-radius:18px; --group-radius:12px;
- --shell-smart-blue:var(--primary); --shell-sapphire:var(--primary); --shell-navy:var(--text);
- --shell-ink:var(--text); --shell-secondary:var(--text-secondary); --shell-muted:var(--text-tertiary);
- --shell-cerulean:var(--primary); --portal-heading:var(--text); --portal-focus:var(--focus);
- --portal-canvas:var(--canvas); --portal-tint:var(--surface-subtle); --portal-line:var(--border);
- --portal-selected:var(--surface-selected); --portal-hover:var(--blue-4);
- --ios-blue:var(--primary); --ios-line:var(--border);
- --ios-font:-apple-system,BlinkMacSystemFont,Inter,"Segoe UI",sans-serif;
- --ios-settle:cubic-bezier(.2,.8,.2,1); --ios-press:80ms; --ios-release:160ms;
- --shadow-surface:0 2px 8px #1d1d1f04; --shadow-floating:0 24px 80px #1d1d1f26,0 4px 16px #1d1d1f0f;
- --shadow-menu:0 12px 36px #1d1d1f1c,0 2px 8px #1d1d1f0a;
- --control-height:36px;
-}
+/* Shared interface implementation: opaque surfaces, readable controls and explicit states.
+   UI tokens live in design-system.css; scientific fills stay in lib/palette.ts. */
 body{font-family:var(--ios-font);background:var(--canvas);color:var(--text);-webkit-font-smoothing:antialiased}
 .site-header nav a,.section-nav a,[data-slot=dialog-content]>.dialog-heading h2{font-family:var(--ios-font)}
 .site-header,.home-header.site-header{background:#fff;border-color:var(--border);box-shadow:none}
-.section-nav{background:#fff;border:1px solid #dedee4b3;border-radius:18px;margin:14px 0 24px;top:12px;padding:7px;gap:3px;box-shadow:0 1px 3px #1d1d1f05;scrollbar-width:none;transition:box-shadow 180ms ease,background-color 180ms ease}
-.section-nav[data-floating=true]{box-shadow:0 8px 28px #1d1d1f12,0 1px 4px #1d1d1f08}
-@supports(backdrop-filter:blur(16px)){
- .site-header,.home-header.site-header,.section-nav{background:#ffffffd9;backdrop-filter:blur(24px) saturate(140%);-webkit-backdrop-filter:blur(24px) saturate(140%)}
-}
-.section-nav a[class*="nav-"]{position:relative;isolation:isolate;flex-shrink:0;min-height:36px;padding:7px 13px;border-radius:11px;color:var(--text-secondary);text-decoration:none;font-size:13px;font-weight:500}
-.section-nav a[class*="nav-"].active{background:transparent;color:var(--primary);box-shadow:none}
-.section-nav-indicator{position:absolute;inset:0;z-index:-1;border-radius:11px;background:var(--surface-selected);border:1px solid #cce4ff99;pointer-events:none}
+.section-nav{background:#fff;border:1px solid var(--border);border-radius:14px;margin:14px 0 24px;top:12px;padding:7px;gap:3px;box-shadow:0 1px 3px #1d1d1f05;scrollbar-width:none;transition:box-shadow 180ms ease,background-color 180ms ease}
+.section-nav[data-floating=true]{box-shadow:0 4px 16px #20212412}
+.site-header,.home-header.site-header,.section-nav{background:var(--surface);backdrop-filter:none;-webkit-backdrop-filter:none}
+.section-nav a[class*="nav-"]{position:relative;isolation:isolate;flex-shrink:0;min-height:36px;padding:7px 13px;border-radius:9px;color:var(--text-secondary);text-decoration:none;font-size:14px;font-weight:500}
+.section-nav a[class*="nav-"].active{background:var(--surface-selected);color:var(--primary);box-shadow:inset 0 0 0 1px var(--blue-7)}
 .section-nav a[class*="nav-"].active svg{color:var(--primary)}
 .panel,.cx-panel,#overview .ov-section{border:0;border-radius:0;background:var(--surface);box-shadow:none}
 #overview .ov-section>header{background:transparent;border-radius:16px 16px 0 0}
@@ -58,11 +32,11 @@ body{font-family:var(--ios-font);background:var(--canvas);color:var(--text);-web
 #variants .vc-catalog .vc-filter-group legend,#variants .vc-catalog .vc-filter-group legend svg{color:var(--text-secondary)}
 #variants .vc-catalog .vc-filter-group .vc-search>button{background:var(--surface-selected);color:var(--primary);border:0;border-radius:0 8px 8px 0}
 /* Apple HIG-inspired grouping; dimensions and motion remain memVar choices. */
-.mode-toggle-group,#expression .cx-expression-types{background:#f3f5f8;border:0;border-radius:11px;padding:3px;box-shadow:none}
-.mode-toggle-group .mode-toggle-item{--touch-scale:1;border:0;border-radius:8px;min-height:32px;color:var(--text-secondary);background:transparent}
+.mode-toggle-group,#expression .cx-expression-types{background:var(--surface-subtle);border:1px solid var(--border);border-radius:10px;padding:3px;box-shadow:none}
+.mode-toggle-group .mode-toggle-item{--touch-scale:1;border:0;border-radius:8px;min-height:34px;font-size:14px;color:var(--text-secondary);background:transparent}
 .mode-toggle-group .mode-toggle-item[data-state=on]{color:var(--blue-12);background:transparent;font-weight:600}
 .mode-toggle-group .mode-toggle-item:disabled{opacity:.45;cursor:not-allowed}
-.mode-toggle-group .mode-toggle-indicator{border-radius:8px;background:#fff;border:0;box-shadow:0 1px 3px #233d6015}
+.mode-toggle-group .mode-toggle-indicator{border-radius:7px;background:var(--surface-selected);border:1px solid var(--blue-7);box-shadow:none}
 .mode-toggle-group[data-equal-width]{display:inline-grid;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);align-items:stretch;max-width:100%}
 .mode-toggle-group[data-equal-width] .mode-toggle-item{min-width:0}
 #expression .cx-assay-overview .cx-expression-types{width:320px;max-width:100%;gap:3px;padding:4px;border-radius:13px;margin-bottom:18px}
@@ -76,9 +50,9 @@ button[data-slot=button][data-variant=default]:not(:disabled):hover{background:v
 button[data-slot=button][data-variant=default]:not(:disabled):active{background:var(--blue-12)}
 button[data-slot=button][data-variant=outline]{background:var(--surface);border-color:var(--border-strong);color:var(--text);box-shadow:0 1px 2px #1d1d1f05}
 button[data-slot=button][data-variant=outline]:not(:disabled):hover{background:var(--blue-2)}
-[data-slot=dialog-overlay]{background:#1d1d1f40;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
-[data-slot=dialog-content]:has(>.dialog-heading){border-radius:22px;border:1px solid #ffffffa0;background:var(--surface);box-shadow:var(--shadow-floating)}
-[data-slot=dialog-content]>.dialog-heading{background:#fafafc;border-color:var(--border);padding:18px 24px}
+[data-slot=dialog-overlay]{background:#20212459;backdrop-filter:none;-webkit-backdrop-filter:none}
+[data-slot=dialog-content]:has(>.dialog-heading){border-radius:16px;border:1px solid var(--border-strong);background:var(--surface);box-shadow:var(--shadow-floating)}
+[data-slot=dialog-content]>.dialog-heading{background:var(--surface);border-color:var(--border);padding:18px 24px}
 [data-slot=dialog-content]>.dialog-heading h2{font-weight:600;letter-spacing:-.025em;color:var(--text)}
 [data-slot=dialog-content]>.dialog-heading button{border:0;border-radius:50%;width:36px;height:36px;background:#eaeaec;color:var(--text-secondary)}
 [data-slot=dialog-content]>.dialog-heading button:hover{background:var(--blue-4)}
@@ -94,6 +68,14 @@ button[data-slot=button][data-variant=outline]:not(:disabled):hover{background:v
 .report .section-heading h2,.report .cx-heading h2{font-size:23px;line-height:1.25}
 #overview .ov-section>header h3{font-size:19px;line-height:1.3}
 .report .section-heading p,.report .cx-heading p,.header-description,.db-intro>p,.page-intro>p{color:var(--text-secondary);line-height:1.6}
+/* Reading roles apply to context summaries without recolouring their marks. */
+.report :is(.cx-bar-label,.cx-context-grid strong,.cx-dataset strong),
+#interactions :is(.ppi-overview h3,.ppi-source-name,.ppi-ring-legend li){color:var(--text)}
+#interactions :is(.ppi-overview p,.ppi-ring-legend small,.ppi-source-count small){color:var(--text-secondary)}
+#interactions :is(.ppi-ring-card,.ppi-context-panel,.ppi-entry){background:var(--surface);border-color:var(--border)}
+#interactions .ppi-entry:is(:hover,.is-selected){background:var(--surface-selected);border-color:var(--blue-7)}
+#interactions .ppi-source-grid .ppi-entry{border-left-color:var(--ppi-accent)}
+.report :is(.cx-dataset small,.cx-context-grid small,.cx-body-caption,.cx-context-count){color:var(--text-secondary)}
 .report :is(.section-heading,.cx-heading) .heading-icon{background:var(--surface-subtle);color:var(--primary);border-radius:12px;box-shadow:none}
 #overview .ov-section>header .ov-section-icon{background:var(--surface-subtle);color:var(--primary);border-radius:9px}
 .report>.panel,.report>.cx-panel{margin-bottom:24px}
@@ -107,7 +89,7 @@ button[data-slot=button][data-variant=outline]:not(:disabled):hover{background:v
 .db-section,.db-doc-section,.db-metric-card,.home-example-card,.catalog-filters{border-color:var(--panel-line);border-radius:var(--panel-radius);box-shadow:var(--shadow-surface)}
 
 /* Search is one field with a clear control and one primary action. */
-.site-header .header-search{min-height:40px;padding:4px 5px 4px 12px;gap:8px;background:#ededf0;border:1px solid transparent;border-radius:12px;color:var(--text-tertiary)}
+.site-header .header-search{min-height:40px;padding:4px 5px 4px 12px;gap:8px;background:var(--surface-subtle);border:1px solid var(--border);border-radius:12px;color:var(--text-tertiary)}
 .site-header .header-search:focus-within{background:#fff;border-color:var(--primary);box-shadow:0 0 0 3px #0066cc1a}
 .site-header .header-search input{flex:1;min-width:0;width:100%;padding:2px 0;font-size:13px;color:var(--text);outline:none}
 .site-header .header-search input::placeholder{color:var(--text-tertiary)}
@@ -125,27 +107,27 @@ button[data-slot=button][data-variant=outline]:not(:disabled):hover{background:v
 
 /* Compact desktop controls; no appearance reset on scientific canvases or checkboxes. */
 :is(.toolbar,.viewer-search,.catalog-filters,.ov-location-controls,.vc-filter-fields) :is(input:not([type=checkbox]):not([type=range]),select),.page-jump input{
- min-height:var(--control-height);border:1px solid var(--border-strong);border-radius:9px;background:var(--surface);color:var(--text);font-size:13px;
+ min-height:var(--control-height);border:1px solid var(--border-strong);border-radius:9px;background:var(--surface);color:var(--text);font-size:14px;
  transition:border-color 140ms ease,box-shadow 140ms ease;
 }
 :is(.toolbar,.viewer-search,.catalog-filters,.ov-location-controls,.vc-filter-fields) :is(input:not([type=checkbox]):not([type=range]),select):focus-visible,.page-jump input:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
-.toolbar .filter>label,.toolbar .filter>span{font-size:12px;font-weight:500;color:var(--text-secondary)}
+.toolbar .filter>label,.toolbar .filter>span{font-size:13px;font-weight:500;color:var(--text-secondary)}
 .toolbar .filter{gap:6px}
 #variants .vc-catalog .vc-filter-group .vc-search{border-radius:10px;border-color:var(--border-strong);min-height:36px;background:#fff}
 #variants .vc-catalog .vc-filter-group .vc-search>button{border-radius:0 9px 9px 0}
 .toolbar button[data-slot=button][data-variant=outline],:where(#expression,#qtl,#interactions,#diseases,.dialog-body) .toolbar button[data-variant=outline]{color:var(--text);border-color:var(--border-strong);background:#fff}
 
 /* Portaled menus share the floating surface, with native keyboard/type-ahead behavior. */
-.filter-select-trigger{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:36px;max-width:100%;padding:7px 10px;border:1px solid var(--border-strong);border-radius:9px;background:#fff;color:var(--text);font-family:inherit;font-size:13px;text-align:left;box-shadow:0 1px 2px #1d1d1f05;transition:border-color 140ms,box-shadow 140ms,background-color 140ms}
+.filter-select-trigger{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:38px;max-width:100%;padding:7px 12px;border:1px solid var(--border-strong);border-radius:9px;background:#fff;color:var(--text);font-family:inherit;font-size:14px;text-align:left;box-shadow:0 1px 2px #1d1d1f05;transition:border-color 140ms,box-shadow 140ms,background-color 140ms}
 .filter-select-trigger>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .filter-select-trigger>span:last-child{display:flex;flex:none;color:var(--text-secondary)}
 .filter-select-trigger:hover{background:var(--surface-subtle);border-color:#a4a5ae}
 .filter-select-trigger[data-state=open]{border-color:var(--primary);box-shadow:0 0 0 3px #0066cc14}
 .filter-select-trigger:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
-.filter-select-content{z-index:70;min-width:var(--radix-select-trigger-width);max-width:min(440px,calc(100vw - 24px));max-height:min(360px,var(--radix-select-content-available-height));padding:5px;border:1px solid #d9d9df;border-radius:12px;background:#fffffff5;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:var(--shadow-menu);color:var(--text);transform-origin:var(--radix-select-content-transform-origin);animation:ios-menu-in 130ms var(--ios-settle)}
+.filter-select-content{z-index:70;min-width:var(--radix-select-trigger-width);max-width:min(440px,calc(100vw - 24px));max-height:min(360px,var(--radix-select-content-available-height));padding:5px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);box-shadow:var(--shadow-menu);color:var(--text);transform-origin:var(--radix-select-content-transform-origin);animation:ios-menu-in 130ms var(--ios-settle)}
 .filter-select-viewport{padding:0}
-.filter-select-option{position:relative;display:flex;align-items:center;gap:12px;min-height:34px;padding:7px 32px 7px 10px;border-radius:7px;font-size:13px;line-height:1.4;cursor:pointer;user-select:none;outline:none;overflow-wrap:anywhere}
-.filter-select-option[data-state=checked]{color:var(--primary);font-weight:600}
+.filter-select-option{position:relative;display:flex;align-items:center;gap:12px;min-height:34px;padding:8px 32px 8px 10px;border-radius:7px;font-size:14px;line-height:1.4;cursor:pointer;user-select:none;outline:none;overflow-wrap:anywhere}
+.filter-select-option[data-state=checked]{background:var(--surface-selected);color:var(--blue-12);font-weight:600}
 .filter-select-option[data-highlighted]{background:var(--primary);color:#fff}
 .filter-select-check{position:absolute;right:9px;display:flex;align-items:center}
 .filter-select-scroll{display:flex;align-items:center;justify-content:center;height:22px;color:var(--text-secondary)}
@@ -184,26 +166,27 @@ button[data-slot=button][data-variant=outline]:not(:disabled):hover{background:v
 #variants .vc-main-table .vc-genomic strong{font-size:13px;font-weight:650;color:var(--primary);font-variant-numeric:tabular-nums;letter-spacing:-.015em}
 #variants .vc-main-table .vc-genomic>span{font-size:11px;letter-spacing:.03em;color:var(--text-secondary)}
 #variants .vc-main-table :is(.vc-position strong,.vc-af-value strong){font-size:13px;font-weight:550;font-variant-numeric:tabular-nums;color:var(--text)}
-#variants .vc-main-table .vc-aa{display:inline-grid;place-items:center;border-radius:6px;background:transparent;color:#52647b;min-width:26px;min-height:28px;font:600 12px ui-monospace,SFMono-Regular,Consolas,monospace}
+#variants .vc-main-table .vc-aa{display:inline-grid;place-items:center;border-radius:6px;background:transparent;color:var(--text);min-width:26px;min-height:28px;font:600 12px ui-monospace,SFMono-Regular,Consolas,monospace}
 #variants .vc-main-table .vc-aa-alt{background:transparent;color:var(--primary)}
 #variants .vc-main-table .vc-effect{font-size:13px;font-weight:550;line-height:1.5;padding:0}
 #variants .vc-main-table .vc-transcript-label{font-size:11px;font-weight:400;color:var(--text-secondary);margin-top:4px}
 #variants .vc-main-table .vc-source-list{gap:3px 9px;align-items:flex-start}
-#variants .vc-main-table .vc-source{display:inline-flex;border:0;border-radius:4px;background:transparent;color:var(--primary);font-size:12px;font-weight:500;letter-spacing:0;padding:2px 0;line-height:1.25}
+#variants .vc-main-table .vc-source{display:inline-flex;border:0;border-radius:4px;background:transparent;color:var(--primary);font-size:13px;font-weight:600;letter-spacing:0;padding:2px 0;line-height:1.25}
 #variants .vc-main-table .vc-source:hover{background:var(--blue-4);border-color:var(--blue-7)}
 #variants .vc-main-table .vc-clinical{font-size:13px;font-weight:550;line-height:1.4;padding:0;background:transparent}
 #variants .vc-main-table .vc-score-cell{padding:6px 7px;border-radius:7px}
 #variants .vc-main-table .vc-score-cell:hover{background:#dde8f780}
 #variants .vc-main-table .vc-prediction.is-compact>strong{display:flex;align-items:center;gap:7px;font-size:14px!important;font-weight:600;font-variant-numeric:tabular-nums;color:var(--text)}
 #variants .vc-main-table .vc-score-cell .vc-pred{font-size:12px;font-weight:400;margin-left:0;line-height:1.4}
-#variants .vc-main-table .vc-missing{color:#738198;font-size:13px}
+#variants .vc-main-table .vc-missing{color:var(--text-secondary);font-size:13px}
 #variants .vc-main-table .vc-more{border-radius:7px;color:var(--primary);background:transparent}
 #variants .vc-main-table .vc-more:hover{background:var(--blue-4)}
 :is(.vc-catalog,.vc-detail) .vc-clinical-pathogenic,.vc-pred-damaging{color:var(--evidence-damaging)}
 :is(.vc-catalog,.vc-detail) .vc-clinical-benign,.vc-pred-tolerated{color:var(--evidence-tolerated)}
 :is(.vc-catalog,.vc-detail) .vc-clinical-uncertain,.vc-pred-uncertain{color:var(--evidence-uncertain)}
 :is(.vc-catalog,.vc-detail) .vc-clinical-conflicting{color:#285d9b}
-#variants .vc-main-table .ve-stars{color:#896f36}
+#variants .vc-main-table .ve-stars{color:var(--review-star-filled)}
+#variants .vc-main-table .ve-stars .empty{color:var(--review-star-empty)}
 
 /* Atlas and track colours share one semantic palette with their legends. */
 .atlas-v3 .atlas-colour-key i.atlas-gradient{background:var(--sequence-jsd-gradient)}
@@ -216,7 +199,8 @@ button[data-slot=button][data-variant=outline]:not(:disabled):hover{background:v
 .atlas-v3 .atlas-amino:is(:hover,:focus-visible) .atlas-ptm-dots i{transform:none}
 .atlas-v3 .atlas-amino.search-match{outline-color:var(--primary)}
 .atlas-preview-ptm{color:var(--evidence-damaging)}
-.composite-track-label strong,.compact-track-legend{color:var(--text-secondary)}
+.composite-track-label strong{color:var(--text)}
+.compact-track-legend{color:var(--text-secondary)}
 
 /* Shared timing; only small controls scale. Dense scientific content stays still. */
 :is(button[data-slot=button],.mode-toggle-item,.section-nav a[class*="nav-"],#expression .cx-expression-collections button,[data-slot=dialog-content]>.dialog-heading button){
@@ -267,7 +251,7 @@ button[data-slot=button][data-variant=outline]:not(:disabled):hover{background:v
  [data-slot=dialog-overlay]{background:#1d1d1f66;backdrop-filter:none;-webkit-backdrop-filter:none}
 }
 @media(prefers-contrast:more){
- .section-nav-indicator,.mode-toggle-group .mode-toggle-indicator{border:1px solid var(--text-secondary);background:#fff}
+ .section-nav a[class*="nav-"].active,.mode-toggle-group .mode-toggle-indicator{border:1px solid var(--text-secondary);background:#fff}
  #expression .cx-expression-collections button.is-selected{border:2px solid var(--primary)}
  #variants .vc-main-table .data-table td{border-bottom-color:var(--border-strong)}
 }
@@ -282,7 +266,6 @@ button[data-slot=button][data-variant=outline]:not(:disabled):hover{background:v
 
 /* Shared affordances: rest → hover → press; persistent selection is a separate state.
    Only interface controls participate. Scientific tiles, plots and drag handles are excluded. */
-html:root{--touch-ease:cubic-bezier(.2,.8,.2,1);--touch-time:170ms;--touch-press:75ms;--touch-ring:var(--blue-7);--touch-hover:#f0f5fb;--touch-down:#dceaff;--touch-shadow:none}
 :is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#interactions,#diseases,#structure,.site-header,.section-nav,.dialog-body,.db-page) :is(button[data-slot=button],.button,.text-button,a.external-link,a.ov-browse,.details-trigger,.mode-toggle-item,.fc-category,.annotation-source-trigger,.cx-metric,.cx-disease-card,.vc-source,.vc-genomic,.vc-position,.vc-score-cell,.vc-af-button,.vc-clinical-button,.vc-more,.vc-tool-group,.vc-count-row,.vc-predictor-heading,.atlas-ptm-key>button,.atlas-source-options label,.ov-source-launchers>button,.mov-compact-sources>button,.cx-expression-collections button,.cx-clinical-key button,.vc-clinical-key button,.vc-consequence-chart button,.vc-active-filters button,.database-nav>a):not(:disabled):not([aria-disabled=true]):not(:has(:disabled)){cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:var(--touch-radius,8px);transition:background-color var(--touch-time) var(--touch-ease),box-shadow var(--touch-time) var(--touch-ease),border-color var(--touch-time) var(--touch-ease),transform var(--touch-time) var(--touch-ease);transform-origin:center}
 @media(hover:hover){
  :is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#interactions,#diseases,#structure,.site-header,.section-nav,.dialog-body,.db-page) :is(button[data-slot=button],.button,.text-button,a.external-link,a.ov-browse,.details-trigger,.mode-toggle-item,.fc-category,.annotation-source-trigger,.cx-metric,.cx-disease-card,.vc-source,.vc-genomic,.vc-position,.vc-score-cell,.vc-af-button,.vc-clinical-button,.vc-more,.vc-tool-group,.vc-count-row,.vc-predictor-heading,.atlas-ptm-key>button,.atlas-source-options label,.ov-source-launchers>button,.mov-compact-sources>button,.cx-expression-collections button,.cx-clinical-key button,.vc-clinical-key button,.vc-consequence-chart button,.vc-active-filters button,.database-nav>a):not(:disabled):not([aria-disabled=true]):not(:has(:disabled)):hover{background-color:var(--touch-hover);box-shadow:var(--touch-shadow);border-color:var(--touch-ring)}
@@ -299,7 +282,6 @@ a.external-link,.text-button{text-decoration-line:underline;text-decoration-colo
 .section-nav a[class*="nav-"]{transition:background-color var(--touch-time) var(--touch-ease),box-shadow var(--touch-time) var(--touch-ease),transform var(--touch-time) var(--touch-ease)}
 @media(hover:hover){.section-nav a[class*="nav-"]:hover{background:var(--touch-hover);box-shadow:var(--touch-shadow)}}
 .section-nav a[class*="nav-"]:active{transform:scale(.985);background:var(--touch-down);box-shadow:none;transition-duration:var(--touch-press)}
-.section-nav a[class*="nav-"].active{background:transparent;box-shadow:none}
 /* Preserve the primary action's strong fill and readable white label. */
 html body :is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#interactions,#diseases,#structure,.site-header,.section-nav,.dialog-body,.db-page) button[data-slot=button][data-variant=default]:not(:disabled):not([aria-disabled=true]):hover{background:var(--blue-10);color:#fff}
 html body :is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#interactions,#diseases,#structure,.site-header,.section-nav,.dialog-body,.db-page) button[data-slot=button][data-variant=default]:not(:disabled):not([aria-disabled=true]):active{background:var(--blue-12);color:#fff}
@@ -430,7 +412,6 @@ html body :is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#inter
 #variants .vc-main-table .vc-af-value sup{font-size:.75em;line-height:0;vertical-align:super;margin-right:2px}
 
 /* Evidence reading roles apply inside portals as well as the protein report. */
-html:root{--reading-body:15px;--reading-label:13px;--reading-group:17px;--reading-value:17px}
 :is(.report,.dialog-body) .data-table{font-size:var(--reading-body);line-height:1.45;border-collapse:separate;border-spacing:0}
 :is(.report,.dialog-body) .data-table th{font-size:var(--reading-label);font-weight:600;line-height:1.4;color:var(--text-secondary);background:var(--surface-subtle);padding:10px 12px;vertical-align:top}
 :is(.report,.dialog-body) .data-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;overflow-wrap:anywhere}
@@ -473,9 +454,9 @@ html:root{--reading-body:15px;--reading-label:13px;--reading-group:17px;--readin
 #variants .vc-main-table .vc-af-value{justify-content:flex-end}
 #variants .vc-main-table .vc-predictor-heading,#variants .vc-main-table .vc-score-cell{text-align:right}
 #variants .vc-main-table .vc-prediction.is-compact{align-items:flex-end}
-#variants .vc-main-table .vc-prediction.is-compact>strong{justify-content:flex-end;font-weight:500}
+#variants .vc-main-table .vc-prediction.is-compact>strong{justify-content:flex-end;font-weight:600}
 #variants .vc-main-table .vc-score-cell .vc-pred{margin-left:auto;font-size:13px}
-#variants .vc-main-table .vc-clinical{font-size:14px;font-weight:500}
+#variants .vc-main-table .vc-clinical{font-size:14px;font-weight:550}
 :is(.report .data-table,.dialog-body .data-table,.vc-population-chart) :is(button,a){--touch-scale:1;--touch-shadow:none}
 :is(.report .data-table,.dialog-body .data-table,.vc-population-chart) :is(button,a):active{transform:none}
 :is(.report,.dialog-body) .data-table tbody tr{transition:background-color 120ms ease}
@@ -498,7 +479,8 @@ html:root{--reading-body:15px;--reading-label:13px;--reading-group:17px;--readin
 :is(.report,.dialog-body) .vc-clinical-other{color:var(--clinical-other-ink)}
 :is(.report,.dialog-body) .vc-clinical-unclassified{color:var(--text-secondary)}
 :is(.report,.dialog-body) :is(.vc-effect,.vc-clinical,.vc-pred){background:transparent;border:0;box-shadow:none}
-:is(.report,.dialog-body) .ve-stars .filled{color:var(--consequence-frameshift)}
+:is(.report,.dialog-body) .ve-stars .filled{color:var(--review-star-filled)}
+:is(.report,.dialog-body) .ve-stars .empty{color:var(--review-star-empty)}
 :is(.report,.dialog-body) .ve-frequency-legend>i{background:linear-gradient(90deg,var(--frequency-low),var(--frequency-high))}
 #variants .vc-main-table :is(.vc-genomic,.vc-source,.vc-aa-alt),
 .dialog-body :is(.vc-detail a.external-link,.ov-go-table a.external-link){color:var(--scientific-link)}

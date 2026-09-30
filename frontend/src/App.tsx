@@ -2,9 +2,6 @@ import { lazy, memo, Suspense, useEffect, useRef, useState, type FormEvent } fro
 import { Link, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Activity, ArrowRight, Atom, BookOpen, Dna, Fingerprint, HeartPulse, Network, Search, SlidersHorizontal, X } from 'lucide-react';
-import { LayoutGroup, motion } from 'motion/react';
-import { useReducedMotion } from './lib/use-reduced-motion';
-import { segmentedTransition } from './lib/motion';
 import { api } from './api';
 import brandLogo from './assets/memvar-logo.png';
 import OverviewContent, { type OverviewData } from './components/Overview';
@@ -46,7 +43,6 @@ function Header(){
 function SectionNav(){
  const [active,setActive]=useState('overview');
  const [floating,setFloating]=useState(false);
- const reduce=useReducedMotion();
  useEffect(()=>{
   let frame=0;
   const update=()=>{
@@ -68,10 +64,9 @@ function SectionNav(){
   window.addEventListener('scroll',schedule,{passive:true});window.addEventListener('resize',schedule);attach();
   return()=>{window.removeEventListener('scroll',schedule);window.removeEventListener('resize',schedule);sizes.disconnect();changes.disconnect();cancelAnimationFrame(frame);};
  },[]);
- return <LayoutGroup id="protein-navigation"><nav className="section-nav" data-floating={floating} aria-label="Protein sections">{sections.map(({id,label,icon:Icon,color})=><a key={id} href={`#${id}`} onClick={()=>setActive(id)} className={`${active===id?'active':''} nav-${color}`} aria-current={active===id?'location':undefined}>
-  {active===id&&<motion.span className="section-nav-indicator" aria-hidden="true" layoutId={reduce?undefined:'current-section'} initial={false} transition={reduce?{duration:0}:segmentedTransition}/>}
+ return <nav className="section-nav" data-floating={floating} aria-label="Protein sections">{sections.map(({id,label,icon:Icon,color})=><a key={id} href={`#${id}`} onClick={()=>setActive(id)} className={`${active===id?'active':''} nav-${color}`} aria-current={active===id?'location':undefined}>
   <Icon size={15} aria-hidden="true"/><span>{label}</span>
- </a>)}</nav></LayoutGroup>;
+ </a>)}</nav>;
 }
 function ProteinContent({accession}:{accession:string}){const [expressionContext,setExpressionContext]=useState('');const [selectedPosition,setSelectedPosition]=useState<number|null>(null);const query=useQuery({queryKey:['overview',accession],queryFn:({signal})=>api<OverviewData>(`/proteins/${encodeURIComponent(accession)}/overview`,signal)});useEffect(()=>{window.scrollTo(0,0);},[accession]);return <><main className="report"><Status loading={query.isPending} error={query.error}>{query.data&&<><SectionNav/><Overview data={query.data}/><Suspense fallback={<Status loading/>}><SequenceViewer accession={accession} selectedPosition={selectedPosition} onSelectPosition={setSelectedPosition}/></Suspense><Suspense fallback={<Status loading/>}><StructureViewer accession={accession} selectedPosition={selectedPosition} onSelectPosition={setSelectedPosition}/></Suspense><Variants accession={accession} selectedPosition={selectedPosition} onClearSelectedPosition={()=>setSelectedPosition(null)}/><ExpressionPanel accession={accession} onContextChange={setExpressionContext}/><QtlPanel accession={accession}/><AlphaGenomePanel accession={accession} expressionContext={expressionContext}/><InteractionPanel accession={accession}/><DiseasePanel accession={accession}/></>}</Status></main></>;}
 function ProteinPage(){const accession=(useParams().accession??'').toUpperCase();return <ProteinContent accession={accession} key={accession}/>;}

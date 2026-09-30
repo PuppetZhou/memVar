@@ -23,6 +23,8 @@ export const predictionPalette = {
 export const predictionCalls = {
   damaging: palette.rose, tolerated: palette.sage, uncertain: palette.butter,
 };
+// Review stars encode evidence review status, independently of variant consequences.
+export const reviewColors = { filled: '#b88210', empty: '#7b8490' } as const;
 export const consequenceColors: Record<string, string> = {
   missense: palette.apricot, 'stop-gained': palette.rose, 'start-lost': palette.coral,
   'stop-lost': palette.peach, synonymous: palette.sage, splice: palette.blue,
@@ -65,8 +67,8 @@ export function predictionTextColor(fill: string): string {
     const rgb = channels.map(c => Math.round(c * factor));
     const linear = rgb.map(c => c / 255).map(c => c <= .04045 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4);
     const luminance = linear[0] * .2126 + linear[1] * .7152 + linear[2] * .0722;
-    // 5.0 leaves room for the subtle hover/alternating table backgrounds.
-    if (1.05 / (luminance + .05) >= 5.0) return '#' + rgb.map(c => c.toString(16).padStart(2, '0')).join('');
+    // 5.0 leaves room for subtle hover and alternating table backgrounds.
+    if (1.05 / (luminance + .05) >= 5) return '#' + rgb.map(c => c.toString(16).padStart(2, '0')).join('');
   }
   return '#000000';
 }
@@ -105,6 +107,7 @@ export const scientificCssVariables = {
   '--clinical-uncertain': clinicalColors.uncertain, '--clinical-conflicting': clinicalColors.conflicting,
   '--evidence-damaging': evidenceInk.damaging, '--evidence-tolerated': evidenceInk.tolerated,
   '--evidence-uncertain': evidenceInk.uncertain,
+  '--review-star-filled': reviewColors.filled, '--review-star-empty': reviewColors.empty,
   '--scientific-link': predictionTextColor('#457b9d'), '--scientific-ink': '#1d3557',
   '--frequency-low': frequencyColors.low, '--frequency-high': frequencyColors.high,
   ...Object.fromEntries(Object.entries(consequenceColors).map(([key, fill]) => [`--consequence-${key}`, predictionTextColor(fill)])),

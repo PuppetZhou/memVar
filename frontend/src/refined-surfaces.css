@@ -1,13 +1,5 @@
-/* Quiet presentation palette. Scientific tracks and source classification colors
-   retain their own scales; opacity is never applied to a whole content panel. */
-html:root {
- --blue-2:#f6f8fa; --blue-3:#eaf0f5; --blue-5:#d5dfe8;
- --blue-6:#c9d5df; --blue-7:#b3c4d2; --blue-8:#899fb3;
- --blue-9:#4c7293; --blue-10:#3e6383; --blue-11:#315b7c; --blue-12:#203d55;
- --border:#d8dde2; --border-strong:#b7c0ca;
- --background:#f5f6f7; --canvas:#f5f6f7; --foreground:#001233;
- --text:#001233; --text-secondary:#33415c; --muted-foreground:#5c677d;
-}
+/* Module layout adaptations. Shared UI tokens live in design-system.css.
+   Scientific tracks and source classification colors retain their own scales. */
 body{background:var(--canvas);color:var(--foreground)}
 #overview .ov-section>header{background:#f7f8f9;border-bottom:0}
 #overview .ov-section-action{background:white;border-top:0;padding-top:8px}
@@ -64,25 +56,7 @@ body{background:var(--canvas);color:var(--foreground)}
 #overview .fc-panel-heading h4{color:#365f65}
 .ve-population .ve-frequency-legend>i{background:linear-gradient(90deg,var(--frequency-low),var(--frequency-high))}
 
-/* Database reading surfaces: neutral canvas, blue actions and retained scientific colours.
-   This replaces the pastel portal shell; component geometry and data scales stay intact. */
-:root{
- /* Blue reading palette supplied by the user. Scientific scales stay independent. */
- --shell-smart-blue:#0466c8;
- --shell-sapphire:#0353a4;
- --shell-navy:#002855;
- --shell-ink:#001233;
- --shell-secondary:#33415c;
- --shell-muted:#5c677d;
- --shell-cerulean:var(--shell-sapphire);
- --portal-heading:var(--shell-ink);
- --portal-focus:var(--shell-smart-blue);
- --portal-canvas:#f7f8fa;
- --portal-tint:#f4f6f9;
- --portal-line:#cbd2dc;
- --portal-selected:#eaf1fa;
- --portal-hover:#e1ebf7;
-}
+/* Database reading surfaces and module geometry use the shared UI tokens. */
 body{background:var(--portal-canvas)}
 .site-header{background:#fff;border-bottom:1px solid #e1e8ed;box-shadow:none}
 .site-header nav a,.section-nav a{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-weight:600}
@@ -189,7 +163,7 @@ body{background:var(--portal-canvas)}
 #overview .ov-section-action>.ov-browse:hover{background:var(--portal-selected);border-radius:3px}
 .dialog-body .field-grid>div{background:#f5f7f8;border-radius:3px}
 .dialog-body .field-grid dt{color:#59646c;font-weight:400}
-.dialog-body .field-grid dd{color:#26333c}
+.dialog-body .field-grid dd{color:var(--text)}
 
 /* Compound search fields own a single boundary; child inputs stay borderless. */
 #variants .vc-catalog .vc-filter-group .vc-search{background:#fff;border:1px solid var(--portal-line);border-radius:4px;gap:8px;padding-left:10px;overflow:visible}
@@ -279,23 +253,23 @@ body{background:var(--portal-canvas)}
 
 /* Consequence is the reading priority; transcript metadata remains a secondary action. */
 #variants .vc-main-table .vc-effect{font-size:14px;font-weight:600}
-#variants .vc-main-table .vc-transcript-label{color:#5c677d;font-size:12px;margin-top:5px}
+#variants .vc-main-table .vc-transcript-label{color:var(--text-tertiary);font-size:12px;margin-top:5px}
 #variants .vc-main-table .vc-transcript-label:hover{color:var(--shell-sapphire);text-decoration:underline}
 
 /* Reading hierarchy: primary records, then supporting metadata. */
-.composite-track-label strong{color:#001233;font-weight:600}
-.composite-track-label small{color:#33415c;font-weight:400}
-#variants .vc-main-table .data-table thead th{background:#f1f4f7;font-size:14px;font-weight:600;line-height:1.3;padding-block:10px;color:#001233}
+.composite-track-label strong{color:var(--text);font-weight:600}
+.composite-track-label small{color:var(--text-secondary);font-weight:400}
+#variants .vc-main-table .data-table thead th{background:#f1f4f7;font-size:14px;font-weight:600;line-height:1.3;padding-block:10px;color:var(--text)}
 #variants .vc-main-table .data-table thead th>span{color:inherit}
-#variants .vc-main-table .data-table thead .vc-predictor-heading{font-size:14px;color:#001233}
-#variants .vc-main-table .data-table thead :is(small,.vc-predictor-direction){font-size:12px;font-weight:400;line-height:1.35;color:#33415c}
+#variants .vc-main-table .data-table thead .vc-predictor-heading{font-size:14px;color:var(--text)}
+#variants .vc-main-table .data-table thead :is(small,.vc-predictor-direction){font-size:12px;font-weight:400;line-height:1.35;color:var(--text-secondary)}
 #variants .vc-main-table .data-table td{padding-block:8px;line-height:1.4}
 #variants .vc-main-table .data-table tbody tr:nth-child(even){background:#f8f9fb}
 #variants .vc-main-table .vc-genomic{gap:2px}
-#variants .vc-main-table .vc-genomic strong{font-family:inherit;font-size:15px;font-weight:500;color:#0353a4;font-variant-numeric:tabular-nums}
-#variants .vc-main-table .vc-genomic>span{font-size:12px;font-weight:400;color:#33415c}
+#variants .vc-main-table .vc-genomic strong{font-family:inherit;font-size:15px;font-weight:500;color:var(--primary);font-variant-numeric:tabular-nums}
+#variants .vc-main-table .vc-genomic>span{font-size:12px;font-weight:400;color:var(--text-secondary)}
 #variants .vc-main-table .vc-effect{font-size:14px;font-weight:600;line-height:1.35}
-#variants .vc-main-table .vc-transcript-label{font-size:12px;font-weight:400;line-height:1.3;margin-top:3px;color:#5c677d}
+#variants .vc-main-table .vc-transcript-label{font-size:12px;font-weight:400;line-height:1.3;margin-top:3px;color:var(--text-tertiary)}
 #variants .vc-main-table .vc-clinical{font-size:14px;font-weight:500}
 #variants .vc-main-table .vc-source{font-size:13px;line-height:1.3}
 #variants .vc-main-table :is(.vc-position strong,.vc-af-value strong){font-size:14px;font-weight:500;font-variant-numeric:tabular-nums}
@@ -334,7 +308,7 @@ body{background:var(--portal-canvas)}
 #expression .cx-expression-collections button{border:1px solid #ccd4df;border-radius:4px}
 #expression .cx-expression-collections button.is-selected{background:#edf3f8;border-color:#577590;box-shadow:none}
 #expression .cx-expression-source .cx-expression-collection-icon,
-#expression .cx-expression-type-icon{background:transparent;color:#5c677d;border-radius:0}
+#expression .cx-expression-type-icon{background:transparent;color:var(--text-tertiary);border-radius:0}
 #expression .cx-expression-database>svg,
-#expression .cx-expression-collections button>svg{color:#5c677d}
-#expression .cx-expression-collections .cx-expression-method{color:#33415c;font-weight:400}
+#expression .cx-expression-collections button>svg{color:var(--text-tertiary)}
+#expression .cx-expression-collections .cx-expression-method{color:var(--text-secondary);font-weight:400}

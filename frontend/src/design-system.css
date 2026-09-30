@@ -41,34 +41,41 @@
  --radius-lg: 8px;
  --radius-xl: 12px;
 }
-:root {
- color-scheme: light;
- --background: var(--slate-1);
- --foreground: var(--slate-12);
- --card: #fff;
- --primary: var(--blue-11);
- --primary-foreground: #fff;
- --secondary: var(--slate-3);
- --muted-foreground: var(--slate-11);
- --canvas: var(--slate-2);
- --surface: var(--card);
- --surface-subtle: var(--slate-2);
- --surface-selected: var(--blue-3);
- --text: var(--slate-12);
- --text-secondary: var(--slate-11);
- --text-tertiary: var(--slate-11);
- --muted: var(--slate-11);
- --border: var(--slate-7);
- --border-strong: var(--slate-8);
- --focus: var(--blue-8);
+/* One UI palette for the site shell, controls and reading surfaces.
+   Scientific encodings are owned by lib/palette.ts and are never derived here. */
+html:root {
+ color-scheme:light;
+ --blue-1:#fbfdff; --blue-2:#f1f7ff; --blue-3:#dceeff; --blue-4:#c6e5ff;
+ --blue-5:#acd8ff; --blue-6:#8ec7f7; --blue-7:#71afe7; --blue-8:#3989d6;
+ --blue-9:#0961df; --blue-10:#064fbf; --blue-11:#0757c9; --blue-12:#103c72;
+ --canvas:#f5f6f8; --background:var(--canvas); --card:#fff; --surface:var(--card);
+ --surface-subtle:#f7f8fa; --secondary:var(--surface-subtle); --surface-selected:#cce8ff;
+ --foreground:#202124; --text:var(--foreground); --text-secondary:#4b515a;
+ --text-tertiary:#606771; --muted:var(--text-secondary); --muted-foreground:var(--text-secondary);
+ --slate-11:var(--text-secondary); --slate-12:var(--text);
+ --primary:var(--blue-11); --primary-foreground:#fff; --focus:var(--primary);
+ --border:#d9dde3; --border-strong:#b7bec8; --panel-line:var(--border);
+ --panel-radius:14px; --group-radius:10px;
  --font-body:15px; --font-data:14px; --font-label:13px; --font-hint:12px;
- --blue: var(--blue-11);
- --purple: var(--violet-9);
- --teal: var(--teal-9);
- --green: var(--green-9);
- --amber: var(--amber-9);
- --rose: var(--red-9);
+ --reading-body:15px; --reading-label:13px; --reading-group:17px; --reading-value:17px;
+ --blue:var(--primary); --purple:var(--violet-9); --teal:var(--teal-9);
+ --green:var(--green-9); --amber:var(--amber-9); --rose:var(--red-9);
+ /* Compatibility names are aliases, not another palette to maintain. */
+ --shell-smart-blue:var(--primary); --shell-sapphire:var(--primary); --shell-navy:var(--text);
+ --shell-ink:var(--text); --shell-secondary:var(--text-secondary); --shell-muted:var(--text-tertiary);
+ --shell-cerulean:var(--primary); --portal-heading:var(--text); --portal-focus:var(--focus);
+ --portal-canvas:var(--canvas); --portal-tint:var(--surface-subtle); --portal-line:var(--border);
+ --portal-selected:var(--surface-selected); --portal-hover:var(--blue-4);
+ --ios-blue:var(--primary); --ios-line:var(--border);
+ --ios-font:-apple-system,BlinkMacSystemFont,Inter,"Segoe UI",sans-serif;
+ --ios-settle:cubic-bezier(.2,.8,.2,1); --ios-press:80ms; --ios-release:160ms;
+ --shadow-surface:none; --shadow-floating:0 16px 48px #20212426,0 3px 10px #2021240f;
+ --shadow-menu:0 8px 28px #2021241c,0 2px 6px #2021240a;
+ --control-height:36px;
+ --touch-ease:var(--ios-settle); --touch-time:170ms; --touch-press:75ms;
+ --touch-ring:var(--blue-7); --touch-hover:var(--blue-2); --touch-down:var(--blue-4); --touch-shadow:none;
 }
+
 /* Minimum reset only for installed primitives, preserving native/scientific widget styles. */
 @layer base {
  [data-slot] { box-sizing:border-box; border:0 solid var(--border); margin:0; }
