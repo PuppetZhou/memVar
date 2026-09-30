@@ -2,8 +2,8 @@
    UI tokens live in design-system.css; scientific fills stay in lib/palette.ts. */
 body{font-family:var(--ios-font);background:var(--canvas);color:var(--text);-webkit-font-smoothing:antialiased}
 .site-header nav a,.section-nav a,[data-slot=dialog-content]>.dialog-heading h2{font-family:var(--ios-font)}
-.site-header,.home-header.site-header{background:#fff;border-color:var(--border);box-shadow:none}
-.section-nav{background:#fff;border:1px solid var(--border);border-radius:14px;margin:14px 0 24px;top:12px;padding:7px;gap:3px;box-shadow:0 1px 3px #1d1d1f05;scrollbar-width:none;transition:box-shadow 180ms ease,background-color 180ms ease}
+.site-header,.home-header.site-header{border-color:var(--border);box-shadow:none}
+.section-nav{border:1px solid var(--border);border-radius:14px;margin:14px 0 24px;top:12px;padding:7px;gap:3px;box-shadow:0 1px 3px #1d1d1f05;scrollbar-width:none;transition:box-shadow 180ms ease,background-color 180ms ease}
 .section-nav[data-floating=true]{box-shadow:0 4px 16px #20212412}
 .site-header,.home-header.site-header,.section-nav{background:var(--surface);backdrop-filter:none;-webkit-backdrop-filter:none}
 .section-nav a[class*="nav-"]{position:relative;isolation:isolate;flex-shrink:0;min-height:36px;padding:7px 13px;border-radius:9px;color:var(--text-secondary);text-decoration:none;font-size:14px;font-weight:500}
@@ -12,25 +12,20 @@ body{font-family:var(--ios-font);background:var(--canvas);color:var(--text);-web
 .panel,.cx-panel,#overview .ov-section{border:0;border-radius:0;background:var(--surface);box-shadow:none}
 #overview .ov-section>header{background:transparent;border-radius:16px 16px 0 0}
 #overview .ov-section-action{border-radius:0 0 16px 16px}
-#overview .ov-identity .ov-identity-fields>div{border-radius:9px;background:var(--surface-subtle)}
-#overview .ov-source-launchers>button,#membrane-association .mov-compact-sources>button{border-radius:11px;background:var(--surface-subtle);box-shadow:none}
 #overview .fc-category{border-radius:9px}
 #overview .fc-category[data-state=active]{background:var(--surface-selected);color:var(--primary);box-shadow:none}
-#expression .cx-assay-overview{border:1px solid var(--border);border-radius:14px;background:#fafbfd;box-shadow:none}
+#expression .cx-assay-overview{box-shadow:none}
 #expression .cx-assay-overview>header{border-color:var(--border)}
-#expression .cx-expression-database{border:0;border-radius:10px;background:var(--surface-subtle)}
-#expression .cx-expression-collections button{border:1px solid var(--border);border-radius:11px;background:var(--surface);box-shadow:none}
+#expression .cx-expression-collections button{border:1px solid var(--border);background:var(--surface)}
 #expression .cx-expression-collections button:hover{background:var(--blue-2);border-color:var(--border-strong)}
-#expression .cx-expression-collections button.is-selected{background:var(--surface-selected);border-color:var(--blue-7);box-shadow:none;color:var(--blue-12)}
+#expression .cx-expression-collections button.is-selected{box-shadow:none;color:var(--blue-12)}
 #expression .cx-expression-collections button.is-selected>svg{color:var(--primary)}
-#diseases .cx-disease-sources .cx-disease-card:not(:disabled){border-radius:12px;border:1px solid var(--border);border-top:3px solid var(--cx-source);background:var(--surface);box-shadow:none}
-#diseases .cx-disease-sources .cx-disease-card:not(:disabled):hover{background:var(--blue-2);box-shadow:none}
-#diseases .cx-disease-sources .cx-disease-card.is-selected{background:var(--surface-selected);border-color:var(--blue-7)}
-#variants .vc-category-panel{border-radius:12px;border-color:var(--border);background:var(--surface)}
+#diseases .cx-disease-sources .cx-disease-card:not(:disabled):hover{box-shadow:none}
+#variants .vc-category-panel{border-color:var(--border);background:var(--surface)}
 #variants .vc-catalog .vc-filter-group{background:transparent;border:0;border-radius:10px}
-#variants .vc-catalog .vc-filters{border:0;border-radius:0;background:transparent;padding:12px 0;gap:20px}
+#variants .vc-catalog .vc-filters{border-radius:0;padding:12px 0;gap:20px}
 #variants .vc-catalog .vc-filter-group legend,#variants .vc-catalog .vc-filter-group legend svg{color:var(--text-secondary)}
-#variants .vc-catalog .vc-filter-group .vc-search>button{background:var(--surface-selected);color:var(--primary);border:0;border-radius:0 8px 8px 0}
+#variants .vc-catalog .vc-filter-group .vc-search>button{background:var(--surface-selected);color:var(--primary);border:0}
 /* Apple HIG-inspired grouping; dimensions and motion remain memVar choices. */
 .mode-toggle-group,#expression .cx-expression-types{background:var(--surface-subtle);border:1px solid var(--border);border-radius:10px;padding:3px;box-shadow:none}
 .mode-toggle-group .mode-toggle-item{--touch-scale:1;border:0;border-radius:8px;min-height:34px;font-size:14px;color:var(--text-secondary);background:transparent}
@@ -57,7 +52,6 @@ button[data-slot=button][data-variant=outline]:not(:disabled):hover{background:v
 [data-slot=dialog-content]>.dialog-heading button{border:0;border-radius:50%;width:36px;height:36px;background:#eaeaec;color:var(--text-secondary)}
 [data-slot=dialog-content]>.dialog-heading button:hover{background:var(--blue-4)}
 [data-slot=dialog-content]>.dialog-body{background:var(--surface)}
-[data-slot=dialog-content] .field-grid>div{border-radius:9px;background:var(--surface-subtle)}
 :is(button,a,input,select):focus-visible{outline:2px solid var(--focus);outline-offset:3px}
 
 /* Typography and reading hierarchy. Scientific labels and marks keep their own styles. */
@@ -154,30 +148,25 @@ button[data-slot=button][data-variant=outline]:not(:disabled):hover{background:v
 #variants .vc-main-table .data-table thead .vc-predictor-heading{font-size:12px;font-weight:650;color:var(--text)}
 #variants .vc-main-table .data-table thead :is(small,.vc-predictor-direction){display:block;font-size:11px;line-height:1.45;font-weight:400;color:var(--text-secondary);margin-top:4px}
 #variants .vc-main-table .data-table :is(th,td):is(:nth-child(2),:nth-child(6),:nth-child(8),:nth-child(9)){border-left:0}
-#variants .vc-main-table .data-table td{padding:10px 12px;line-height:1.45;border-bottom:1px solid #edf0f3;color:var(--text);font-size:13px;vertical-align:middle}
+#variants .vc-main-table .data-table td{padding:10px 12px;line-height:1.45;border-bottom:1px solid #edf0f3;color:var(--text);vertical-align:middle}
 #variants .vc-main-table .data-table tbody tr{--row-surface:#fff;background:var(--row-surface)}
-#variants .vc-main-table .data-table tbody tr:nth-child(even){--row-surface:#fafafa;background:var(--row-surface)}
-#variants .vc-main-table .data-table tbody tr:is(:hover,:focus-within){--row-surface:#f1f6fc;background:var(--row-surface)}
 #variants .vc-main-table .data-table :is(th,td):first-child{position:sticky;left:0;padding-left:16px;border-right:0}
 #variants .vc-main-table .data-table td:first-child{background:var(--row-surface);z-index:1}
 #variants .vc-main-table .data-table th:first-child{z-index:3}
-#variants .vc-main-table .data-table tbody tr:is(:hover,:focus-within) td:first-child{box-shadow:none}
 #variants .vc-main-table .vc-genomic{gap:5px}
-#variants .vc-main-table .vc-genomic strong{font-size:13px;font-weight:650;color:var(--primary);font-variant-numeric:tabular-nums;letter-spacing:-.015em}
+#variants .vc-main-table .vc-genomic strong{font-variant-numeric:tabular-nums;letter-spacing:-.015em}
 #variants .vc-main-table .vc-genomic>span{font-size:11px;letter-spacing:.03em;color:var(--text-secondary)}
 #variants .vc-main-table :is(.vc-position strong,.vc-af-value strong){font-size:13px;font-weight:550;font-variant-numeric:tabular-nums;color:var(--text)}
-#variants .vc-main-table .vc-aa{display:inline-grid;place-items:center;border-radius:6px;background:transparent;color:var(--text);min-width:26px;min-height:28px;font:600 12px ui-monospace,SFMono-Regular,Consolas,monospace}
+#variants .vc-main-table .vc-aa{display:inline-grid;place-items:center;border-radius:6px;background:transparent;color:var(--text);min-height:28px;font:600 12px ui-monospace,SFMono-Regular,Consolas,monospace}
 #variants .vc-main-table .vc-aa-alt{background:transparent;color:var(--primary)}
-#variants .vc-main-table .vc-effect{font-size:13px;font-weight:550;line-height:1.5;padding:0}
+#variants .vc-main-table .vc-effect{padding:0}
 #variants .vc-main-table .vc-transcript-label{font-size:11px;font-weight:400;color:var(--text-secondary);margin-top:4px}
 #variants .vc-main-table .vc-source-list{gap:3px 9px;align-items:flex-start}
 #variants .vc-main-table .vc-source{display:inline-flex;border:0;border-radius:4px;background:transparent;color:var(--primary);font-size:13px;font-weight:600;letter-spacing:0;padding:2px 0;line-height:1.25}
 #variants .vc-main-table .vc-source:hover{background:var(--blue-4);border-color:var(--blue-7)}
-#variants .vc-main-table .vc-clinical{font-size:13px;font-weight:550;line-height:1.4;padding:0;background:transparent}
-#variants .vc-main-table .vc-score-cell{padding:6px 7px;border-radius:7px}
+#variants .vc-main-table .vc-clinical{line-height:1.4;padding:0;background:transparent}
 #variants .vc-main-table .vc-score-cell:hover{background:#dde8f780}
-#variants .vc-main-table .vc-prediction.is-compact>strong{display:flex;align-items:center;gap:7px;font-size:14px!important;font-weight:600;font-variant-numeric:tabular-nums;color:var(--text)}
-#variants .vc-main-table .vc-score-cell .vc-pred{font-size:12px;font-weight:400;margin-left:0;line-height:1.4}
+#variants .vc-main-table .vc-prediction.is-compact>strong{display:flex;align-items:center;font-variant-numeric:tabular-nums}
 #variants .vc-main-table .vc-missing{color:var(--text-secondary);font-size:13px}
 #variants .vc-main-table .vc-more{border-radius:7px;color:var(--primary);background:transparent}
 #variants .vc-main-table .vc-more:hover{background:var(--blue-4)}
@@ -263,7 +252,6 @@ button[data-slot=button][data-variant=outline]:not(:disabled):hover{background:v
 .structure-legend-group .structure-gradient{background:var(--sequence-score-gradient)}
 .structure-legend-group .structure-gradient.is-jsd{background:var(--sequence-jsd-gradient)}
 
-
 /* Shared affordances: rest → hover → press; persistent selection is a separate state.
    Only interface controls participate. Scientific tiles, plots and drag handles are excluded. */
 :is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#interactions,#diseases,#structure,.site-header,.section-nav,.dialog-body,.db-page) :is(button[data-slot=button],.button,.text-button,a.external-link,a.ov-browse,.details-trigger,.mode-toggle-item,.fc-category,.annotation-source-trigger,.cx-metric,.cx-disease-card,.vc-source,.vc-genomic,.vc-position,.vc-score-cell,.vc-af-button,.vc-clinical-button,.vc-more,.vc-tool-group,.vc-count-row,.vc-predictor-heading,.atlas-ptm-key>button,.atlas-source-options label,.ov-source-launchers>button,.mov-compact-sources>button,.cx-expression-collections button,.cx-clinical-key button,.vc-clinical-key button,.vc-consequence-chart button,.vc-active-filters button,.database-nav>a):not(:disabled):not([aria-disabled=true]):not(:has(:disabled)){cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:var(--touch-radius,8px);transition:background-color var(--touch-time) var(--touch-ease),box-shadow var(--touch-time) var(--touch-ease),border-color var(--touch-time) var(--touch-ease),transform var(--touch-time) var(--touch-ease);transform-origin:center}
@@ -292,14 +280,13 @@ html body :is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#inter
 #variants .vc-main-table .vc-score-cell{min-height:40px;border-radius:5px;padding:4px 5px}
 #variants .vc-main-table .vc-prediction.is-compact{padding:0;border-radius:0;background:transparent}
 #variants .vc-main-table .vc-prediction.is-compact>strong{color:var(--score-color);font-size:15px!important;gap:7px}
-#variants .vc-main-table .vc-score-cell .vc-pred{display:inline-flex;width:fit-content;max-width:100%;padding:0;margin:3px 0 0;border-radius:0;color:var(--score-color);background:transparent;font-size:12px;font-weight:500;line-height:1.4}
+#variants .vc-main-table .vc-score-cell .vc-pred{display:inline-flex;width:fit-content;max-width:100%;padding:0;margin:3px 0 0;border-radius:0;color:var(--score-color);background:transparent;font-weight:500;line-height:1.4}
 #variants .vc-main-table .vc-score-cell .vc-no-call{display:block;color:var(--text-secondary);font-size:10px;margin:3px 0 0;line-height:1.4}
 @media(prefers-reduced-motion:reduce){
  :is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#interactions,#diseases,#structure,.site-header,.section-nav,.dialog-body,.db-page) :is(button[data-slot=button],.button,.text-button,a.external-link,a.ov-browse,.details-trigger,.mode-toggle-item,.fc-category,.annotation-source-trigger,.cx-metric,.cx-disease-card,.vc-source,.vc-genomic,.vc-position,.vc-score-cell,.vc-af-button,.vc-clinical-button,.vc-more,.vc-tool-group,.vc-count-row,.vc-predictor-heading,.atlas-ptm-key>button,.atlas-source-options label,.ov-source-launchers>button,.mov-compact-sources>button,.cx-expression-collections button,.cx-clinical-key button,.vc-clinical-key button,.vc-consequence-chart button,.vc-active-filters button,.database-nav>a):not(:disabled):not([aria-disabled=true]):not(:has(:disabled)),.section-nav a[class*="nav-"]{transition:none}
  :is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#interactions,#diseases,#structure,.site-header,.section-nav,.dialog-body,.db-page) :is(button[data-slot=button],.button,.text-button,a.external-link,a.ov-browse,.details-trigger,.mode-toggle-item,.fc-category,.annotation-source-trigger,.cx-metric,.cx-disease-card,.vc-source,.vc-genomic,.vc-position,.vc-score-cell,.vc-af-button,.vc-clinical-button,.vc-more,.vc-tool-group,.vc-count-row,.vc-predictor-heading,.atlas-ptm-key>button,.atlas-source-options label,.ov-source-launchers>button,.mov-compact-sources>button,.cx-expression-collections button,.cx-clinical-key button,.vc-clinical-key button,.vc-consequence-chart button,.vc-active-filters button,.database-nav>a):not(:disabled):not([aria-disabled=true]):not(:has(:disabled)):active,.section-nav a[class*="nav-"]:active{transform:none;transition:none}
 }
 @media(prefers-contrast:more){:is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#interactions,#diseases,#structure,.site-header,.section-nav,.dialog-body,.db-page) :is(button[data-slot=button],.button,.text-button,a.external-link,a.ov-browse,.details-trigger,.mode-toggle-item,.fc-category,.annotation-source-trigger,.cx-metric,.cx-disease-card,.vc-source,.vc-genomic,.vc-position,.vc-score-cell,.vc-af-button,.vc-clinical-button,.vc-more,.vc-tool-group,.vc-count-row,.vc-predictor-heading,.atlas-ptm-key>button,.atlas-source-options label,.ov-source-launchers>button,.mov-compact-sources>button,.cx-expression-collections button,.cx-clinical-key button,.vc-clinical-key button,.vc-consequence-chart button,.vc-active-filters button,.database-nav>a):not(:disabled):not([aria-disabled=true]):not(:has(:disabled)):hover{outline:1px solid var(--primary);outline-offset:1px}}
-
 
 /* White reading surfaces with a thin frame around each meaningful module. */
 .report>.panel,.report>:is(#sequence,#structure,#expression,#qtl,#interactions,#diseases,#alphagenome),#overview .ov-identity.panel,#overview .ov-section{border:1px solid var(--panel-line);border-radius:var(--panel-radius);box-shadow:var(--shadow-surface);background:#fff}
@@ -324,7 +311,6 @@ html body :is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#inter
 #sequence .composite-source-controls,#sequence .viewer-search,#structure>.toolbar,:where(#expression,#qtl,#interactions,#diseases,.dialog-body) .toolbar{background:transparent;border:0;border-radius:0;padding-inline:0}
 .atlas-v3.full-sequence{border:0;border-radius:0;padding-inline:0}
 .atlas-v3 .atlas-source-entry,.atlas-v3 .atlas-legend-group,.atlas-v3 .atlas-overlay-group{background:transparent;border:0;padding-inline:0}
-
 
 /* QTL uses the shared neutral surfaces and blue interaction palette. */
 #qtl{--cx-accent:var(--primary);--cx-dark:var(--text);--cx-tint:var(--surface-selected);--cx-line:var(--border);--context-bar-color:var(--blue-7)}
@@ -383,7 +369,7 @@ html body :is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#inter
 #membrane-association .mov-compact-sources{gap:10px}
 #membrane-association .mov-compact-sources>button{padding:10px 12px;border:1px solid var(--slate-7);border-radius:7px;background:#fff;min-height:0}
 #membrane-association .mov-compact-sources>button p{margin:5px 0 0;font-size:13px;line-height:1.4}
-#membrane-association .ov-section-action{padding:0 20px 12px;gap:8px}
+#membrane-association .ov-section-action{padding:0 20px 12px}
 #overview .ov-rose>header{padding:10px 20px}
 #overview .ov-rose>.ov-section-body{padding:0 20px 14px}
 #overview .ov-reaction-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:0}
@@ -447,7 +433,7 @@ html body :is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#inter
 :is(.report,.dialog-body) .evidence-number{font-variant-numeric:tabular-nums;letter-spacing:0;white-space:nowrap}
 :is(.report,.dialog-body) .evidence-number sup{font-size:.75em;line-height:0;vertical-align:super;margin-right:2px}
 #variants .vc-main-table .data-table td{font-size:14px}
-#variants .vc-main-table .vc-genomic strong{font-size:14px;font-weight:600}
+#variants .vc-main-table .vc-genomic strong{font-size:14px}
 #variants .vc-main-table :is(.vc-genomic>span,.vc-transcript-label){font-size:12px}
 #variants .vc-main-table .data-table :is([data-column=aa-position],[data-column=frequency],[data-column^=prediction-]){text-align:right;font-variant-numeric:tabular-nums}
 #variants .vc-main-table :is(.vc-position,.vc-af-button){text-align:right;margin-left:auto}

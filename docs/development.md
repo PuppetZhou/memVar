@@ -73,10 +73,15 @@ npm run dev
 
 ```bash
 cd frontend
+npm run test:genomic
 npm run build
 ```
 
+`test:genomic` 使用 Node.js 22.6+ 的类型剥离执行坐标契约测试，无需数据库；覆盖半开区间、SVG/Canvas 对齐、指针定位和双向刷选。AlphaGenome 前端职责与坐标约定见 [CONTEXT.md](../CONTEXT.md)。
+
 后端定向检查位于 `tests/`；部分检查需要本地数据库或上游数据，纯代码构建通过不代表完整数据链路已验证。修改影响科学含义的筛选、映射或阈值时，应先确认数据规则，再修改实现。
+
+在 `Web` 的父目录运行基因轨道的后端回归检查：`python -m unittest Web.tests.test_avi Web.tests.test_alphagenome_expression Web.tests.test_qtl_significance Web.tests.test_qtl_tracks`。这些检查需要已安装的服务数据库和参考预测文件，包含来源数值、身份关联、区间边界及分页。
 
 ## AlphaGenome与AVI服务数据
 

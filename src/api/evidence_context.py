@@ -512,8 +512,12 @@ def expression(accession: str, source: str = "", category: str = "normal", limit
             "note": "Gene-level source measurements. Units and sample contexts are not pooled across studies."}
 
 
-@router.get("/proteins/{accession}/qtl/tracks")
-def qtl_tracks(accession: str, gene: str):
+def _gtex_track_context(accession: str, gene: str) -> tuple[str, list[dict]]:
+    """Resolve the linked HGNC gene and its GTEx datasets once per request.
+
+    The shared genomic browser retains AlphaGenome's frozen/current identity
+    check. Dataset availability remains scoped to that gene's GTEx pair counts.
+    """
     from .alphagenome import candidates
     selected = next((g for g in candidates(accession) if g['ensembl_gene_id'] == gene), None)
     if selected is None:
@@ -523,6 +527,12 @@ def qtl_tracks(accession: str, gene: str):
         FROM web_context.qtl_context_count c JOIN web_context.context_dataset d USING(dataset_id)
         WHERE c.hgnc_id=:hgnc AND c.table_name='gtex_qtl_pair' AND d.provider='GTEx'
         GROUP BY d.dataset_id,d.kind,d.details_json ORDER BY tissue,qtl_type""", {'hgnc': selected['hgnc_id']})
+    return selected['hgnc_id'], items
+
+
+@router.get("/proteins/{accession}/qtl/tracks")
+def qtl_tracks(accession: str, gene: str):
+    _, items = _gtex_track_context(accession, gene)
     return {'items': items, 'assembly': 'GRCh38', 'source': 'GTEx v11'}
 
 
@@ -532,11 +542,8 @@ def qtl_track(accession: str, gene: str, dataset: str, chromosome: str,
               offset: int = Query(0, ge=0), limit: int = Query(2000, ge=1, le=5000)):
     if end <= start:
         raise HTTPException(422, "End must exceed start (0-based half-open interval)")
-    from .alphagenome import candidates
-    selected = next((g for g in candidates(accession) if g['ensembl_gene_id'] == gene), None)
-    if selected is None:
-        raise HTTPException(404, "Gene is not linked to this protein")
-    if not any(d['dataset_id'] == dataset for d in qtl_tracks(accession, gene)['items']):
+    hgnc_id, datasets = _gtex_track_context(accession, gene)
+    if not any(d['dataset_id'] == dataset for d in datasets):
         raise HTTPException(404, "GTEx dataset is not available for this gene")
     rows = query("""WITH scoped AS MATERIALIZED (
         SELECT source_row,variant_id,phenotype_id,pval_nominal,slope,slope_se,pval_nominal_threshold
@@ -548,7 +555,7 @@ def qtl_track(accession: str, gene: str, dataset: str, chromosome: str,
             THEN split_part(variant_id,'_',2)::bigint > :start
             AND split_part(variant_id,'_',2)::bigint <= :end ELSE false END
         ORDER BY source_row LIMIT :limit OFFSET :offset""",
-        dict(hgnc=selected['hgnc_id'],dataset=dataset,chromosome=chromosome,start=start,end=end,limit=limit,offset=offset))
+        dict(hgnc=hgnc_id,dataset=dataset,chromosome=chromosome,start=start,end=end,limit=limit,offset=offset))
     total = int(rows[0]['total']) if rows else 0
     for row in rows:
         row.pop('total', None)

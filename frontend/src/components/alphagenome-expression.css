@@ -53,11 +53,9 @@
 
 /* Heading and actions. */
 .agx-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
-.agx-eyebrow { color: var(--ag-secondary); font-size: 12px; font-weight: 550; }
 .agx-heading h2 { display: flex; align-items: center; gap: 8px; margin: 3px 0 6px; color: var(--ag-text); font-size: 24px; letter-spacing: -.4px; }
 .agx-heading h2 > span { color: var(--ag-secondary); font-weight: 450; }
 .agx-heading p { margin: 0; color: var(--ag-secondary); font-size: 14px; line-height: 1.5; }
-.agx-predicted { padding: 4px 9px; border-radius: 6px; background: #f0f2f4; color: var(--ag-secondary); font-size: 12px; }
 .agx-stats { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 8px 0 0; padding: 8px 0 12px; color: var(--ag-secondary); font-size: 12px; }
 .agx-stats b { color: var(--ag-text); font-size: 14px; font-weight: 650; }
 .agx-stats > span:last-child { margin-left: auto; }
@@ -249,7 +247,6 @@
 .agx-guide-disclosure > p { margin: 4px 0 8px; color: var(--ag-secondary); font-size: 12px; line-height: 1.5; }
 .agx-loading, .agx-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; min-height: 90px; padding: 20px 12px; color: var(--ag-secondary); font-size: 13px; text-align: center; line-height: 1.5; }
 .agx-empty > strong { color: var(--ag-text); font-size: 16px; }
-.agx-empty-icon { color: var(--ag-action); }
 .agx-error { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px; border: 1px solid #e6bcbc; border-radius: 8px; background: #fff6f6; color: #973b3b; font-size: 13px; }
 .agx-collapsed-label { display: block; padding: 18px 0; color: var(--ag-secondary); font-size: 12px; }
 .agx-legacy-anchor { display: block; height: 0; scroll-margin-top: 110px; }
@@ -302,7 +299,6 @@ svg .agx-plot-tooltip, svg .agx-plot-tooltip * { pointer-events: none; }
   .agx { --ag-label: 132px; padding: 14px; }
   .agx-heading h2 { font-size: 21px; }
   .agx-heading p { font-size: 13px; }
-  .agx-predicted { display: none; }
   .agx-stats { gap: 7px 14px; }
   .agx-stats > span:last-child { margin-left: 0; }
   .agx-toolbar { align-items: flex-start; gap: 8px; }
