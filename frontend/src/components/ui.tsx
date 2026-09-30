@@ -26,7 +26,7 @@ export function Disclosure({title,children,open=false,className,onOpenChange}:{t
 }
 export function LinkOut({href,children}:{href:unknown;children:ReactNode}){return typeof href==='string'&&/^https?:\/\//.test(href)?<a className="external-link" href={href} target="_blank" rel="noreferrer">{children}<ExternalLink size={12}/></a>:<>{children}</>;}
 export function Fields({items}:{items:{label:string;value:unknown}[]}){return <dl className="field-grid">{items.filter(item=>item.value!==null&&item.value!==undefined&&item.value!=='').map((item,index)=><div key={`${item.label}-${index}`}><dt>{item.label}</dt><dd>{display(item.value)}</dd></div>)}</dl>;}
-export function DataTable<T>({items,columns,onRowClick}:{items:T[];columns:ColumnDef<T>[];onRowClick?:(row:T)=>void}){const table=useReactTable({data:items,columns,getCoreRowModel:getCoreRowModel()});return <div className="table-wrap"><table className="data-table"><thead>{table.getHeaderGroups().map(group=><tr key={group.id}>{group.headers.map(header=><th key={header.id}>{header.isPlaceholder?null:flexRender(header.column.columnDef.header,header.getContext())}</th>)}</tr>)}</thead><tbody>{table.getRowModel().rows.map(row=><tr key={row.id} onClick={()=>onRowClick?.(row.original)} className={onRowClick?'clickable-row':undefined}>{row.getVisibleCells().map(cell=><td key={cell.id}>{flexRender(cell.column.columnDef.cell,cell.getContext())}</td>)}</tr>)}</tbody></table></div>;}
+export function DataTable<T>({items,columns,onRowClick}:{items:T[];columns:ColumnDef<T>[];onRowClick?:(row:T)=>void}){const table=useReactTable({data:items,columns,getCoreRowModel:getCoreRowModel()});return <div className="table-wrap"><table className="data-table"><thead>{table.getHeaderGroups().map(group=><tr key={group.id}>{group.headers.map(header=><th key={header.id} scope="col" data-column={header.column.id}>{header.isPlaceholder?null:flexRender(header.column.columnDef.header,header.getContext())}</th>)}</tr>)}</thead><tbody>{table.getRowModel().rows.map(row=><tr key={row.id} data-row={row.id} onClick={()=>onRowClick?.(row.original)} className={onRowClick?'clickable-row':undefined}>{row.getVisibleCells().map(cell=><td key={cell.id} data-column={cell.column.id}>{flexRender(cell.column.columnDef.cell,cell.getContext())}</td>)}</tr>)}</tbody></table></div>;}
 export function PageJump({page,onJump,totalPages,maxPage,loading=false,label='Go to page'}:{page:number;onJump:(page:number)=>void;totalPages?:number;maxPage?:number;loading?:boolean;label?:string}){
  const [draft,setDraft]=useState('');
  useEffect(()=>setDraft(''),[page]);
@@ -38,6 +38,12 @@ export function Pager({page,count,next,onPrevious,onNext,onJump,totalPages,maxPa
 export function Modal({title,onClose,children,closeRequested=false}:{title:string;onClose:()=>void;children:ReactNode;closeRequested?:boolean}){
  const activeElement=document.activeElement;
  const opener=useRef<HTMLElement|SVGElement|null>(activeElement instanceof HTMLElement||activeElement instanceof SVGElement?activeElement:null);
+ // Table cell renderers can remount their buttons while a detail dialog is open.
+ const cell=activeElement?.closest('td[data-column]');
+ const tableOrigin=useRef(cell?{
+   table:cell.closest('table'),row:cell.parentElement?.getAttribute('data-row'),column:cell.getAttribute('data-column'),
+   control:[...cell.querySelectorAll('button,a[href],input,select,[tabindex]')].indexOf(activeElement as Element),
+ }:null);
  const [open,setOpen]=useState(true);
  const closing=useRef(false);
  const latestOnClose=useRef(onClose);
@@ -49,10 +55,21 @@ export function Modal({title,onClose,children,closeRequested=false}:{title:strin
    className="w-[96vw] max-w-[1180px] sm:max-w-[1180px] max-h-[90vh] grid-rows-[auto_minmax(0,1fr)] gap-0 p-0"
    onCloseAutoFocus={event=>{
      event.preventDefault();
-     // Radix calls this after the exit animation and focus-scope teardown. Keep
-     // conditional parent callers mounted until then; do not steal another dialog's focus.
-     if(opener.current?.isConnected&&!document.activeElement?.closest('[role="dialog"]'))opener.current.focus({preventScroll:true});
+     // Restore after the parent/history update and outgoing focus scope finish.
+     // A nested dialog may return to its parent, but must not steal a new dialog's focus.
+     const target=opener.current;
      if(closing.current){closing.current=false;latestOnClose.current();}
+     requestAnimationFrame(()=>{
+       const remaining=[...document.querySelectorAll('[role="dialog"][data-state="open"]')].at(-1);
+       let destination=target;
+       const origin=tableOrigin.current;
+       if(!destination?.isConnected&&origin?.table?.isConnected){
+         const row=[...origin.table.querySelectorAll('tr[data-row]')].find(item=>item.getAttribute('data-row')===origin.row);
+         const cell=[...row?.children??[]].find(item=>item.getAttribute('data-column')===origin.column);
+         destination=cell?.querySelectorAll<HTMLElement>('button,a[href],input,select,[tabindex]')[origin.control]??null;
+       }
+       if(destination?.isConnected&&(!remaining||remaining.contains(destination)))destination.focus({preventScroll:true});
+     });
    }}>
    <div className="dialog-heading"><DialogTitle>{title}</DialogTitle><Button variant="ghost" size="icon" onClick={requestClose} aria-label="Close details"><X/></Button></div>
    <div className="dialog-body overflow-auto"><Reveal>{children}</Reveal></div>

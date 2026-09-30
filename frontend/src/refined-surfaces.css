@@ -50,7 +50,7 @@ body{background:var(--canvas);color:var(--foreground)}
 .vc-main-table.vc-scroll .data-table thead th{position:sticky;top:0;z-index:2;background:#edf1f4;border-bottom:1px solid #cbd5de}
 .vc-scroll-status{display:flex;align-items:center;justify-content:center;gap:12px;min-height:46px;padding:12px;color:#5c6a76;font-size:13px}
 .vc-scroll-count{font-size:12px;color:#5c6a76;margin:10px 0 0}
-.ve-frequency-legend>i{background:linear-gradient(90deg,hsl(211 24% 47%),hsl(211 24% 27%))}
+.ve-frequency-legend>i{background:linear-gradient(90deg,var(--frequency-low),var(--frequency-high))}
 
 #diseases .cx-panel-footer,#diseases .cx-section-note{border-top:0}
 #variants .vc-catalog .vc-filter-group{border-left:0}
@@ -62,7 +62,7 @@ body{background:var(--canvas);color:var(--foreground)}
 :is(#expression,#qtl,#interactions) .cx-metrics .cx-metric-value{color:#3b586d}
 :is(#expression,#qtl,#interactions) .cx-metrics .cx-metric.is-selected{background:#eaf0f4;border-color:#8fa5b6}
 #overview .fc-panel-heading h4{color:#365f65}
-.ve-population .ve-frequency-legend>i{background:linear-gradient(90deg,hsl(211 24% 47%),hsl(211 24% 27%))}
+.ve-population .ve-frequency-legend>i{background:linear-gradient(90deg,var(--frequency-low),var(--frequency-high))}
 
 /* Database reading surfaces: neutral canvas, blue actions and retained scientific colours.
    This replaces the pastel portal shell; component geometry and data scales stay intact. */
@@ -276,15 +276,6 @@ body{background:var(--portal-canvas)}
 #variants .vc-main-table .data-table thead :is(small,span){color:var(--shell-secondary)}
 #variants .vc-main-table .data-table tbody tr:nth-child(even){background:#f3f6fa}
 #variants .vc-main-table .data-table tbody tr:hover{background:#e8f0fb}
-.vc-catalog .vc-effect-missense,.vc-detail .vc-effect-missense{color:color-mix(in srgb,#f8961e 65%,#001233);}
-.vc-catalog .vc-effect-stop-gained,.vc-detail .vc-effect-stop-gained{color:color-mix(in srgb,#f94144 65%,#001233);}
-.vc-catalog .vc-effect-start-lost,.vc-detail .vc-effect-start-lost{color:color-mix(in srgb,#f3722c 65%,#001233);}
-.vc-catalog .vc-effect-stop-lost,.vc-detail .vc-effect-stop-lost{color:color-mix(in srgb,#f9844a 65%,#001233);}
-.vc-catalog .vc-effect-synonymous,.vc-detail .vc-effect-synonymous{color:color-mix(in srgb,#43aa8b 65%,#001233);}
-.vc-catalog .vc-effect-splice,.vc-detail .vc-effect-splice{color:color-mix(in srgb,#577590 65%,#001233);}
-.vc-catalog .vc-effect-frameshift,.vc-detail .vc-effect-frameshift{color:color-mix(in srgb,#f9c74f 65%,#001233);}
-.vc-catalog .vc-effect-inframe,.vc-detail .vc-effect-inframe{color:color-mix(in srgb,#277da1 65%,#001233);}
-.vc-catalog .vc-effect-other,.vc-detail .vc-effect-other{color:color-mix(in srgb,#4d908e 65%,#001233);}
 
 /* Consequence is the reading priority; transcript metadata remains a secondary action. */
 #variants .vc-main-table .vc-effect{font-size:14px;font-weight:600}

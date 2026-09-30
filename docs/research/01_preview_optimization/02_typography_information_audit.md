@@ -485,3 +485,43 @@ U05 / P1：一次实页比较“模块白底、控件浅灰、选区蓝轮廓”
 | 不用鼠标完成定位和清除；减少动效模式复核 | 数字输入、Tab/方向键、明确按钮可完成 | 只有拖动、右键、双击才能操作；无动效时没有状态反馈 |
 
 **限制：** 外站本轮为官方资料对照，CATVariant配色与真实布局仍待浏览器可用时补看；本地为截图和源码审查，以上任务未实际运行。本轮只增加文档，不修改交互行为、不恢复公网、不干扰主任务。
+
+## 10. Apple组件与展开详情再审（2026-09-29，仅分析）
+
+当前状态：用户随后确认聊天分析第3–6点，已授权并实施表格读数、组件质感、字体角色及动效；第1–2点布局重组继续保留为候选。下文素材和比较为分析依据，实际实施范围以当前计划及交付记录为准。
+
+### 证据与素材边界
+
+重新调用Figma `get_libraries`及`search_design_system`，在既有[组件对照文件](https://www.figma.com/design/kmxJzBoxwUrhs5zeqbzOqY)确认iOS/iPadOS 26与macOS 26库。本次检索到macOS `Column Header`、`List Item / Primary Column`、`List Item / Secondary Column`、`Group Title`、`Disclosure Button`、`Sheet`，以及iOS `Sheets (Modals)`、`Sheet - Inspector - iPhone`和两套Body/Regular、Body/Emphasized文字样式。这里只获得名称、key及部分描述，未取得这些组件的内部参数或视觉预览；页面0:1元数据为空画布，不能称为已完成memVar设计稿。未重新尝试此前被拒的库导入，当前导入权限未复核。库也列出27版，但本轮继续已调研26版，未比较或采用新版。
+
+Apple HIG的Materials、Typography、Motion与Disclosure controls通过官方DocC JSON读取。其原则支持内容层保持清晰、材质用于必要层级、文字依重要性分层、动效简短且可减少；具体Web像素和时长仍是项目适配建议，不宣称取自Figma kit。参考：[材质](https://developer.apple.com/design/human-interface-guidelines/materials)、[排版](https://developer.apple.com/design/human-interface-guidelines/typography)、[动效](https://developer.apple.com/design/human-interface-guidelines/motion)、[展开控件](https://developer.apple.com/design/human-interface-guidelines/disclosure-controls)。
+
+复用独立Playwright检查5173 EGFR的身份/频率弹窗，截图`output/playwright/analysis-{identity,frequency}-dialog.png`；代码定位`components/ui.tsx`、`VariantCatalog.tsx`、`VariantEvidencePanels.tsx`、`lib/motion.tsx`与`ios-surfaces.css`。未全量检查每种证据详情。
+
+### 核心判断
+
+下一轮优先建立“摘要—局部展开—完整证据”一致的信息组织。桌面数据表以macOS列表/列头/分组组件为主要参考，iOS/iPadOS提供控件状态与层级参考。保留当前白底、细模块边界、蓝色操作和科学语义色，不继续给每条标签加框；数据不因展示压缩而被合并、去重或改变代表项。
+
+| 优先级 | 当前证据 | 建议与取舍 |
+| --- | --- | --- |
+| P0 详情结构 | 共用Modal统一96vw/1180px上限、90vh，标题固定、正文滚动已有；身份表的长交叉引用把isoform区推到下方 | 弹层按内容选宽度：短说明用紧凑popover，中等证据用常规dialog，跨列比较用宽dialog。身份弹窗增加Identifiers/Isoforms明确入口或分段；不自动折掉必须比较的记录。候选宽度560–640/760–880/1040–1180px，需真实内容验收 |
+| P0 对象身份 | EGFR变异频率详情标题可只有M1?，不同基因组变异可能共享此标签 | 固定标题区提供蛋白变更＋基因组chr:pos REF→ALT及assembly，版本/转录本按当前数据呈现；缺失不补造。切换证据后仍知道在看哪个变异 |
+| P0 主表/详情一致 | 主表去图标及上标AF已实施，PopulationDetail仍用原afPercent字符串；频率弹窗仍有蓝/青/紫指标底 | 共用数字格式和语义文字样式，主表与portal弹窗都适用；去装饰彩底但保留AF原量尺、零/缺失与来源关系。`#variants`后代规则不能覆盖portal，避免继续逐页补丁 |
+| P0 表格读数 | 当前通用DataTable主要是结构渲染，列布局与格式由各处单独定义；实际身份表蓝色链接/重复数据库名抢眼 | 定义主对象、证据描述、数值、来源/操作四类列。主ID左对齐，数值右对齐/等宽数字，单位在表头；列头固定在实际滚动容器。重复来源可视觉分组，行粒度/行数不改。复制ID操作悬停及键盘焦点可见 |
+| P1 展开规则 | Disclosure已有高度动画并保留已挂载内容；详情另有Modal与多层tab/折叠，组合缺少统一用途 | 同一对象的少量补充用就地展开；完整证据集用dialog；需要持续对照主表的单条记录才考虑右侧inspector。不要机械把所有弹窗改抽屉，窄抽屉不适合长表。同层保持一个主滚动区，展开区短说明避免二次滚动 |
+| P1 文字 | 近期R/Q与后果字过小已修，主表和详情存在不同字体权重 | 候选：页面标题26/600，模块22–24/600，子组16–18/600，正文和表格14–15/400–500，主残基16–17/600，辅助12–13。数值强调主指标，避免所有数字加粗；长解释靠行宽与段落，不只靠灰色。系统字体先保留，在Mac/Windows/Linux各自检查 |
+| P1 点击语义 | 用户接受主要来源卡片边界，拒绝膜分类/底部文字动作/Inhibition小框 | 模块边界、点击容器、普通数据三种语法分开。右箭头=进入详情，chevron=开合，external-link=离站；图标按钮需名称、tooltip和足够命中区；关键动作用文字，小图标不能替代未知概念 |
+| P2 材质与动效 | 现有160ms短fade、分段spring、collapse和reduced-motion已具备；不是缺动效库 | 优先校准滚动/焦点/加载过程。高频表格点击只做背景反馈；展开160–200ms、弹层180–220ms、hover100–140ms为候选值。材质限制在导航/菜单/遮罩，表格和科学图形保持实底；动画可中断，减少动态即时呈现 |
+
+
+### 展开后建议骨架
+
+固定对象标题（主身份＋辅助坐标）→证据分类导航→紧凑关键读数→完整表格或图形→按需展开的来源/方法信息。滚动过程中对象与当前证据类别可辨认；关闭回到原行及筛选状态。分类、测量单位、预测/实验身份和关联限制不得全部藏进tooltip。
+
+频率详情例：把三个装饰指标卡压成一行“AF / AC / AN / 来源”，祖源组沿用既有条图和原量尺，AF及AC/AN列对齐；保留零/缺失与当前population标识。是否改变条图需后续用户决定，本次不重新定义尺度或临床阈值。
+
+### 建议下一轮范围与验收
+
+先用真实EGFR的三组样本形成Figma对照：Variant表＋频率详情；Identifiers＋Isoforms；一组ClinVar长证据展开。每组同时设计默认、展开、滚动中、加载、空/缺失及键盘焦点状态；保留长ID/多来源/长疾病名，避免短占位文本掩盖问题。Figma确认层级后，现有React有界原型验证动效和滚动。三组Figma对照仍为建议；用户已单独授权直接实施第3–6点，不以画布作为前置，尚未创建Figma画板。
+
+验收重点：一屏能识别对象与关键读数；同一AF在主表/详情一致；主行和证据之间有明确入口；关闭返回原位置；表头与数据不被导航遮挡；科学字段完整；减少动态保留反馈。不是全站验收或另建复杂QC体系。

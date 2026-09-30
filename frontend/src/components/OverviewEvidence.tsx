@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { evidenceCodeColors, palette, textOnColor } from '../lib/palette';
 import { LinkOut } from './ui';
 
 type EvidenceDefinition = {
@@ -49,20 +50,10 @@ const REACTOME_EVIDENCE: Record<string, EvidenceDefinition> = {
   },
 };
 
-// Categorical colours identify source codes; they do not encode an evidence ranking.
-const GO_CODE_COLOURS: Record<string, string> = {
-  EXP: '#39713e', IDA: '#08796b', IPI: '#8050a4', IMP: '#315fac', IGI: '#a13e6b', IEP: '#8a6415',
-  HTP: '#547238', HDA: '#237782', HMP: '#5555a4', HGI: '#925875', HEP: '#9a6229',
-  IBA: '#7445a5', IBD: '#934495', IKR: '#575d9d', IRD: '#7c596d',
-  ISS: '#356d8c', ISO: '#34659c', ISA: '#4c6291', ISM: '#4c7480', IGC: '#477160', RCA: '#626d38',
-  TAS: '#98621c', NAS: '#9a5334', IC: '#71603f', ND: '#707477', IEA: '#546579',
-};
-
 function EvidenceLabel({ code, definition, colour }: { code: unknown; definition: EvidenceDefinition; colour?: string }) {
   const value = String(code || 'Unspecified');
   return <span className={`ov-evidence ov-evidence-${definition.family}`} data-evidence-code={value} style={colour ? {
-    '--evidence-fg': colour, '--evidence-bg': `color-mix(in srgb, ${colour} 8%, white)`,
-    '--evidence-line': `color-mix(in srgb, ${colour} 32%, white)`,
+    '--evidence-code-fill': colour, '--evidence-code-ink': textOnColor(colour),
   } as CSSProperties : undefined} title={`${definition.name}. ${definition.explanation}`}>
     <strong>{value}</strong><span>{definition.family==='automatic'?'Automatic · ':''}{definition.name}</span>
   </span>;
@@ -71,13 +62,13 @@ function EvidenceLabel({ code, definition, colour }: { code: unknown; definition
 export function GoEvidenceLabel({ code }: { code: unknown }) {
   const value = String(code || 'Unspecified');
   const definition = GO_EVIDENCE[value] ?? { name: 'Source evidence code', explanation: 'The code is retained exactly as supplied by the source.', family: 'other' as const };
-  return <EvidenceLabel code={value} definition={definition} colour={GO_CODE_COLOURS[value] ?? '#56677a'} />;
+  return <EvidenceLabel code={value} definition={definition} colour={evidenceCodeColors[value] ?? palette.missing} />;
 }
 
 export function ReactomeEvidenceLabel({ code }: { code: unknown }) {
   const value = String(code || 'Unspecified');
   const definition = REACTOME_EVIDENCE[value] ?? { name: 'Reactome source code', explanation: 'The code is retained exactly as supplied by the Reactome export.', family: 'other' as const };
-  return <EvidenceLabel code={value} definition={definition} />;
+  return <EvidenceLabel code={value} definition={definition} colour={evidenceCodeColors[value] ?? palette.missing} />;
 }
 
 export function GoEvidenceHelp() {

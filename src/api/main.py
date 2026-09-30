@@ -44,6 +44,9 @@ app.include_router(interface_router)
 from .alphagenome import router as alphagenome_router
 app.include_router(alphagenome_router)
 
+from .avi import router as avi_router
+app.include_router(avi_router)
+
 from .catalog_statistics import router as catalog_statistics_router
 app.include_router(catalog_statistics_router)
 

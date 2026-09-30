@@ -1,8 +1,27 @@
 # AlphaGenome 新数据接入与存储分析
 
-核对：2026-09-29 13:09香港时间。用户本轮要求先分析讨论；未执行正式mapping、数据库迁移、旧文件删除或网站切换。用户明确旧版AlphaGenome参考轨道可以退役，新版作为后续接入目标；Atlas静态评分属于独立产品，不随参考轨道退役。
+初次核对：2026-09-29 13:09香港时间。以下容量与进程状态保留该核对时点。用户随后授权AVI mapping入库、新版轨道/AVI后端前端接入，并要求依据已有官网调研先设计；当前状态见[执行计划](../../plan/01_preview_optimization/README.md)与[共轴轨道设计](../../plan/01_preview_optimization/alphagenome_atlas.md)，本页不再构成“仅讨论”限制。用户明确旧版参考轨道可退役；Atlas静态评分属于独立产品，不随参考轨道退役。
 
-## 实际状态
+## 2026-09-30：Newsmy统一打包与上云再讨论（尚未执行）
+
+用户希望把数据库备份与Newsmy6T上的AlphaGenome一起组织，后续传至云端；本轮授权为可行性讨论，未启动dump、文件复制、数据库迁盘或云端上传。
+
+本次只读核对：PostgreSQL容器17.10，`memvar_web`的`pg_database_size`为200,435,496,627字节（200.4GB / 186.7GiB），活动目录仍为NVMe上的`Web/data/postgres`。`web_avi`为2,667,388,928字节（含表/索引/manifest），`web_alphagenome`为6,856,704字节，`web_mane`为8,724,480字节。Newsmy6T仍为机械盘/ntfs3，df余量约2.9TiB；内置ext4余量约1.5TiB。HDF5总量采用已有[完成验收](../../../../modules/Alphagenome/docs/result.md)的2,585,607,525,831字节，本轮没有重扫全部数值。
+
+当前API已统一关联PostgreSQL目录与HDF5区间数据，AVI总分及18项贡献已在库内。建议候选方案为**统一迁移清单与后端交付包**：
+
+- 在Newsmy保存PostgreSQL逻辑备份，优先目录格式`pg_dump -Fd`，云端用`pg_restore`恢复；另外准备角色/权限重建说明、扩展与运行配置。备份可在活动库继续位于NVMe时生成，不要求先迁动PGDATA。压缩备份大小须实际导出后测量，不能以数据库物理大小作为承诺。
+- 已在Newsmy的完整AlphaGenome快照直接纳入迁移清单，保留tiles及metadata关系，避免再造一份TB级副本。现有相对资源路径与`MEMVAR_ALPHAGENOME_REFERENCE_ROOT`允许云端重新指定文件根目录；同时保留source_run_id/checkpoint一致性验证。
+- 一并列出网站运行依赖的结构模型/manifest、API代码、前端构建及配置。特别是`src/api/structures.py`仍读取科研配置指定的本地PDB gzip与Parquet清单，需要部署化处理；仅迁PostgreSQL与AlphaGenome仍不等于全站运行依赖已齐。
+- 云端为PostgreSQL配置数据库磁盘，为HDF5准备后端可按区间读取的文件系统。当前代码不能直接将对象存储URL作为HDF5根目录。总体组织为一套网站后端，不要求每种数值都存为SQL行或数据库blob。
+
+不建议为了传输方便将2.586TB完整HDF5改存PostgreSQL：逐碱基/track展开可能显著放大规模，具体倍数未测试；作为二进制分块保存也需重写区间读取与备份方式。科学值不必改动，但目前没有必要承担此重构。现有约0.200TB数据库与2.586TB轨道的合计约2.786TB仅是两个主要运行数据量的量级，未计其他资源、恢复临时空间与WAL，也不是最终压缩上传量。
+
+普通文件打包不能直接用于正在写入的PGDATA。逻辑备份和恢复规则依据[PostgreSQL 17 pg_dump](https://www.postgresql.org/docs/17/app-pgdump.html)、[SQL dump](https://www.postgresql.org/docs/17/backup-dump.html)及[文件系统备份](https://www.postgresql.org/docs/17/backup-file.html)。最终迁移包需以独立恢复和代表页面/接口核对作为可交付依据。
+
+待后续执行前明确的部署信息：云端为自建还是托管PostgreSQL、目标版本、文件盘容量与传输带宽。本轮建议不改变此前已采用的活动库NVMe/原生轨道外盘架构。
+
+## 初次核对状态（2026-09-29）
 
 | 对象 | 本轮核对 | 含义 |
 | --- | --- | --- |
@@ -15,7 +34,7 @@
 
 来源位置由根`config/sources.yaml`的`alphagenome_reference`、`alphagenome_atlas`、`alphagenome_avi_attributions_collection`维护。参考轨道完成依据见[模块结果](../../../../modules/Alphagenome/docs/result.md)，归因复制动态状态见[status](../../../../runs/t7-local-copy-20260929/status.json)。本轮容量来自df/lsblk及只读SQL；没有扫描大表计数。
 
-## 推荐存储方案（待讨论）
+## 本轮采用的存储方案
 
 活动PostgreSQL保留NVMe。Newsmy机械盘适合保存本批大型预测文件和备份；现有ntfs3挂载及机械盘随机I/O没有为活动数据库带来优势，且曾出现轨道写入与ZIP复制争用，见模块结果中的IO优化记录。本判断不是声称PostgreSQL技术上绝对不能使用该盘。
 
@@ -41,7 +60,7 @@
 
 未来分别迁移PostgreSQL和轨道资源。数据库可通过`pg_dump`/`pg_restore`逻辑迁移至云端；这不要求当前先迁到Newsmy，工具也适用于跨机器架构迁移，见[官方pg_dump](https://www.postgresql.org/docs/17/app-pgdump.html)。迁移时另处理角色权限及配置。轨道文件后续选云文件盘或适配后的对象存储；数据库只保存可重新定位的资源标识，不把本地`/media/...`路径作为云端固定契约。
 
-近期顺序（待本轮讨论确定）：
+后续已授权的执行顺序（当前进度由执行计划维护）：
 
 1. 核实既有ZIP校验任务的最终完成状态，确定归因原值/状态契约及贡献解释边界。
 2. 在模块内mapping并验证发布curated，再把归因独立服务表导入当前PostgreSQL，接入SNV详情。
@@ -49,4 +68,4 @@
 4. 新版网站链路通过必要验收后解除旧展示文件依赖，按用户退役要求清理对应旧轨道资源；不误删Atlas评分。
 5. 完成数据接入后按实测服务数据规模制定云端迁移方案。
 
-本轮完成标准为给出可核对的容量、数据含义与部署建议。正式接入的完成标准另包括映射键/状态与源值核对、数据库定向查询、新轨道代表窗口和关键页面验收；本轮未启动这些步骤。
+初次分析以可核对的容量、数据含义与部署建议交付。随后正式接入已获授权，其完成标准包括映射键/状态与源值核对、数据库定向查询、新轨道代表窗口和关键页面验收；不可用初次分析状态代替当前执行状态。

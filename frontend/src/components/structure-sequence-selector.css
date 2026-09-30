@@ -80,3 +80,12 @@
 .ssc .ssc-overview-selection{background:#bde0fe80;border-color:var(--ssc-selection)}
 .ssc .ssc-selected-key{background:#bde0fe;border-color:var(--ssc-selection)}
 .ssc .ssc-window,.ssc .ssc-window-key{border-color:var(--ssc-window);background:#cdb4db26}
+
+/* Compact full-sequence selector: residue details appear at the pointer. */
+.ssc-overview{height:60px;margin-top:8px}
+.ssc-overview-ticks{top:43px}
+.ssc-overview-handle span{display:none}
+.ssc-overview-handle:focus-visible span{display:block}
+.ssc-hover-readout{position:absolute;bottom:calc(100% - 8px);display:flex;align-items:center;gap:8px;width:max-content;max-width:320px;padding:6px 9px;border:1px solid var(--slate-7);border-radius:6px;background:#fff;box-shadow:0 2px 8px #172a3a18;color:var(--slate-11);font-size:12px;line-height:1.4;z-index:5;pointer-events:none}
+.ssc-hover-readout strong{font:600 15px ui-monospace,monospace;color:var(--slate-12)}
+.ssc-caption{margin-top:4px}

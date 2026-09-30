@@ -5,7 +5,7 @@ import { useReducedMotion } from '@/lib/use-reduced-motion';
 // A tightly damped spring for the segmented selector; unrelated content keeps its short fade.
 export const segmentedTransition = { type: 'spring' as const, stiffness: 480, damping: 40, mass: 0.7 };
 
-export const uiTransition = { duration: 0.16, ease: [0.2, 0.8, 0.2, 1] as const };
+export const uiTransition = { duration: 0.14, ease: [0.2, 0.8, 0.2, 1] as const };
 
 /** Animate a whole region; never mount a motion controller per residue or heatmap cell. */
 export function Reveal({ children, className }: { children: ReactNode; className?: string }) {
@@ -44,7 +44,7 @@ export function CollapseRegion({ open, children, style, ...props }: RegionProps 
   return <motion.div {...props}
     initial={false}
     animate={{ height: open ? 'auto' : 0, opacity: open ? 1 : 0 }}
-    transition={reduce ? { duration: 0 } : uiTransition}
+    transition={reduce ? { duration: 0 } : { ...uiTransition, duration: 0.18 }}
     aria-hidden={!open}
     inert={!open}
     style={{ ...style, overflow: 'hidden' }}>

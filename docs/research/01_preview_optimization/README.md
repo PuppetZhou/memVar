@@ -10,7 +10,7 @@
 
 ## 按问题进入
 
-新增数据接入：[AlphaGenome新版、AVI归因与存储分析](alphagenome_storage.md)（2026-09-29，先讨论；含实测容量与上云建议）。
+新增数据接入：[AlphaGenome新版、AVI归因与存储分析](alphagenome_storage.md)（2026-09-29，含实测容量与上云建议）；已按后续授权形成[轨道设计](../../plan/01_preview_optimization/alphagenome_atlas.md)并接入新版参考与AVI总分，归因原包损坏的依赖见[交付记录](../../record/01_preview_optimization/20260929_alphagenome_avi.md)。
 
 | 工作范围 | 清单ID |
 | --- | --- |

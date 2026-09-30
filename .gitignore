@@ -41,3 +41,7 @@ docs/**/results/
 # Original design uploads; runtime copies are tracked under frontend/src/assets/.
 /docs/logo.png
 /docs/tissue.png
+
+# Local agent tooling and imported Atlas research exports are not website source.
+.agents/
+docs/research/01_preview_optimization/atlas_reference/

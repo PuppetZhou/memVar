@@ -22,3 +22,34 @@
 .ppi-context-grid .ppi-kind-full{background:var(--blue-3);color:var(--blue-11);border-color:var(--blue-6)}
 .ppi-context-grid .ppi-kind-topic{background:var(--teal-3);color:var(--teal-11);border-color:var(--teal-6)}
 .ppi-context-grid .ppi-kind-mutation{background:var(--violet-3);color:var(--violet-11);border-color:var(--violet-6)}
+
+/* Compact overview: categories and content-sized source controls fit in one viewport. */
+.report>#interactions.cx-panel{padding:16px 20px}
+#interactions>.cx-heading{padding-bottom:10px;margin-bottom:12px;gap:10px}
+#interactions>.cx-heading>div{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 14px}
+#interactions>.cx-heading h2{font-size:20px;margin:0}
+#interactions>.cx-heading p{font-size:12px;margin:0}
+#interactions .cx-heading-icon{width:32px;height:32px}
+#interactions>.cx-scope{margin-top:8px;padding-top:6px}
+.ppi-overview>.ppi-ring-card{margin-top:0;padding:12px 14px}
+.ppi-ring-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px 12px}
+.ppi-ring-heading h3{font-size:14px;margin:0}
+.ppi-ring-card>.ppi-ring-heading>p{font-size:11px;margin:0}
+.ppi-ring-layout{gap:20px}
+.ppi-ring-layout svg{width:130px;height:130px}
+.ppi-ring-legend{gap:2px 16px;margin:8px 0;max-height:175px}
+.ppi-ring-legend li{font-size:13px;line-height:1.4;padding:3px}
+.ppi-ring-legend small{font-size:11px;min-width:38px}
+.ppi-overview>.ppi-path{margin:0 0 8px;min-height:28px}
+.ppi-overview>.ppi-stage{margin-top:10px}
+.ppi-stage>header{margin-bottom:8px;gap:12px;flex-wrap:wrap}
+.ppi-stage>header h3{font-size:14px}.ppi-stage>header p{margin:0;font-size:12px}
+.ppi-source-stage{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ppi-source-stage>header{margin:0}
+.ppi-source-grid{display:flex;gap:8px;flex-wrap:wrap}
+.ppi-source-grid .ppi-entry{display:flex;align-items:center;gap:10px;padding:7px 10px;border-top-width:1px;border-left:3px solid var(--ppi-accent);border-radius:8px;background:var(--slate-1,#fff);min-width:0}
+.ppi-source-grid .ppi-entry-icon{width:24px;height:24px;border-radius:6px;color:var(--ppi-accent)}
+.ppi-source-name{font-size:13px;color:#223c5e}.ppi-source-count{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap;justify-content:flex-end}
+.ppi-source-count b{font-size:16px;color:var(--ppi-accent);font-variant-numeric:tabular-nums;font-weight:650}.ppi-source-grid .ppi-source-count small{font-size:11px;line-height:1.3;min-height:0}
+.ppi-source-grid .ppi-entry>svg{color:var(--ppi-accent)}
+@media(max-width:650px){.report>#interactions.cx-panel{padding:14px}.ppi-source-stage{align-items:flex-start;gap:8px}.ppi-source-grid .ppi-entry{gap:7px}.ppi-ring-layout{gap:10px}.ppi-ring-legend{max-height:220px}}

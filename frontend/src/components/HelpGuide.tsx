@@ -20,7 +20,7 @@ const guides = {
   ['Choose predictors','Select published fields as individual predictor columns; scroll the table to compare additional scores. Method groups organize the available outputs; tool labels may include model variants and are not independent votes. Coverage varies by field.'],
   ['AlphaMissense','Predicts the effect of amino acid substitutions using evolutionary and structural context. We show the original 0–1 score and linked source category; this is computational evidence, not a clinical classification.'],
   ['Read scores','Scales and directions differ. Matched source calls determine category colors; other tints follow documented score direction. Conservation uses blue. We do not create a combined score or new thresholds.'],
-  ['AlphaGenome','The Variant Browser contains variant-scoring outputs. The separate AlphaGenome section shows reference-sequence tracks, not alternate-allele effects.'],
+  ['AlphaGenome','Compare reference-sequence tracks by biosample and modality. The AVI track shows scores for current gene-associated project SNVs; variant details retain original feature contributions. Reference tracks do not represent alternate-allele effects.'],
  ], links:[['AlphaMissense method','https://deepmind.google/research/publications/21083/']] },
  expression: { title:'Expression guide', sections:[
   ['Browse','Choose RNA or protein measurements, then a database and tissue, cell or cancer context. The matrix starts with ten source-defined groups; use Show more or Show all to access the full collection.'],

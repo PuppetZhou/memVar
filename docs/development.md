@@ -78,3 +78,34 @@ npm run build
 
 后端定向检查位于 `tests/`；部分检查需要本地数据库或上游数据，纯代码构建通过不代表完整数据链路已验证。修改影响科学含义的筛选、映射或阈值时，应先确认数据规则，再修改实现。
 
+## AlphaGenome与AVI服务数据
+
+AlphaGenome运行时从PostgreSQL读取gene/window/track目录，从配置指定的文件系统读取原生HDF5区间。`config/alphagenome.yaml`中的`reference_root`须指向已验收的预测快照；`source_run_id`和`checkpoint_revision`必须与库内manifest一致。目录导入来源由`catalog_path`指定，当前来源为科研模块正式Parquet；网站运行不回读该Parquet路径。读取依赖h5py和NumPy，已列入`requirements-web.txt`。
+
+在`Web`的父目录执行参考目录导入（需要配置本地数据库管理员连接）：
+
+```bash
+python -m Web.src.database.import_alphagenome_reference
+```
+
+AVI总分沿用`web_variant`现有列。18列特征贡献独立于总分，由`config/avi.yaml`指定正式科研输入和Web服务目录；2026-09-30已从`20260930_avi_attribution_01`完成以下构建/导入，全部10,866,094行可用（后续重建仍须绑定已发布科研快照）：
+
+```bash
+python -m Web.src.build.build_avi
+python -m Web.src.database.import_avi
+```
+
+归因导入使用独立`web_avi`schema，检查主键、行数、当前variant关联和样本原值后在事务内替换；失败回滚。尚无贡献库时已有AVI总分和参考轨道仍可查询，详情返回不可用状态。定向检查为`python -m unittest Web.tests.test_alphagenome_expression Web.tests.test_avi -v`；真实参考测试需要现有服务数据库和预测文件。
+
+迁云需同时准备数据库和HDF5资源，并按实际挂载位置调整配置。当前后端使用本地文件随机读取；对象存储URL不能直接替换`reference_root`，需要另行适配。已有本地部署和归因接入证据见[交付记录](record/01_preview_optimization/20260929_alphagenome_avi.md)。
+
+
+### MANE Select CDS服务模型
+
+配置 `config/mane_cds.yaml` 绑定已发布科研快照和服务目录。科研入口为项目根 `python run.py foundation build_mane_cds`（已交付快照不重复覆盖）；Web投影与入库从科研工作区根执行：
+
+```bash
+python -m Web.src.database.import_mane_cds
+```
+
+该命令将正式Parquet复制到Web服务目录，按HGNC组装模型并事务导入 `web_mane.gene_cds`，不在Web重选代表或处理新的CDS规则。运行时API `/api/proteins/{accession}/expression/alphagenome/cds?gene=ENSG...` 仅查询PostgreSQL，校验当前蛋白的真实gene关联；提供完整版本ENST、来源状态、0-based half-open CDS/stop_codon片段。当前模型快照 `20260930_mane_cds_01`。导入及真实API核对证据见 `data/postgresql_mane_cds_import.json` 与 `data/mane_cds_live_validation.json`；云端迁移需包含 `web_mane` schema。

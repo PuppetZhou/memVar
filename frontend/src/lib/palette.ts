@@ -11,16 +11,34 @@ export const clinicalColors = {
   conflicting: palette.blue, other: palette.cyan, unclassified: '#c4ccd7',
 } as const;
 
-// Dark counterparts for text on light surfaces; pale scientific fills are not text colours.
-export const evidenceInk = { damaging: '#cc247c', tolerated: '#008047', uncertain: '#996300' };
-
-// Author-selected palette for variant predictions; sequence annotations keep their own palette.
+// Scientific fills share the sequence palette. Readable ink is derived from each fill.
+export const evidenceInk = {
+  damaging: predictionTextColor(palette.rose), tolerated: predictionTextColor(palette.sage),
+  uncertain: predictionTextColor(palette.butter),
+};
 export const predictionPalette = {
-  pink: '#CC247C', red: '#E95351', orange: '#F7A24F', yellow: '#FBEB66',
-  green: '#4EA660', cyan: '#79CAFB', blue: '#5292F7', violet: '#AA77E9',
+  rose: palette.rose, coral: palette.coral, apricot: palette.apricot,
+  butter: palette.butter, sage: palette.sage, ice: palette.ice, blue: palette.blue,
 } as const;
 export const predictionCalls = {
-  damaging: predictionPalette.pink, tolerated: predictionPalette.green, uncertain: predictionPalette.orange,
+  damaging: palette.rose, tolerated: palette.sage, uncertain: palette.butter,
+};
+export const consequenceColors: Record<string, string> = {
+  missense: palette.apricot, 'stop-gained': palette.rose, 'start-lost': palette.coral,
+  'stop-lost': palette.peach, synonymous: palette.sage, splice: palette.blue,
+  frameshift: palette.butter, inframe: palette.cyan, other: palette.ice,
+};
+export const frequencyColors = { low: predictionTextColor(palette.blue), high: '#1d3557' };
+
+// Categorical, not ranked. The exact source code remains the primary identifier.
+export const evidenceCodeColors: Record<string, string> = {
+  EXP: palette.sage, IDA: palette.blue, IPI: palette.rose, IMP: palette.apricot,
+  IGI: palette.cyan, IEP: palette.butter, HTP: palette.leaf, HDA: palette.coral,
+  HMP: palette.peach, HGI: palette.ice, HEP: palette.mist,
+  IBA: palette.blue, IBD: palette.cyan, IKR: palette.sage, IRD: palette.rose,
+  ISS: palette.ice, ISO: palette.blue, ISA: palette.cyan, ISM: palette.apricot,
+  IGC: palette.leaf, RCA: palette.sage, TAS: palette.butter, NAS: palette.peach,
+  IC: palette.mist, ND: palette.missing, IEA: palette.blue,
 };
 
 // Fixed 0–1 display scale for conservation and interface scores. Stops are colour
@@ -55,8 +73,8 @@ export function predictionTextColor(fill: string): string {
 
 export function predictionRamp(value: number, directional = true): string {
   const stops = directional
-    ? [predictionPalette.green, predictionPalette.yellow, predictionPalette.orange, predictionPalette.red, predictionPalette.pink]
-    : [predictionPalette.cyan, predictionPalette.blue, predictionPalette.violet];
+    ? [palette.sage, palette.butter, palette.apricot, palette.coral, palette.rose]
+    : [palette.ice, palette.blue, frequencyColors.high];
   const position = Math.max(0, Math.min(1, value)) * (stops.length - 1);
   const i = Math.min(Math.floor(position), stops.length - 2);
   return interpolateColor(stops[i], stops[i + 1], position - i);
@@ -87,4 +105,8 @@ export const scientificCssVariables = {
   '--clinical-uncertain': clinicalColors.uncertain, '--clinical-conflicting': clinicalColors.conflicting,
   '--evidence-damaging': evidenceInk.damaging, '--evidence-tolerated': evidenceInk.tolerated,
   '--evidence-uncertain': evidenceInk.uncertain,
+  '--scientific-link': predictionTextColor('#457b9d'), '--scientific-ink': '#1d3557',
+  '--frequency-low': frequencyColors.low, '--frequency-high': frequencyColors.high,
+  ...Object.fromEntries(Object.entries(consequenceColors).map(([key, fill]) => [`--consequence-${key}`, predictionTextColor(fill)])),
+  ...Object.fromEntries(Object.entries(clinicalColors).map(([key, fill]) => [`--clinical-${key}-ink`, predictionTextColor(fill)])),
 };

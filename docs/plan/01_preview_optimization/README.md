@@ -1,12 +1,42 @@
 # 01 公网预览后优化：当前计划
 
+## 科学配色与详情视觉审查（2026-09-29，开发预览已实现）
+
+用户授权统一表格与展开详情配色。当前用序列11色色系统一consequence、ClinVar、预测、GO/Reactome证据；海军蓝/cerulean派生色用于数值和链接。取代此前预测独立8色及高饱和后果文字；预测分类/方向、AF对数量尺和零/缺失区别保持不变。转录本详情去除多层彩色框，用标题、间距和分隔线划分；GO证据采用实色代码块＋中性说明，代码文字始终保留，颜色不表示证据等级。
+
+本轮覆盖Variant主表、对应预测/临床/频率/转录本详情及GO/Reactome共用证据标签；序列JSD/interface/binding沿用下文用户专门确认的配色，不扩改AlphaGenome。颜色集中在`frontend/src/lib/palette.ts`，样式维护于组件与`ios-surfaces.css`。验证与预览范围见[本轮记录](../../record/01_preview_optimization/20260922_ui_toolkit.md#2026-09-29科学配色与详情视觉审查)。
+
+## Apple表格、质感、字体与动效优化（2026-09-29，开发预览已实现）
+
+用户确认分析建议第3–6点并授权实施；第1–2点的对象标题重组、弹窗宽度分类与新详情栏不在本轮。已共用AF/预测科学计数排版，统一主表与portal详情文字层级、数值对齐和中性表面，身份表提供复制入口与固定表头，精简频率指标装饰。内容过渡140ms、展开180ms，高频表格不缩放；修复关闭详情时原表格按钮重建导致的焦点丢失。
+
+候选构建、EGFR定向交互和减少动态验证通过；5173预览已更新，未覆盖8000静态产物。实现、截图及覆盖边界见[交付记录](../../record/01_preview_optimization/20260922_ui_toolkit.md#2026-09-29落实分析第36点)。Figma库目录证据及暂缓布局建议保留于[排版审查第10节](../../research/01_preview_optimization/02_typography_information_audit.md#10-apple组件与展开详情再审2026-09-29仅分析)，不以Figma画布作为本轮实现前置；其他任务授权不变。
+
+## 四处前端密度与点击提示批注（2026-09-29，开发预览已实现）
+
+本轮授权仅涉及概览信息密度、入口可点击性、Rhea/GtoPdb列对齐、结构选择器精简及变异表字号。已压缩概览与膜特征，生化来源入口和预览改同列；后续11条批注落实膜分类/底部动作无框、来源入口仅箭头、药理action无框、功能来源无下划线、定位下拉箭头留白、预测区白底及AF无图标/上标科学计数；结构删除Start/End输入和局部残基条，改全长蓝条悬停显示残基/映射，保留拖动、键盘和重置；Ref/Alt为17px，consequence为15px。替代此前保留局部32残基条及手工范围输入的展示方案；科学数据、筛选和映射语义不变。
+
+TypeScript/Vite候选构建及EGFR桌面定向交互通过，5173开发预览已更新，等待用户视觉反馈。后端/AlphaGenome正在其他任务中修改，本轮未替换8000静态产物或重启服务。证据与限制见[交付记录](../../record/01_preview_optimization/20260922_ui_toolkit.md#2026-09-29四处密度与交互批注)。
+
 ## QTL轨道撤除与配色统一（2026-09-29）
 
 用户要求删除上一版QTL轨道，并匹配后续全站配色。已撤除前端轨道、专用坐标API和位置筛选代码；旧链接中的坐标参数自动清理，恢复来源/类型/组织范围。互作入口精简继续保留。QTL采用当前共享白底、浅中性灰、细边与蓝色交互态：来源卡片数量改为正文色，组织统计条改柔和蓝，类型改纯文字，P值取消绿色底块并保留来源判定说明。原P值/阈值/计数口径保持不变；构建、原QTL分页测试及EGFR实页配色/旧链接清理/自定义P值比较验证通过，本地8000已更新。本段替代上一版轨道的实施状态，历史见[QTL交付记录](../../record/01_preview_optimization/20260922_ui_toolkit.md#2026-09-29qtl轨道撤除与配色统一)。
 
-## AlphaGenome新版接入与上云存储（2026-09-29，讨论中）
+## AlphaGenome新版与AVI共轴轨道（2026-09-29，09-30归因mapping/入库/真实前端完成）
 
-用户提出新版参考轨道替代旧版、AVI归因ZIP mapping入库和后续展示，本轮先分析讨论。已只读核对磁盘、运行清单、数据库和归因包字段；建议活动PostgreSQL保留NVMe，归因原值入表、原生轨道留外盘并建立服务索引。依据、容量、输入输出、依赖与待决项见[存储与接入分析](../../research/01_preview_optimization/alphagenome_storage.md)。尚未执行迁库、mapping、旧文件删除或网站切换；此前Atlas总分继续保留。
+09-30第三批反馈已交付：AVI复选框多选且默认仅Total，替代此前单类别聚焦/淡化；互作总览1176×827下一屏完整（386px），QTL页尾合并一行（28px）。[验证与截图](../../record/01_preview_optimization/20260929_alphagenome_avi.md#09-30第三批反馈avi复选框与互作qtl密度)。
+
+09-30后续五项批注也已交付：坐标轴滚轮平移/Pan导航条、增强CDS及外显子定位、互作来源紧凑行/重复标题撤除、Expression底部预测入口；[验证与截图](../../record/01_preview_optimization/20260929_alphagenome_avi.md#09-30后续五项批注平移cds可见性与空间压缩)。
+
+09-30八项新批注已交付：专属palette、MANE Select CDS、Add再次点击取消、紧凑轨道和滚动图例、坐标数值浮层、同biosample同模态叠加/分轨切换。来源和实际验收见[当前记录](../../record/01_preview_optimization/20260929_alphagenome_avi.md#09-30专属配色mane-cds与紧凑叠加轨道)。
+
+用户随后授权AVI mapping入库、新AlphaGenome和AVI后端/前端接入，要求先依据`Web/alphagenome-atlas-research-2026-09-28.zip`完成设计。已形成[共轴轨道设计](alphagenome_atlas.md)：gene由当前蛋白关系确定，先biosample再模态，可连续加轨；AVI独立置顶，参考官网截图配色、加强轨道边界。该授权替代此前仅讨论的边界。
+
+已完成：新版原生HDF5目录发布为4张正式Parquet索引并导入`web_alphagenome`，后端按viewport读取参考轨道及当前gene关联SNV；前端已实现共轴、先biosample再模态、加轨/重排/折叠、AVI总分与SNV定位。TypeScript/Vite构建、8项参考轨道测试、5项AVI接口测试及EGFR真实桌面操作通过，本地8000已更新。PostgreSQL保留NVMe，轨道原生文件继续外盘；不扩SNV收录范围、不重算总分或混合重叠窗口。[实际交付与限制](../../record/01_preview_optimization/20260929_alphagenome_avi.md)。
+
+同日追加六项交互反馈已实施并验证：iOS浅蓝选中、参考轨道/基因视野两个reset图标、拖选放大/Esc取消、跨轨道十字线与坐标数值浮层、AVI左侧分类（其单类别聚焦/Show all已由上述第三批复选框交互替代）。Raw贡献与PHRED总分分开，未就绪时显示不可用；09-30真实贡献已就绪；区间归因API扩展后9项定向测试通过。实际拖选、reset、悬停定位、点击SNV与原生单bin放大证据见[追加记录](../../record/01_preview_optimization/20260929_alphagenome_avi.md)。
+
+2026-09-30完成：新T7包通过全量完整性验证，`20260930_avi_attribution_01`正式发布10,866,094个SNV的18列贡献及状态；10,863,110个完整匹配、2,984个MT来源未覆盖。Web服务表及`web_avi`事务导入完成（约2.67GB），72个跨染色体样本及EGFR全部4,096个SNV/73,728贡献值经真实API回查原始来源一致；彩色叠条、当时的类别聚焦/Show all（现已替代）、200bp定位、拖选/reset、共轴读数通过。原值/零/负值/null语义保持不变，贡献和不用于重算独立AVI总分。详见[交付与证据](../../record/01_preview_optimization/20260929_alphagenome_avi.md)。旧输入损坏问题已由重新下载解决，旧失败记录保留历史证据。
 
 ## 结构可读性与CATVariant参考（2026-09-29，已交付）
 
@@ -48,7 +78,7 @@ TypeScript/Vite构建、EGFR表格实际样式及详情开合通过，本地8000
 
 ## 前版：点击反馈与预测评分配色（2026-09-28）
 
-用户指定评分区域采用新8色并统一可选择部分的iOS反馈。已落实来源按钮、文字链接、筛选项、功能分类、卡片、分段选择器与导航的悬停／按下／持续选中／键盘焦点状态；科学图形拖柄和残基格子不加入通用缩放。预测颜色独立于上一版序列色板：原来源Damaging用粉红、Tolerated用绿、Uncertain用橙；连续分数仍按原方向渐变，未提供分类不推断（早期曾显示No source call，当前简洁版已去掉重复文字）。无新增阈值或临床结论。
+该批评分独立8色已由上文科学配色统一替代；以下保留交付历史。用户当时指定评分区域采用新8色并统一可选择部分的iOS反馈。已落实来源按钮、文字链接、筛选项、功能分类、卡片、分段选择器与导航的悬停／按下／持续选中／键盘焦点状态；科学图形拖柄和残基格子不加入通用缩放。预测颜色独立于上一版序列色板：原来源Damaging用粉红、Tolerated用绿、Uncertain用橙；连续分数仍按原方向渐变，未提供分类不推断（早期曾显示No source call，当前简洁版已去掉重复文字）。无新增阈值或临床结论。
 
 构建及EGFR定向交互检查通过；新版已在本地8000部署，待用户观感反馈。详见[当前记录与独立回退](../../record/01_preview_optimization/20260922_ui_toolkit.md#2026-09-28点击反馈与预测配色追加)。
 
@@ -179,7 +209,7 @@ Web已建立独立Git仓库，首次提交为开始追踪时的在途快照，�
 
 用户确认纳入PaxDB、字段最简、organ归入互动图及cell单独区分。上游完成全419个人类数据集mapping与curated发布，Web独立web_paxdb导入完成；Expression的Protein measurements提供integrated默认入口与individual studies，组织复用人体图，cell/体液/组分/全身独立，不聚合丰度。内部标识与weights仅后端保留。本地已更新；实施与必要验证见[记录](../../record/01_preview_optimization/20260922_ui_toolkit.md#2026-09-28paxdb后端与页面接入)。
 
-PaxDB最新呈现：默认Protein abundance入口、Tissue/ppm两列与线性横条，连续滚动替代翻页；表达来源卡片左右等高、移除图标彩底和侧边色条。来源整合类型仍保留后端及详情。
+PaxDB最新呈现（2026-09-29）：默认Protein abundance的组织导航滚动区直接显示Tissue/ppm两列与线性丰度条，取消下方重复记录区；Cells、Fluids & secretions、组分及全身整合值直接列表，撤除重复的All/单项筛选行。人体区域与搜索筛选列表、保留来源详情入口；同一context type内量尺固定。Individual protein studies保留多研究来源导航和记录筛选，不聚合丰度。表达来源卡片左右等高，整合类型仍保留后端及详情。[验证记录](../../record/01_preview_optimization/20260922_ui_toolkit.md#2026-09-29paxdb整合丰度直接展示)。
 
 ## iOS风格试用（2026-09-28）
 

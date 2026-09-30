@@ -1,0 +1,3 @@
+source_directory: modules/Alphagenome/data/curated/20260930_avi_attribution_01
+service_directory: data/tables/avi
+schema: web_avi

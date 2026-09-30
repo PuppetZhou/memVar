@@ -342,16 +342,7 @@ html body :is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#inter
 #sequence .composite-source-controls,#sequence .viewer-search,#structure>.toolbar,:where(#expression,#qtl,#interactions,#diseases,.dialog-body) .toolbar{background:transparent;border:0;border-radius:0;padding-inline:0}
 .atlas-v3.full-sequence{border:0;border-radius:0;padding-inline:0}
 .atlas-v3 .atlas-source-entry,.atlas-v3 .atlas-legend-group,.atlas-v3 .atlas-overlay-group{background:transparent;border:0;padding-inline:0}
-/* Saturated text accents, without the previous navy blend or coloured badge backgrounds. */
-:is(.vc-catalog,.vc-detail) .vc-effect-missense{color:#b85b00}
-:is(.vc-catalog,.vc-detail) .vc-effect-synonymous{color:#008047}
-:is(.vc-catalog,.vc-detail) .vc-effect-start-lost{color:#c04419}
-:is(.vc-catalog,.vc-detail) .vc-effect-stop-gained{color:#cf264d}
-:is(.vc-catalog,.vc-detail) .vc-effect-stop-lost{color:#b9570c}
-:is(.vc-catalog,.vc-detail) .vc-effect-splice{color:#336dcc}
-:is(.vc-catalog,.vc-detail) .vc-effect-frameshift{color:#986c00}
-:is(.vc-catalog,.vc-detail) .vc-effect-inframe{color:#077b9e}
-:is(.vc-catalog,.vc-detail) .vc-effect-other{color:#007e7b}
+
 
 /* QTL uses the shared neutral surfaces and blue interaction palette. */
 #qtl{--cx-accent:var(--primary);--cx-dark:var(--text);--cx-tint:var(--surface-selected);--cx-line:var(--border);--context-bar-color:var(--blue-7)}
@@ -393,3 +384,176 @@ html body :is(#overview,#sequence,#variants,#expression,#qtl,#alphagenome,#inter
 #qtl .qtl-pvalue-within{color:var(--primary)}
 #qtl .qtl-reference-dot{background:var(--primary)}
 #qtl .qtl-scroll-status{background:var(--surface-subtle)}
+
+/* 2026-09-29: compact overview and explicit entry points. */
+#overview .ov-identity.panel{padding:14px 20px;margin-bottom:14px}
+#overview .ov-identity-heading{margin-bottom:10px;gap:12px}
+#overview .ov-identity-heading h1{font-size:26px;line-height:1.25}
+#overview .ov-identity .ov-identity-fields{padding:0;gap:12px}
+#overview .ov-identity .ov-identity-fields>div{padding:4px 0}
+#overview .ov-identity-fields dt{margin-bottom:3px;font-size:13px}
+#overview .ov-identity-heading>.ov-browse{padding:5px 10px;border:1px solid var(--slate-7);border-radius:6px;background:#fff;font-size:13px;min-height:32px}
+#membrane-association{margin-bottom:14px}
+#membrane-association>header{padding:10px 20px}
+#membrane-association>.ov-section-body{padding:6px 20px 10px}
+#membrane-association .mov-labels{margin:0 0 8px;gap:8px}
+#membrane-association .mov-labels>button{padding:4px 0;border:0;background:transparent;font-size:13px;cursor:pointer}
+#membrane-association .mov-compact-sources{gap:10px}
+#membrane-association .mov-compact-sources>button{padding:10px 12px;border:1px solid var(--slate-7);border-radius:7px;background:#fff;min-height:0}
+#membrane-association .mov-compact-sources>button p{margin:5px 0 0;font-size:13px;line-height:1.4}
+#membrane-association .ov-section-action{padding:0 20px 12px;gap:8px}
+#overview .ov-rose>header{padding:10px 20px}
+#overview .ov-rose>.ov-section-body{padding:0 20px 14px}
+#overview .ov-reaction-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:0}
+#overview .ov-reaction-column{display:flex;flex-direction:column;gap:10px;min-width:0}
+#overview .ov-source-launcher{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:9px 12px;border:1px solid var(--slate-7);border-radius:7px;background:#fff;text-align:left;cursor:pointer;color:var(--slate-12)}
+#overview .ov-source-launcher strong{font-size:15px;font-weight:600}
+#overview .ov-source-launcher small{display:block;margin-top:2px;font-size:13px;color:var(--slate-11)}
+#overview .ov-source-cta{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--primary);white-space:nowrap}
+#overview .ov-reaction-column .ov-ligands{margin:0}
+#overview .ov-source-launcher:hover,#membrane-association .mov-compact-sources>button:hover,#membrane-association .mov-labels>button:hover{background:var(--blue-2);border-color:var(--blue-8)}
+#overview .ov-source-launcher:focus-visible{outline:2px solid var(--primary);outline-offset:3px}
+#variants .vc-main-table .vc-aa{font-size:17px;font-weight:650;min-width:28px;line-height:1.4}
+#variants .vc-main-table .vc-effect{font-size:15px;font-weight:550;line-height:1.45}
+@media(max-width:800px){#overview .ov-reaction-columns{grid-template-columns:1fr}#overview .ov-source-launcher{flex-wrap:wrap}#overview .ov-identity-heading{flex-wrap:wrap}}
+#overview .ov-reaction-column>.reaction-equation{margin:0}
+#overview #membrane-association .ov-section-action>.ov-browse{padding:5px 0;border:0;border-radius:0;background:transparent;font-size:13px;color:var(--primary)}
+
+/* Follow-up: light text actions, neutral surfaces and readable frequency values. */
+#membrane-association .ov-section-action{gap:22px}
+#overview .fc-source a.external-link,#overview .fc-source a.external-link:hover{text-decoration:none;border-bottom:0}
+#overview .ov-source-cta{flex:none}
+#overview .ov-ligands .ov-pharmacology-action{border:0;background:transparent;padding:0;border-radius:0}
+#overview .ov-location-controls select{appearance:none;-webkit-appearance:none;padding:7px 34px 7px 12px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23646b76' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;background-size:16px}
+#variants .vc-catalog .vc-predictor-intro{background:var(--surface);border-color:var(--border)}
+#variants .vc-main-table .vc-af-value strong{font-size:15px;font-weight:500;letter-spacing:0;font-variant-numeric:tabular-nums;white-space:nowrap}
+#variants .vc-main-table .vc-af-value sup{font-size:.75em;line-height:0;vertical-align:super;margin-right:2px}
+
+/* Evidence reading roles apply inside portals as well as the protein report. */
+html:root{--reading-body:15px;--reading-label:13px;--reading-group:17px;--reading-value:17px}
+:is(.report,.dialog-body) .data-table{font-size:var(--reading-body);line-height:1.45;border-collapse:separate;border-spacing:0}
+:is(.report,.dialog-body) .data-table th{font-size:var(--reading-label);font-weight:600;line-height:1.4;color:var(--text-secondary);background:var(--surface-subtle);padding:10px 12px;vertical-align:top}
+:is(.report,.dialog-body) .data-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;overflow-wrap:anywhere}
+:is(.report,.dialog-body) .data-table tbody tr{background:var(--surface)}
+:is(.report,.dialog-body) .data-table tbody tr:nth-child(even){background:#fafafa}
+:is(.report,.dialog-body) .data-table tbody tr:is(:hover,:focus-within){background:var(--blue-2)}
+.dialog-body .table-wrap{overflow:visible;max-height:none}
+.dialog-body .data-table th{position:sticky;top:0;z-index:2;border-bottom:1px solid var(--border-strong)}
+.dialog-body .data-table{min-width:0;width:100%}
+.dialog-body .data-table .external-link{text-decoration:none;color:var(--primary)}
+.dialog-body .data-table .external-link:hover{background:var(--blue-3)}
+.dialog-body{overscroll-behavior:contain;scrollbar-gutter:stable}
+.dialog-body :is(h3,.ve-method-groups>details>summary){font-size:var(--reading-group);font-weight:600;color:var(--text);line-height:1.4}
+.dialog-body :is(.field-grid,.vc-detail .field-grid){font-size:var(--reading-body)}
+.dialog-body .field-grid dt{font-size:var(--reading-label);color:var(--text-secondary);font-weight:400}
+.dialog-body .field-grid dd{font-size:var(--reading-body);color:var(--text);line-height:1.55}
+.dialog-body :is(.ve-caption,.vc-note,.ve-score-direction,.ve-frequency-legend,.ve-frequency-legend small){font-size:var(--reading-label);line-height:1.5;color:var(--text-secondary)}
+.dialog-body .details-trigger{font-size:14px;font-weight:500;min-height:38px;color:var(--text)}
+.dialog-body .details-content{font-size:var(--reading-body);line-height:1.55}
+.dialog-body :is(.ve-prediction-overview>section,.ve-method-groups>details,.ve-score-card,.vc-detail-entrypoints>button){background:var(--surface);border-color:var(--border);box-shadow:none}
+.dialog-body .ve-metrics{gap:0;border-block:1px solid var(--border);padding:12px 0}
+.dialog-body .ve-metrics>div{background:transparent;border:0;border-radius:0;padding:0 18px;box-shadow:none}
+.dialog-body .ve-metrics>div:first-child{padding-left:0}
+.dialog-body .ve-metrics>div+div{border-left:1px solid var(--border)}
+.dialog-body .ve-metrics>div>span{font-size:var(--reading-label);color:var(--text-secondary)}
+.dialog-body .ve-metrics strong{font-size:22px;font-weight:600;color:var(--text);line-height:1.4;font-variant-numeric:tabular-nums}
+.dialog-body .ve-metrics small{font-size:var(--reading-label);color:var(--text-secondary);line-height:1.4}
+.dialog-body .ve-population .vc-population-chart>div{padding:10px 8px;border-color:var(--border);font-size:var(--reading-body)}
+.dialog-body .vc-population-chart>div>span:first-child{color:var(--text)}
+.dialog-body .vc-population-chart>div.selected{background:var(--surface-selected)}
+.dialog-body .vc-population-chart>div>small,.dialog-body .vc-population-number>small{font-size:var(--reading-label);color:var(--text-secondary);font-variant-numeric:tabular-nums;line-height:1.45}
+.dialog-body .vc-population-number>strong{font-size:var(--reading-body);font-weight:500;white-space:nowrap}
+:is(.report,.dialog-body) .evidence-number{font-variant-numeric:tabular-nums;letter-spacing:0;white-space:nowrap}
+:is(.report,.dialog-body) .evidence-number sup{font-size:.75em;line-height:0;vertical-align:super;margin-right:2px}
+#variants .vc-main-table .data-table td{font-size:14px}
+#variants .vc-main-table .vc-genomic strong{font-size:14px;font-weight:600}
+#variants .vc-main-table :is(.vc-genomic>span,.vc-transcript-label){font-size:12px}
+#variants .vc-main-table .data-table :is([data-column=aa-position],[data-column=frequency],[data-column^=prediction-]){text-align:right;font-variant-numeric:tabular-nums}
+#variants .vc-main-table :is(.vc-position,.vc-af-button){text-align:right;margin-left:auto}
+#variants .vc-main-table .vc-af-value{justify-content:flex-end}
+#variants .vc-main-table .vc-predictor-heading,#variants .vc-main-table .vc-score-cell{text-align:right}
+#variants .vc-main-table .vc-prediction.is-compact{align-items:flex-end}
+#variants .vc-main-table .vc-prediction.is-compact>strong{justify-content:flex-end;font-weight:500}
+#variants .vc-main-table .vc-score-cell .vc-pred{margin-left:auto;font-size:13px}
+#variants .vc-main-table .vc-clinical{font-size:14px;font-weight:500}
+:is(.report .data-table,.dialog-body .data-table,.vc-population-chart) :is(button,a){--touch-scale:1;--touch-shadow:none}
+:is(.report .data-table,.dialog-body .data-table,.vc-population-chart) :is(button,a):active{transform:none}
+:is(.report,.dialog-body) .data-table tbody tr{transition:background-color 120ms ease}
+@media(prefers-reduced-motion:reduce){:is(.report,.dialog-body) .data-table tbody tr{transition:none}}
+
+:is(.report,.dialog-body) strong>.evidence-number{display:inline;font:inherit;color:inherit;letter-spacing:inherit}
+.dialog-body .identifier-value{display:flex;align-items:center;gap:6px;min-width:0}
+.dialog-body .identifier-value .external-link{overflow-wrap:anywhere;min-width:0}
+.dialog-body .copy-identifier{display:inline-flex;align-items:center;justify-content:center;flex:none;width:28px;height:28px;border:0;border-radius:5px;background:transparent;color:var(--text-secondary);opacity:0;cursor:pointer;transition:opacity 120ms ease,background-color 120ms ease}
+.dialog-body tr:is(:hover,:focus-within) .copy-identifier,.dialog-body .copy-identifier:focus-visible{opacity:1}
+.dialog-body .copy-identifier:hover{background:var(--surface-selected);color:var(--primary)}
+@media(pointer:coarse){.dialog-body .copy-identifier{opacity:1;width:36px;height:36px}}
+@media(prefers-reduced-motion:reduce){.dialog-body .copy-identifier{transition:none}}
+
+/* Scientific reading surfaces: shared palette, restrained ink, distinct source codes. */
+:is(.report,.dialog-body) .vc-clinical-pathogenic{color:var(--clinical-pathogenic-ink)}
+:is(.report,.dialog-body) .vc-clinical-benign{color:var(--clinical-benign-ink)}
+:is(.report,.dialog-body) .vc-clinical-uncertain{color:var(--clinical-uncertain-ink)}
+:is(.report,.dialog-body) .vc-clinical-conflicting{color:var(--clinical-conflicting-ink)}
+:is(.report,.dialog-body) .vc-clinical-other{color:var(--clinical-other-ink)}
+:is(.report,.dialog-body) .vc-clinical-unclassified{color:var(--text-secondary)}
+:is(.report,.dialog-body) :is(.vc-effect,.vc-clinical,.vc-pred){background:transparent;border:0;box-shadow:none}
+:is(.report,.dialog-body) .ve-stars .filled{color:var(--consequence-frameshift)}
+:is(.report,.dialog-body) .ve-frequency-legend>i{background:linear-gradient(90deg,var(--frequency-low),var(--frequency-high))}
+#variants .vc-main-table :is(.vc-genomic,.vc-source,.vc-aa-alt),
+.dialog-body :is(.vc-detail a.external-link,.ov-go-table a.external-link){color:var(--scientific-link)}
+#variants .vc-main-table .vc-genomic strong{color:var(--scientific-link);font-weight:600}
+#variants .vc-main-table .data-table tbody tr:nth-child(even){--row-surface:#fafafa;background:var(--row-surface)}
+#variants .vc-main-table .data-table tbody tr:is(:hover,:focus-within){--row-surface:#f4f6f8;background:var(--row-surface)}
+
+.ov-evidence[data-evidence-code]{display:inline-flex;align-items:center;gap:9px;max-width:100%;border:0;border-radius:0;background:transparent;padding:0;color:var(--text-secondary);font-size:13px;line-height:1.5}
+.ov-evidence[data-evidence-code]>strong{display:inline-flex;align-items:center;justify-content:center;flex:none;min-width:40px;min-height:26px;padding:3px 6px;border-radius:5px;background:var(--evidence-code-fill);color:var(--evidence-code-ink);font-size:12px;font-weight:650;letter-spacing:.035em}
+.ov-evidence[data-evidence-code]>span{max-width:32ch}
+
+.dialog-body .vc-detail-entrypoints{gap:12px;margin-block:20px 28px}
+.dialog-body .vc-detail-entrypoints>button{padding:16px;line-height:1.5}
+.dialog-body .ve-transcripts{margin-top:28px}
+.dialog-body .ve-transcript-intro{padding:0 0 20px;margin:0;border:0;border-bottom:1px solid var(--border);border-radius:0;background:transparent;max-width:80ch}
+.dialog-body .ve-transcript-intro>strong{font-size:17px;color:var(--text);line-height:1.4}
+.dialog-body .ve-transcript-intro>span{font-size:13px;color:var(--text-secondary);line-height:1.65;margin-top:10px}
+.dialog-body .ve-transcript-card{padding:24px 0;margin:0;border:0;border-bottom:1px solid var(--border);border-radius:0;background:transparent}
+.dialog-body .ve-transcript-card:last-child{border-bottom:0;padding-bottom:8px}
+.dialog-body .ve-transcript-card>header{gap:10px;margin-bottom:20px}
+.dialog-body :is(.ve-mane,.ve-transcript-flag,.ve-transcript-flag.canonical){padding:0;background:transparent;border-radius:0;color:var(--text-secondary);font-size:13px}
+.dialog-body .ve-mane{color:var(--scientific-ink);font-weight:600}
+.dialog-body .ve-transcript-flag{padding-left:10px;border-left:1px solid var(--border)}
+.dialog-body .ve-representative-ids{gap:24px;margin:0 0 24px}
+.dialog-body .ve-representative-ids dt{font-size:13px;color:var(--text-secondary);margin-bottom:8px}
+.dialog-body .ve-representative-ids dd{font-size:15px;color:var(--text)}
+.dialog-body .ve-sequence-relation{padding:16px 18px;border:0;border-left:3px solid var(--sequence-membrane);border-radius:0 8px 8px 0;background:var(--surface-subtle,#fafafa);gap:8px;color:var(--text);font-size:14px}
+.dialog-body .ve-sequence-relation>strong{font-size:14px;color:var(--text)}
+.dialog-body .ve-sequence-relation>small{font-size:13px;line-height:1.6;color:var(--text-secondary)}
+.dialog-body .ve-sequence-targets>span{padding:0;border:0;background:transparent}
+.dialog-body .ve-transcript-changes{margin:24px 0;gap:24px}
+.dialog-body .ve-transcript-changes>div{padding:0;border:0;border-radius:0;background:transparent}
+.dialog-body .ve-transcript-changes small{color:var(--text-secondary);font-size:13px;margin-bottom:8px}
+.dialog-body .ve-transcript-changes strong{font-size:16px;color:var(--scientific-ink)}
+.dialog-body .ve-transcript-card>.vc-consequence-pills{margin-top:6px}
+.dialog-body .ve-transcript-card>.vc-consequence-pills .vc-effect{padding:0;font-size:14px}
+.dialog-body .ve-stability-card{background:var(--surface);border-color:var(--border)}
+.dialog-body .ve-stability-stabilizing{--ddg-color:var(--evidence-tolerated)}
+.dialog-body .ve-stability-destabilizing{--ddg-color:var(--evidence-damaging)}
+@media(max-width:600px){
+ .dialog-body .ve-transcript-card{padding-block:20px}
+ .dialog-body .ve-representative-ids,.dialog-body .ve-transcript-changes{gap:16px;grid-template-columns:1fr}
+ .dialog-body .ve-sequence-relation{padding:14px}
+ .ov-evidence[data-evidence-code]{gap:7px}
+}
+.dialog-body .ve-assertion{background:var(--surface);border-color:var(--border);border-left-color:var(--sequence-membrane)}
+.dialog-body .ve-assertion.ve-tone-pathogenic{border-left-color:var(--clinical-pathogenic)}
+.dialog-body .ve-assertion.ve-tone-benign{border-left-color:var(--clinical-benign)}
+.dialog-body .ve-assertion.ve-tone-uncertain{border-left-color:var(--clinical-uncertain)}
+.dialog-body .ve-assertion.ve-tone-conflicting{border-left-color:var(--clinical-conflicting)}
+.dialog-body .ve-review-box{background:var(--surface-subtle);border-color:var(--border)}
+.dialog-body :is(.ve-review strong,.ve-review small,.ve-review-box>span){color:var(--text-secondary)}
+.dialog-body .ve-group-overview>button>i>b{background:var(--sequence-membrane)}
+.dialog-body .vc-detail-entrypoints strong{color:var(--text);font-size:14px}
+.dialog-body .vc-detail-entrypoints span{color:var(--text-secondary);font-size:13px}
+.dialog-body .vc-detail-entrypoints svg{color:var(--scientific-link)}
+.dialog-body .data-table [data-column=term] .text-button{color:var(--scientific-link);text-decoration:none}
+.dialog-body .data-table [data-column=term] .text-button:hover{text-decoration:underline;text-underline-offset:3px}

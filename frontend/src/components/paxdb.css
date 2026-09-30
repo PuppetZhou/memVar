@@ -2,3 +2,15 @@
 
 .pax-browser>.table-wrap{max-height:460px;overflow:auto}.pax-browser>.table-wrap th{position:sticky;top:0;z-index:1}.pax-browser .cx-body-browser{margin-top:12px}
 .pax-abundance{display:grid;grid-template-columns:minmax(70px,1fr) 85px;align-items:center;gap:16px;max-width:520px}.pax-abundance>span:last-child{text-align:right;font-variant-numeric:tabular-nums}.pax-abundance-track{height:7px;display:block;background:#edf1f5;border-radius:2px;overflow:hidden}.pax-abundance-track>span{display:block;height:100%;background:#277da1}.pax-record small{display:block;font-size:12px;font-weight:400;line-height:1.4;color:#5c677d;margin-top:3px}.pax-scroll-status{padding:10px 12px;color:#5c677d;font-size:12px}.pax-browser .data-table th:first-child{width:45%}
+
+/* Integrated abundance lives alongside anatomy; one scroll area, no duplicate records pane. */
+.pax-browser .cx-tissue-scroll .pax-inline-table{overflow:visible;max-height:none;border:0;border-radius:0}
+.pax-browser .pax-inline-table thead{position:sticky;top:-2px;z-index:1;background:var(--surface,#fff)}
+.pax-browser .pax-inline-table th{background:var(--surface,#fff)}
+.pax-browser .pax-inline-table .pax-abundance{grid-template-columns:minmax(60px,1fr) 74px;gap:12px}
+.pax-browser .pax-inline-table .data-table th:first-child{width:46%}
+.pax-browser .pax-inline-table .data-table :is(th,td){padding:10px 8px}
+.pax-browser .pax-abundance-track>span{background:var(--sequence-membrane,#7b95c6)}
+.pax-browser .pax-record{color:var(--scientific-link,#417494)}
+.pax-browser .pax-value{color:var(--scientific-ink,#1d3557)}
+.pax-empty{font-size:14px;padding:12px 8px;color:var(--text-secondary)}

@@ -6,3 +6,5 @@ psycopg[binary]>=3.2,<4
 PyYAML>=6,<7
 pyarrow>=18,<24
 duckdb>=1.2,<2
+h5py>=3.12,<4
+numpy>=1.26,<3

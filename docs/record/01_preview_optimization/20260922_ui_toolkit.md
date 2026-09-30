@@ -726,3 +726,50 @@ TypeScript/Vite构建通过，本地8000 API服务已重启更新。1414×827浏
 QTL样式在`ios-surfaces.css`中按`#qtl`限定，复用当前全站surface/text/border/primary变量：去金色模块强调、彩色数量和绿色P值底块；白底、浅灰说明区、细灰边、柔和蓝色组织统计条和蓝色交互状态。类型文字不套彩色框，来源卡片/类型按钮明确标示选中态；身体示意图原有解剖区域色保留。原来源阈值和自定义P值比较逻辑、全部记录及临床含义不变。
 
 验证：TypeScript/Vite构建与原QTL跨dataset分页测试通过；1414×827实页确认轨道0、旧坐标参数已清除、apaQTL完整39条；P值命中文字为rgb(0,102,204)且底色透明，说明区为rgb(245,245,247)、组织条rgb(144,189,235)。自定义参考1e-6产生24条命中/15条其他，仍为39条。记录和组织面板截图在`output/playwright/qtl-restyle-20260929/`（截图时仅临时隐藏悬浮导航遮挡，不修改页面功能）。本地8000服务及构建已更新。
+
+
+## 2026-09-29四处密度与交互批注
+
+用户四处浏览器批注要求压缩概览和生化区、明确点击入口、对齐Guide to Pharmacology入口与内容、删除结构Start/End输入及Visible residues区，悬停蓝条显示残基，并改善变异表字号。实现由`Overview.tsx`、`StructureSequenceSelector.tsx`及其CSS、`ios-surfaces.css`维护。生化来源入口和预览置于同一列，去重复来源标题；来源卡片保留细边框。后续批注采用图标入口、膜分类与底部动作无框，替代初版普遍加框与View文字的方案。结构保留全长映射条、拖动范围、端点键盘调整和Reset，悬停显示序列字母/位置及chain/结构编号，未映射时明确说明；移除局部32残基窗口及其浏览逻辑。Ref/Alt字母12→17px，consequence 13→15px。数据和科学规则未改。
+
+2026-09-29 13:45 HKT附近，独立Playwright浏览器在1414×827、EGFR（P00533）验证：三个概览详情入口可开关；L606悬停显示Chain A/residue 606；拖动创建选区、方向键端点+1、Esc清除、End从空选区创建1210位置、Reset通过。浏览器实测字母17px、后果15px；Rhea/GtoPdb入口与内容左边分别45/715px，两侧预览顶部相同。结构选择区约173px高，身份卡约154px。TypeScript/Vite候选构建及diff空白检查通过；截图在工作区`output/playwright/density-{overview,reactions,structure,hover,variants}.png`，其中reactions截图早于最后12px预览顶部对齐修订，最终对齐已通过DOM坐标核对。
+
+5173开发预览自动更新；候选构建位于`/tmp/memvar-ui-density-build`，未发布到8000静态目录。应用内浏览器无可连接实例，因此不宣称直接检查用户61290转发页面。其他任务同时修改AlphaGenome前后端；开发页观察到AVI接口404和热更新期间依赖数组变长提示，未改其代码或重启后端。验证仅覆盖本轮EGFR桌面变化，不代表全站、移动端或AlphaGenome新链路验收。
+
+
+### 同日跟进：11条轻量呈现批注
+
+移除膜分类、两个底部入口和药理预览action标签框；功能来源链接取消下划线。Rhea/GtoPdb使用已有Lucide ArrowRight，仅保留图标及悬停提示，整个来源入口仍可点击。Cellular location两个原生select取消贴边的系统箭头，改固定16px箭头、距右侧10px及34px文字预留区。Prediction toolkit主容器改共享白底。频率列移除地球图标、15px中等字重与等宽数字，原e计数只改排版为×10上标指数；原百分比换算、有效位数、零/缺失、色标与点击详情保持。
+
+5173 EGFR 1414×827定向核对：相关边框均0px、来源链接text-decoration为none、预测区rgb(255,255,255)、AF图标0个、指数使用sup；Source HPA/All sources和scope Isoform 2/All available objects切换、两处图标入口弹窗及频率人口详情开关通过。TypeScript/Vite候选构建通过。截图`output/playwright/density-followup-{location,reactions,frequency}.png`；仍仅更新开发预览，未重启后端或覆盖8000静态目录。
+
+
+## 2026-09-29落实分析第3–6点
+
+授权：表格比较、组件质感、字体角色和动效；未采用第1–2点的对象标题重排、按宽度分类弹窗或右侧详情栏。新`EvidenceNumber.tsx`复用调用方既有格式化结果，只将e计数转为×10上标，接入主表AF、详情总AF/各population/原AF/图注最大值和预测读数。共用DataTable增加scope=col与列/行定位属性，主表数值列右对齐；portal详情表格采用共享字体、细横边、固定表头，正文作为滚动容器。频率读数取消蓝/青/紫装饰背景和顶部彩线，保留AF原科学颜色、组数、AC/AN、来源、图例与量尺。预测详情容器去装饰渐变，分类/评分语义保留。身份表复制控件在悬停/键盘焦点显示，粗指针常显，成功/失败有状态文本。
+
+`ios-surfaces.css`统一report与dialog-body文字角色和数值字形；频率指标22px、子组17px、正文15px、辅助13px，主表沿用14px正文/17px残基。`lib/motion.tsx`内容过渡140ms、展开180ms；保留既有弹窗200ms和分段弹簧，表格高频按钮禁缩放，减少动态关闭过渡。
+
+回归检查发现原Modal的opener在表格重绘后isConnected=false，导致关闭后焦点落回body。已在共用Modal记录原表格行/列及控件序号，在关闭/父状态更新后优先返回原元素，原元素重建则找到同位置新控件；不抢占其他新打开的dialog。临时诊断日志已移除。
+
+验证：TypeScript/Vite最终候选构建、diff空白检查通过；EGFR 1414×827主表和频率详情均显示7.40×10⁻⁵%，关闭后焦点和表格scrollTop保持；身份表header在正文滚动300px后固定在内容视口，ENST00000275493.7复制内容准确；快速展开/收起、减少动态即时展开及dialog animation=none通过。截图`output/playwright/reading-{frequency,table,identifiers}.png`。只覆盖本批代表路径，未全量检查所有来源详情、设备或每个缺失分支。用户视觉反馈待续。
+
+5173自动更新，候选构建`/tmp/memvar-ui-reading-build`；未覆盖8000静态产物、未重启后端或改动其他任务的AlphaGenome代码。
+
+## 2026-09-29科学配色与详情视觉审查
+
+用户要求统一科学配色，并指出Variant表格色彩不协调、转录本详情密集、GO证据代码区别不明显。当前已用指定序列11色替换旧预测8色、后果独立色和GO旧色；`lib/palette.ts`集中维护填色与深色文字、预测/后果/临床/频率/证据代码映射。链接取指定cerulean的可读深色，非方向分数与AF末端取oxford navy。移除两份旧consequence文字覆盖，预测详情donut图例同步接入；临床/稳定性详情保持中性底，仅保留语义文字和小面积边线。
+
+转录本详情去掉蓝绿套框、ID及变化值小卡，采用17px标题、13px说明、15–16px身份/变更值和20–24px节间距；全长序列关系为浅灰说明区，边线不编码匹配状态。所有来源说明与字段继续展示。GO/Reactome标签改为实色代码块＋中性说明；常见IDA、EXP、HDA分别为blue、sage、coral。有限色板允许代码间复用，代码和原始解释始终保留，颜色不表示证据等级。
+
+验证：TypeScript/Vite候选构建至`/tmp/memvar-palette-build`通过；EGFR 1414×827实页核对主表、转录本、GO（IDA/EXP/HDA）、ClinVar及预测切换。临床Likely benign边线为`#67a583`；预测来源图例与共享色板一致。390px转录本详情单列、内容宽325px与滚动宽相等。对分类文字及两条连续色阶各101点抽样，最浅交互底`#f4f6f8`上最低对比4.62:1；全部证据代码块文字最低5.23:1。cerulean链接加深至`#417494`。`git diff --check`通过。截图位于科研工作区`output/playwright/palette-{table,transcript,go}.png`。
+
+交付到5173开发服务；8000运行正常，本批未覆盖其静态产物或重启后端。内置浏览器仍无可用绑定，使用独立Playwright核对；未验证用户端61290转发。科学分类、评分方向/量尺/阈值、AF原值与零/缺失语义、代表转录本及序列关联均未改动。序列JSD/interface/binding保持用户此前专门确认的回退色；AlphaGenome与后端数据优化保持原任务。此记录是本轮区域验收，不代表所有页面和所有证据类型均已视觉验收。
+
+## 2026-09-29PaxDB整合丰度直接展示
+
+根据三处批注，Protein abundance整合视图将原组织计数条替换为组织名称、ppm原值和线性丰度条，直接放在人体导航旁的同一滚动区，撤除下方重复记录面板。Cells、Fluids & secretions及其余非组织整合类别不再重复展示All/单项筛选按钮；保留context type切换和点击名称查看数据集详情。Individual protein studies可能同组织多条，继续保留原来源导航/筛选，不聚合或选择代表丰度。
+
+`PaxDbBrowser.tsx`复用同一丰度表渲染，`QtlTissueNavigator`新增可选列表内容槽，默认QTL/单项研究仍为原计数导航。整合值续页自动加载并保留失败重试，避免区域筛选只看到首个API页；后端API、来源记录、数值及分类不变。显示量尺取API当前context type的maximum；区域/搜索只筛选行，不重算maximum。`paxdb.css`处理内嵌表头、单滚动区及共享蓝色丰度条。
+
+验证：TypeScript/Vite构建至`/tmp/memvar-pax-inline-build`及diff空白检查通过。EGFR实页整合组织37行、仅1张表；Brain/spinal cord筛选4行，搜索cerebral为1行，120 ppm原值及条宽前后一致，数据集详情可开关。Cells/Fluids各5行且重复筛选容器均为0；Cells原值14.0、0.011、58.4、53.2、8.25，Fluids原值17.6、7.34、17.4、3.17、0.749保持。Individual studies组织选择仍出现原数据集名和Clear selection，QTL仍渲染原导航（本页32行）。截图：科研工作区`output/playwright/pax-inline-{tissues,fluids}.png`。5173开发预览已更新；本批未覆盖8000静态版或重启后端，未验证用户61290端口转发。
