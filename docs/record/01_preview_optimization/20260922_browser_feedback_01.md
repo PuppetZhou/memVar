@@ -14,3 +14,18 @@
 定向验证：`npm exec tsc -- -b`及 Vite 生产构建通过（1,711 模块）；候选前端已发布到本地 `frontend/dist/`。8000 服务 `/api/health` 为只读 PostgreSQL `ok`，主页指向新 JS/CSS，入口 JS 返回 200。P00533 的 GTEx 中位 TPM 接口返回 68 个单值组、0 缺失，范围 0.05314–70.1852，供横条按 log1p 显示；本轮未重复全量数据或全站 smoke。
 
 浏览器控制接口仍未给出可连接实例，故以上不记作真实桌面截图、悬停、点击、焦点或图表视觉验收通过。用户批注截图是问题证据，不是修改后验收证据。
+
+## 2026-10-02：互作图标、保存范围、JSD 与逐条注释
+
+按 CFTR／EGFR 页面四项浏览器批注更新前端。科学来源、注释范围、坐标、数值与后端数据保持原值；仅修呈现和命中交互。
+
+| 批注 | 已发布行为 |
+| --- | --- |
+| 互作记录图标过多 | 去掉记录表参与者类别、物种、外链和 View evidence 的装饰图标；名称、类别、物种、UniProt/项目链接和证据入口保留。 |
+| AlphaGenome 展示范围 | 当前裁剪来源默认/复位使用保存区间，即完整 Ensembl gene 加两侧各 10 kb 与所选原模型窗口的交集；不再对短基因默认仅加 8% 留白。页面明确轴范围与 MANE Select 转录本结构的区别，不拉伸 MANE 冒充完整 gene。 |
+| JSD source support | 删除图中悬停提示的 Source support 行，保留 JSD 原分值、逐残基选择及缺失状态。 |
+| domain 不能逐条查看 | Domain/region 与截图对应的 membrane 每条来源注释各有独立悬停、点击和键盘目标；重叠命中区域分行，真实残基范围、来源筛选与原始注释顺序保留。PTM 原有显示分箱和选择语义继续沿用。 |
+
+修改为 `ContextPanels.tsx`、`ConservationPlot.tsx`、`AlphaGenomeExpression.tsx` 与 `CompactAnnotationTracks.tsx`。TypeScript/Vite 构建和 6 项已有坐标测试通过；00:36 更新静态文件，入口 `index-DfBbJfEF.js`，保留旧 hashed assets。8000 与 ngrok 持续运行。
+
+验证状态：00:40 四项实际浏览器验收通过。CFTR 默认/复位/Full saved range 均为 `chr7:117,277,120–117,725,971`；短基因 SSR4/P51571 均为 `chrX:153,783,516–153,808,510`，包含两侧各 10 kb。互作记录表 SVG 数为 0，内外链接保留；EGFR JSD 图及 L606=0.467264 原值保留，Source support 文本为 0。不同 Pfam domain、UniProt region 及膜注释可独立悬停、点击/Enter 打开对应单条详情；来源选择仍为原 UniProt/Pfam。控制台 0 错误、0 警告。本轮未扩大为全站或数据扫描。[验收结果](../../../data/ui_axis_validation/annotation_gene_ui/summary.json)、[CFTR 截图](../../../data/ui_axis_validation/annotation_gene_ui/cftr_saved_range.png)、[注释交互截图](../../../data/ui_axis_validation/annotation_gene_ui/egfr_annotation.png)。

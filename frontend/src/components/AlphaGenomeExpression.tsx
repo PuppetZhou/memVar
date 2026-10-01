@@ -160,22 +160,112 @@ function AlphaGenomeGuide({ snapshot }: { snapshot?: string }) {
     </>
   );
 }
+const retainedStart = (tile: Tile) => tile.retention_start_0based ?? tile.window_start_0based;
+const retainedEnd = (tile: Tile) => tile.retention_end_0based ?? tile.window_end_0based;
 function initialView(gene: Gene, tile: Tile): View {
+  if (retainedStart(tile) !== tile.window_start_0based || retainedEnd(tile) !== tile.window_end_0based) {
+    return [retainedStart(tile), retainedEnd(tile)];
+  }
   const pad = Math.max(
     1000,
     (gene.gene_end_1based_inclusive - gene.gene_start_1based) * 0.08
   );
   const start = Math.max(
-      tile.window_start_0based,
+      retainedStart(tile),
       Math.floor(gene.gene_start_1based - 1 - pad)
     ),
     end = Math.min(
-      tile.window_end_0based,
+      retainedEnd(tile),
       Math.ceil(gene.gene_end_1based_inclusive + pad)
     );
   return start < end
     ? [start, end]
-    : [tile.window_start_0based, tile.window_end_0based];
+    : [retainedStart(tile), retainedEnd(tile)];
+}
+
+/** A slider draft stays local; tracks and their shared axis use one committed view. */
+function GenomicNavigator({ tile, view, windowCds, onCommit, onFocusFeature }: {
+  tile: Tile;
+  view: View;
+  windowCds: TranscriptFeature[];
+  onCommit: (view: View) => void;
+  onFocusFeature: (feature: TranscriptFeature) => void;
+}) {
+  const [previewStart, setPreviewStart] = useState<number | null>(null);
+  const draft = useRef<number | null>(null);
+  const viewSpan = view[1] - view[0];
+  const windowSpan = retainedEnd(tile) - retainedStart(tile);
+  const cropped = retainedStart(tile) !== tile.window_start_0based || retainedEnd(tile) !== tile.window_end_0based;
+  const fullRangeLabel = cropped ? 'Full saved range' : 'Full window';
+  const cancel = () => {
+    draft.current = null;
+    setPreviewStart(null);
+  };
+  useEffect(cancel, [tile.tile_id, view[0], view[1]]);
+  const commit = () => {
+    const start = draft.current;
+    cancel();
+    if (start !== null && start !== view[0]) onCommit([start, start + viewSpan]);
+  };
+  return (
+    <div className="agx-region-nav">
+      {windowCds.length > 0 && (
+        <label className="agx-exon-picker">
+          <span className="agx-cds-nav-label">Explore CDS</span>
+          <select
+            aria-label="Jump to MANE CDS exon"
+            value=""
+            onChange={(e) => {
+              const block = windowCds[Number(e.target.value)];
+              if (block) onFocusFeature(block);
+            }}
+          >
+            <option value="" disabled>
+              Jump to coding region…
+            </option>
+            {windowCds.map((b, i) => (
+              <option key={b.start_0based} value={i}>
+                Exon {b.exon_number} ·{' '}
+                {location(b.start_0based, b.end_0based)}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+      <label className="agx-pan-picker">
+        <span>Pan</span>
+        <input
+          type="range"
+          aria-label={cropped ? 'Pan genomic region within saved range' : 'Pan genomic region within model window'}
+          aria-valuetext={`${tile.chromosome}:${location(previewStart ?? view[0], (previewStart ?? view[0]) + viewSpan)}`}
+          title={cropped ? 'Drag to browse the saved range while keeping this zoom level' : 'Drag to browse the model window while keeping this zoom level'}
+          min={retainedStart(tile)}
+          max={retainedEnd(tile) - viewSpan}
+          step={1}
+          value={previewStart ?? view[0]}
+          disabled={viewSpan >= windowSpan}
+          onChange={(e) => {
+            const start = Number(e.target.value);
+            draft.current = start;
+            setPreviewStart(start);
+          }}
+          onPointerDown={(e) => e.currentTarget.setPointerCapture(e.pointerId)}
+          onPointerUp={commit}
+          onKeyUp={commit}
+          onBlur={commit}
+          onPointerCancel={cancel}
+        />
+        <span className="agx-pan-hint">
+          {viewSpan >= windowSpan ? fullRangeLabel : 'Drag to browse'}
+        </span>
+      </label>
+      <output className="agx-pan-preview" aria-live="off">
+        {previewStart !== null
+          ? `Preview ${tile.chromosome}:${location(previewStart, previewStart + viewSpan)} · release to apply`
+          : `${tile.chromosome}:${location(view[0], view[1])}`}
+      </output>
+    </div>
+  );
 }
 function Workspace({
   catalog,
@@ -301,13 +391,13 @@ function Workspace({
         current.origin
       );
       const span = Math.min(
-        tile.window_end_0based - tile.window_start_0based,
+        retainedEnd(tile) - retainedStart(tile),
         Math.max(32, high - low)
       );
       const start = Math.max(
-        tile.window_start_0based,
+        retainedStart(tile),
         Math.min(
-          tile.window_end_0based - span,
+          retainedEnd(tile) - span,
           Math.floor((low + high - span) / 2)
         )
       );
@@ -407,9 +497,9 @@ function Workspace({
         const span = current[1] - current[0],
           left = Math.round(
             Math.max(
-              tile.window_start_0based,
+              retainedStart(tile),
               Math.min(
-                tile.window_end_0based - span,
+                retainedEnd(tile) - span,
                 current[0] + fraction * span
               )
             )
@@ -417,46 +507,48 @@ function Workspace({
         return left === current[0] ? current : [left, left + span];
       });
     },
-    [tile.window_start_0based, tile.window_end_0based]
+    [retainedStart(tile), retainedEnd(tile)]
   );
   const focusFeature = (block: TranscriptFeature) => {
     const span = Math.min(
-      tile.window_end_0based - tile.window_start_0based,
+      retainedEnd(tile) - retainedStart(tile),
       Math.max(200, Math.ceil((block.end_0based - block.start_0based) * 1.6))
     );
     const left = Math.max(
-      tile.window_start_0based,
+      retainedStart(tile),
       Math.min(
-        tile.window_end_0based - span,
+        retainedEnd(tile) - span,
         Math.floor((block.start_0based + block.end_0based - span) / 2)
       )
     );
     setHoverPosition(null);
     setView([left, left + span]);
   };
-  const windowSpan = tile.window_end_0based - tile.window_start_0based,
+  const cropped = retainedStart(tile) !== tile.window_start_0based || retainedEnd(tile) !== tile.window_end_0based;
+  const fullRangeLabel = cropped ? 'Full saved range' : 'Full window';
+  const windowSpan = retainedEnd(tile) - retainedStart(tile),
     viewSpan = view[1] - view[0];
   const windowCds =
     cdsQuery.data?.segments
       .filter(
         (b) =>
           b.feature === 'CDS' &&
-          b.start_0based < tile.window_end_0based &&
-          b.end_0based > tile.window_start_0based
+          b.start_0based < retainedEnd(tile) &&
+          b.end_0based > retainedStart(tile)
       )
       .sort((a, b) => a.exon_number - b.exon_number) ?? [];
   const zoom = (factor: number) => {
     const span = Math.round(
         Math.min(
-          tile.window_end_0based - tile.window_start_0based,
+          retainedEnd(tile) - retainedStart(tile),
           Math.max(32, (view[1] - view[0]) * factor)
         )
       ),
       left = Math.round(
         Math.max(
-          tile.window_start_0based,
+          retainedStart(tile),
           Math.min(
-            tile.window_end_0based - span,
+            retainedEnd(tile) - span,
             (view[0] + view[1] - span) / 2
           )
         )
@@ -466,12 +558,12 @@ function Workspace({
   const focusVariant = (position1: number) => {
     const span = Math.min(
         200,
-        tile.window_end_0based - tile.window_start_0based
+        retainedEnd(tile) - retainedStart(tile)
       ),
       start = Math.round(
         Math.max(
-          tile.window_start_0based,
-          Math.min(tile.window_end_0based - span, position1 - 1 - span / 2)
+          retainedStart(tile),
+          Math.min(retainedEnd(tile) - span, position1 - 1 - span / 2)
         )
       );
     setView([start, start + span]);
@@ -480,9 +572,9 @@ function Workspace({
     const span = view[1] - view[0],
       left = Math.round(
         Math.max(
-          tile.window_start_0based,
+          retainedStart(tile),
           Math.min(
-            tile.window_end_0based - span,
+            retainedEnd(tile) - span,
             view[0] + direction * span * 0.5
           )
         )
@@ -555,13 +647,18 @@ function Workspace({
                 {gene.tiles.map((t, i) => (
                   <option key={t.tile_id} value={t.tile_id}>
                     {i + 1} / {gene.tiles.length} ·{' '}
-                    {location(t.window_start_0based, t.window_end_0based)}
+                    {location(retainedStart(t), retainedEnd(t))}
                   </option>
                 ))}
               </select>
             </label>
           )}
         </div>
+        {(retainedStart(tile) !== tile.window_start_0based || retainedEnd(tile) !== tile.window_end_0based) && (
+          <span title={`Original model input: ${location(tile.window_start_0based, tile.window_end_0based)}`}>
+            Saved range: {location(retainedStart(tile), retainedEnd(tile))}. Outside this range is not stored.
+          </span>
+        )}
         <div className="agx-toolbar-actions">
           <button
             className="agx-icon-reset"
@@ -726,7 +823,7 @@ function Workspace({
           </button>
           <button
             aria-label="Pan genomic window left"
-            disabled={view[0] <= tile.window_start_0based}
+            disabled={view[0] <= retainedStart(tile)}
             onClick={() => pan(-1)}
           >
             ←
@@ -743,27 +840,33 @@ function Workspace({
             onClick={() => zoom(2)}
             disabled={
               view[1] - view[0] >=
-              tile.window_end_0based - tile.window_start_0based
+              retainedEnd(tile) - retainedStart(tile)
             }
           >
             <ZoomOut size={15} />
           </button>
           <button
             aria-label="Pan genomic window right"
-            disabled={view[1] >= tile.window_end_0based}
+            disabled={view[1] >= retainedEnd(tile)}
             onClick={() => pan(1)}
           >
             →
           </button>
           <button
             onClick={() =>
-              setView([tile.window_start_0based, tile.window_end_0based])
+              setView([retainedStart(tile), retainedEnd(tile)])
             }
           >
-            Full window
+            {fullRangeLabel}
           </button>
         </div>
       </div>
+      {cropped && (
+        <p className="agx-axis-hint">
+          Saved range: full Ensembl gene + 10 kb each side, within this window.
+          {' '}Structure: MANE Select transcript.
+        </p>
+      )}
       <p className="agx-axis-hint">
         Drag to zoom · scroll axis to pan · click an exon to focus
       </p>
@@ -809,53 +912,13 @@ function Workspace({
           onPan={panFraction}
           onFocusFeature={focusFeature}
         />
-        <div className="agx-region-nav">
-          {windowCds.length > 0 && (
-            <label className="agx-exon-picker">
-              <span className="agx-cds-nav-label">Explore CDS</span>
-              <select
-                aria-label="Jump to MANE CDS exon"
-                value=""
-                onChange={(e) => {
-                  const block = windowCds[Number(e.target.value)];
-                  if (block) focusFeature(block);
-                }}
-              >
-                <option value="" disabled>
-                  Jump to coding region…
-                </option>
-                {windowCds.map((b, i) => (
-                  <option key={b.start_0based} value={i}>
-                    Exon {b.exon_number} ·{' '}
-                    {location(b.start_0based, b.end_0based)}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
-          <label className="agx-pan-picker">
-            <span>Pan</span>
-            <input
-              type="range"
-              aria-label="Pan genomic region within model window"
-              aria-valuetext={`${tile.chromosome}:${location(view[0], view[1])}`}
-              title="Drag to browse the model window while keeping this zoom level"
-              min={tile.window_start_0based}
-              max={tile.window_end_0based - viewSpan}
-              step={1}
-              value={view[0]}
-              disabled={viewSpan >= windowSpan}
-              onChange={(e) => {
-                const start = Number(e.target.value);
-                setHoverPosition(null);
-                setView([start, start + viewSpan]);
-              }}
-            />
-            <span className="agx-pan-hint">
-              {viewSpan >= windowSpan ? 'Full window' : 'Drag to browse'}
-            </span>
-          </label>
-        </div>
+        <GenomicNavigator
+          tile={tile}
+          view={view}
+          windowCds={windowCds}
+          onCommit={setView}
+          onFocusFeature={focusFeature}
+        />
         <AviTrack
           accession={accession}
           gene={gene}

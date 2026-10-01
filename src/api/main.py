@@ -10,6 +10,8 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.gzip import GZipMiddleware
 from sqlalchemy.exc import SQLAlchemyError
+from duckdb import Error as DuckDBError
+from sqlglot.errors import SqlglotError
 
 from .db import DatabaseConfigurationError, engine
 from .core import router as core_router
@@ -21,6 +23,7 @@ async def lifespan(app: FastAPI):
     yield
     if engine.cache_info().currsize:
         engine().dispose()
+        engine.cache_clear()
 
 
 app = FastAPI(title='memVar API', version='0.1.0', lifespan=lifespan,
@@ -54,6 +57,8 @@ from .sequence_prediction_coverage import router as sequence_prediction_router
 app.include_router(sequence_prediction_router)
 
 
+@app.exception_handler(DuckDBError)
+@app.exception_handler(SqlglotError)
 @app.exception_handler(SQLAlchemyError)
 async def database_error(request: Request, exc: SQLAlchemyError):
     logging.getLogger('memvar.api').error('Database request failed: %s', type(exc).__name__)
@@ -62,7 +67,7 @@ async def database_error(request: Request, exc: SQLAlchemyError):
 
 @app.exception_handler(DatabaseConfigurationError)
 async def database_configuration_error(request: Request, exc: DatabaseConfigurationError):
-    return JSONResponse(status_code=503, content={'detail': 'The read-only database connection is not configured.'})
+    return JSONResponse(status_code=503, content={'detail': str(exc)})
 
 
 DIST = Path(__file__).resolve().parents[2] / 'frontend/dist'

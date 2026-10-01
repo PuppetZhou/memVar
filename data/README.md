@@ -1,5 +1,7 @@
 # 当前本地网站服务表
 
+2026-10-01：PostgreSQL 全部 156 张物理表、44 个视图已完成 DuckDB＋Parquet 迁移，保留所有字段、记录、原 ID 与关联。存储核验及网站等价／性能验收通过，8000／原 ngrok 已使用该只读快照，结构化运行包约 27.33 GB。位置由 [duckdb.yaml](../config/duckdb.yaml) 维护，完整字段／文件清单以当前 `manifest.json` 与 `source-metadata.json` 为准，数据及重建入口见[迁移记录](../docs/record/01_preview_optimization/duckdb_storage_migration.md)。以下为迁移前 Parquet／入库记录，仍保留作依据；本轮不删除旧库或旧服务数据，等待用户审查网页。
+
 2026-09-29增量：Q7疾病分类7张服务表已导入`web_classification`。主分类33,417行、变异—MONDO关系760,105行，配套类别/证据完整保留；[manifest](tables/classification/manifest.json)、[导入报告](postgresql_classification_import.json)、[规则边界与复现](../docs/record/01_preview_optimization/20260929_clinvar_classification.md)。迁移须包含此schema或服务目录；API运行不依赖analysis文件。
 
 数据版本：`20260922_membrane_classification_v1`。

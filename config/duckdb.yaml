@@ -1,0 +1,7 @@
+candidate_root: data/duckdb-candidate/snapshot-20260930T160803Z
+catalog: data/duckdb-candidate/snapshot-20260930T160803Z/catalog.alphagenome-gene10k.duckdb
+manifest: data/duckdb-candidate/snapshot-20260930T160803Z/manifest.json
+catalog_statistics: data/duckdb-candidate/snapshot-20260930T160803Z/catalog_statistics.json
+read_only: true
+source_config: config/database.yaml
+record_locator: data/duckdb-candidate/snapshot-20260930T160803Z/source-record-files.json

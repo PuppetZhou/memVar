@@ -261,6 +261,8 @@ export function AviPlot({
 }) {
   const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
   const [width, setWidth] = useState(1000);
+  const staticCanvas = useRef<HTMLCanvasElement | null>(null);
+  const [pixelRatio, setPixelRatio] = useState(() => window.devicePixelRatio || 1);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [anchor, setAnchor] = useState<{ x: number; y: number } | null>(null);
   const showTotal = scores.includes('total');
@@ -351,16 +353,23 @@ export function AviPlot({
     const observer = new ResizeObserver((entries) =>
       setWidth(Math.max(1, entries[0].contentRect.width))
     );
+    const updateRatio = () => setPixelRatio(window.devicePixelRatio || 1);
     observer.observe(canvas);
-    return () => observer.disconnect();
+    window.addEventListener('resize', updateRatio);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', updateRatio);
+    };
   }, [canvas]);
 
   useEffect(() => {
-    const ctx = canvas?.getContext('2d');
-    if (!ctx || !canvas) return;
-    const ratio = window.devicePixelRatio || 1;
-    canvas.width = Math.round(width * ratio);
-    canvas.height = Math.round(HEIGHT * ratio);
+    if (!canvas) return;
+    const base = staticCanvas.current ?? (staticCanvas.current = document.createElement('canvas'));
+    const ctx = base.getContext('2d');
+    if (!ctx) return;
+    const ratio = pixelRatio;
+    base.width = Math.round(width * ratio);
+    base.height = Math.round(HEIGHT * ratio);
     ctx.scale(ratio, ratio);
     ctx.clearRect(0, 0, width, HEIGHT);
     ctx.font = '12px system-ui';
@@ -431,6 +440,27 @@ export function AviPlot({
       ctx.fill();
     }
     ctx.globalAlpha = 1;
+    ctx.restore();
+  }, [canvas, width, pixelRatio, plotted, scale, groups, showTotal, bounds, x, y, density, plotLeft, plotRight, plotWidth]);
+
+  // Pointer movement copies the unchanged base; it never reprocesses every allele.
+  useEffect(() => {
+    const base = staticCanvas.current;
+    const ctx = canvas?.getContext('2d');
+    if (!ctx || !canvas || !base) return;
+    const ratio = pixelRatio;
+    if (canvas.width !== base.width) canvas.width = base.width;
+    if (canvas.height !== base.height) canvas.height = base.height;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(base, 0, 0);
+    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    ctx.font = '12px system-ui';
+    ctx.textAlign = 'right';
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(plotLeft, 0, plotWidth, BOTTOM + 8);
+    ctx.clip();
     if (brush) {
       const a = Math.max(view[0], Math.min(...brush)),
         b = Math.min(view[1], Math.max(...brush));
@@ -496,6 +526,7 @@ export function AviPlot({
   }, [
     canvas,
     width,
+    pixelRatio,
     plotted,
     scale,
     groups,
@@ -924,14 +955,20 @@ export function AviTrack({
     () => knownGroups(items.flatMap((item) => item.contributions ?? [])),
     [items]
   );
-  const first = q.data?.pages[0],
-    missing = items.filter((item) => !finiteValue(item[scale])).length;
-  const attributionCount = items.filter((item) =>
-    (item.contributions ?? []).some((c) => finiteValue(c.value))
-  ).length;
-  const partialCount = items.filter(
-    (item) => contributionCoverage(item).partial
-  ).length;
+  const first = q.data?.pages[0];
+  const missing = useMemo(
+    () => items.filter((item) => !finiteValue(item[scale])).length,
+    [items, scale]
+  );
+  const { attributionCount, partialCount } = useMemo(() => {
+    let attributionCount = 0, partialCount = 0;
+    for (const item of items) {
+      const coverage = contributionCoverage(item);
+      if (coverage.finite > 0) attributionCount++;
+      if (coverage.partial) partialCount++;
+    }
+    return { attributionCount, partialCount };
+  }, [items]);
   const visibleScores = useMemo(
     () => (scale === 'phred' ? scores.filter((id) => id === 'total') : scores),
     [scores, scale]

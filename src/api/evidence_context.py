@@ -4,7 +4,7 @@ import math
 from functools import lru_cache
 from statistics import median
 from fastapi import APIRouter, HTTPException, Query
-from .db import query, one
+from .db import query, one, backend
 from .evidence_common import require_protein, cursor_read, cursor_write, fields, clean
 
 router = APIRouter()
@@ -274,6 +274,9 @@ def qtl(accession: str, source: str = "GTEx", tissue: str = "", qtl_type: str = 
         d = chosen[dataset_index]
         table = {"GTEx": "gtex_qtl_pair", "eQTLGen": "eqtlgen_cis", "QTLbase": "qtlbase_association"}[source]
         order = "source_row" if source == "GTEx" else '"SNPChr","SNPPos","SNP",ctid' if source == "eQTLGen" else '"SNP_chr","SNP_pos_hg38","Trait_chr","Trait_start_hg38",ctid'
+        # The numeric source CTID preserves PostgreSQL block/tuple tie ordering.
+        if backend() == 'duckdb' and source != 'GTEx':
+            order = order.removesuffix('ctid') + '_source_ctid'
         # ctid only breaks identical source-row ties within this immutable published snapshot.
         rows = query(f'''SELECT t.* FROM web_context.{table} t WHERE dataset_id=:dataset
             AND hgnc_id IN (SELECT hgnc_id FROM web.protein_gene WHERE accession=:accession)

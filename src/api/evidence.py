@@ -2,7 +2,7 @@
 from functools import lru_cache
 
 from fastapi import APIRouter, HTTPException, Query
-from .db import query, one
+from .db import query, one, backend
 
 router = APIRouter(prefix="/api", tags=["evidence"])
 
@@ -97,10 +97,17 @@ def variants(accession: str, source: str = "", consequence: str = "", position: 
         ORDER BY c.variant_id,c.annotation_id,c.gene_id''',params)
     page=rows[:limit];ids=list({r['variant_id'] for r in page})
     source_map={}
-    if ids:
+    source_evidence=page_source_evidence(ids)
+    if ids and backend() == 'duckdb':
+        # The published variant_database view is exactly these three source
+        # categories plus dbSNP. Reuse their complete evidence join above.
+        for row in source_evidence:
+            source_map.setdefault(row['variant_id'],set()).add(row['source'])
+        for row in query('SELECT DISTINCT variant_id FROM web_variant.variant_dbsnp WHERE variant_id=ANY(:ids)',{'ids':ids}):
+            source_map.setdefault(row['variant_id'],set()).add('dbSNP')
+    elif ids:
         for row in query('SELECT variant_id,database_name FROM web_variant.variant_database WHERE variant_id=ANY(:ids)',{'ids':ids}):
             source_map.setdefault(row['variant_id'],set()).add(row['database_name'])
-    source_evidence=page_source_evidence(ids)
     canonical=canonical_rows(ids,protein['sequence_id'])
     for row in page:
         row.update(amino_change(row['hgvsp']))
@@ -168,7 +175,11 @@ def variant_detail(variant_id: str, accession: str = ""):
                         "ac":frequency.get("AC_exomes_grpmax"),"an":frequency.get("AN_exomes_grpmax"),
                         "homozygotes":frequency.get("nhomalt_exomes_grpmax"),
                         "selected_ancestry_group":frequency.get("grpmax_exomes")})
-    source_rows = query("SELECT source,native_id,alt_index,details_json FROM web_variant.variant_source_detail WHERE variant_id=:id AND source IN ('ClinVar','COSMIC','gnomAD') ORDER BY source,record_id LIMIT 101", params)
+    if backend() == 'duckdb':
+        from .variant_support import duckdb_source_rows
+        source_rows = duckdb_source_rows([variant_id], 'r.native_id,r.details_json', ['ClinVar','COSMIC','gnomAD'])[:101]
+    else:
+        source_rows = query("SELECT source,native_id,alt_index,details_json FROM web_variant.variant_source_detail WHERE variant_id=:id AND source IN ('ClinVar','COSMIC','gnomAD') ORDER BY source,record_id LIMIT 101", params)
     from .disease_classification import source_classifications, record_classification
     classification = source_classifications(variant_id, source_rows[:100]) if any(r["source"] == "ClinVar" for r in source_rows[:100]) else None
     sources = []

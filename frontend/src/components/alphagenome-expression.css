@@ -137,11 +137,12 @@
 .agx-cds-block { cursor: pointer; vector-effect: non-scaling-stroke; }
 .agx-cds-block:hover, .agx-cds-block:focus-visible { stroke: #1b5990; stroke-width: 2.5; outline: none; }
 .agx-axis .agx-cds-exon-number { fill: #fff; font-size: 11px; font-weight: 650; }
-.agx-region-nav { display: flex; align-items: center; gap: 20px; padding: 8px 0; }
+.agx-region-nav { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 20px; padding: 10px 0; }
 .agx .agx-exon-picker, .agx .agx-pan-picker { display: flex; flex-direction: row; align-items: center; gap: 8px; font-size: 12px; white-space: nowrap; }
 .agx-cds-nav-label { color: var(--ag-text); font-size: 12px; font-weight: 600; }
 .agx .agx-exon-picker select { width: 225px; height: 32px; padding: 4px 34px 4px 12px; border-radius: 18px; color: var(--ag-action); font-size: 12px; }
-.agx-pan-picker { flex: 1; min-width: 0; }
+.agx-pan-picker { flex: 1 1 240px; min-width: 0; }
+.agx-pan-preview { flex-basis: 100%; min-height: 1.5em; color: var(--ag-secondary); font-size: 12px; line-height: 1.5; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .agx .agx-pan-picker input { flex: 1; width: 100%; min-width: 50px; height: 22px; padding: 0; border: 0; background: transparent; cursor: ew-resize; }
 .agx .agx-pan-picker input:disabled { opacity: .4; cursor: default; }
 .agx-pan-hint { color: var(--ag-secondary); font-size: 11px; font-weight: 400; }
@@ -338,4 +339,29 @@ svg .agx-plot-tooltip, svg .agx-plot-tooltip * { pointer-events: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .agx button { transition: none; }
+}
+
+/* Give every aligned plot the same full-width lane on small screens. */
+@media (max-width: 600px) {
+  .agx-axis-row, .agx-track { grid-template-columns: minmax(0, 1fr); }
+  .agx-axis-label { flex-direction: row; align-items: center; flex-wrap: wrap; gap: 6px 12px; }
+  .agx-axis-label > .agx-transcript { margin-top: 0; }
+  .agx-cds-guide { margin-top: 0; }
+  .agx-track > header { flex-direction: row; align-items: flex-start; }
+  .agx-track-title { flex: 1; min-width: 0; }
+  .agx .agx-exon-picker { width: 100%; min-width: 0; }
+  .agx .agx-exon-picker select { flex: 1; width: auto; min-width: 0; }
+  .agx .agx-pan-picker { display: grid; grid-template-columns: auto minmax(0, 1fr); width: 100%; }
+  .agx-pan-hint { grid-column: 2; }
+  .agx-pan-preview { min-height: 3em; }
+}
+.agx-pan-picker input[type=range]::-webkit-slider-thumb { transition: background-color 120ms ease, box-shadow 120ms ease; }
+.agx-pan-picker input[type=range]:active::-webkit-slider-thumb,
+.agx-pan-picker input[type=range]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px #2656c926; }
+.agx-pan-picker input[type=range]::-moz-range-thumb { transition: background-color 120ms ease, box-shadow 120ms ease; }
+.agx-pan-picker input[type=range]:active::-moz-range-thumb,
+.agx-pan-picker input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px #2656c926; }
+@media (prefers-reduced-motion: reduce) {
+  .agx-pan-picker input[type=range]::-webkit-slider-thumb,
+  .agx-pan-picker input[type=range]::-moz-range-thumb { transition: none; }
 }

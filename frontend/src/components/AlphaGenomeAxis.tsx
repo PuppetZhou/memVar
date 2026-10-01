@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { palette } from '../lib/palette';
 import type { Gene, ManeModel, TranscriptFeature } from './alphagenome-model';
 import { CoordinateOverlay } from './GenomicOverlay';
@@ -35,6 +35,18 @@ export function GenomicAxis({
   onFocusFeature: (block: TranscriptFeature) => void;
 }) {
   const axisRef = useRef<SVGSVGElement>(null);
+  const [axisWidth, setAxisWidth] = useState(1000);
+  useEffect(() => {
+    const axis = axisRef.current;
+    if (!axis) return;
+    const observer = new ResizeObserver(([entry]) => {
+      setAxisWidth(Math.max(120, Math.round(entry.contentRect.width)));
+    });
+    observer.observe(axis);
+    return () => observer.disconnect();
+  }, []);
+  const xFor = (coordinate: number) => projectX(coordinate, view, axisWidth);
+  const tickFractions = axisWidth < 360 ? [0, 1] : axisWidth < 620 ? [0, .5, 1] : [0, .25, .5, .75, 1];
   useEffect(() => {
     const axis = axisRef.current;
     if (!axis) return;
@@ -90,8 +102,8 @@ export function GenomicAxis({
         .map((b, i) => [exons[i].end_0based, b.start_0based] as View)
     : [[left, right] as View];
   const arrows = gaps.flatMap(([start, end]) => {
-    const a = projectX(Math.max(view[0], start), view),
-      b = projectX(Math.min(view[1], end), view),
+    const a = xFor(Math.max(view[0], start)),
+      b = xFor(Math.min(view[1], end)),
       count = Math.floor((b - a) / 45);
     return Array.from(
       { length: Math.max(0, count) },
@@ -184,7 +196,7 @@ export function GenomicAxis({
       <svg
         ref={axisRef}
         className="agx-axis"
-        viewBox="0 0 1000 112"
+        viewBox={`0 0 ${axisWidth} 112`}
         preserveAspectRatio="none"
         role="img"
         tabIndex={0}
@@ -213,17 +225,17 @@ export function GenomicAxis({
           }
         }}
       >
-        {[0, 0.25, 0.5, 0.75, 1].map((r) => (
+        {tickFractions.map((r) => (
           <g key={r}>
             <line
-              x1={GENOMIC_PLOT.left + r * GENOMIC_PLOT.span}
-              x2={GENOMIC_PLOT.left + r * GENOMIC_PLOT.span}
+              x1={(GENOMIC_PLOT.left + r * GENOMIC_PLOT.span) * axisWidth / GENOMIC_PLOT.width}
+              x2={(GENOMIC_PLOT.left + r * GENOMIC_PLOT.span) * axisWidth / GENOMIC_PLOT.width}
               y1="20"
               y2="37"
               stroke="#a0a5aa"
             />
             <text
-              x={GENOMIC_PLOT.left + r * GENOMIC_PLOT.span}
+              x={(GENOMIC_PLOT.left + r * GENOMIC_PLOT.span) * axisWidth / GENOMIC_PLOT.width}
               y="14"
               textAnchor={r === 0 ? 'start' : r === 1 ? 'end' : 'middle'}
             >
@@ -241,8 +253,8 @@ export function GenomicAxis({
             strokeWidth="1.5"
           >
             <line
-              x1={projectX(left, view)}
-              x2={projectX(right, view)}
+              x1={xFor(left)}
+              x2={xFor(right)}
               y1="66"
               y2="66"
             />
@@ -259,10 +271,10 @@ export function GenomicAxis({
           </g>
         )}
         {features.map((b, i) => {
-          const x = projectX(Math.max(view[0], b.start_0based), view),
+          const x = xFor(Math.max(view[0], b.start_0based)),
             width = Math.max(
               0.8,
-              projectX(Math.min(view[1], b.end_0based), view) - x
+              xFor(Math.min(view[1], b.end_0based)) - x
             );
           const coding = b.feature === 'CDS' || b.feature === 'stop_codon',
             height = coding ? 24 : 14;
@@ -316,6 +328,7 @@ export function GenomicAxis({
             </g>
           );
         })}
+        <g transform={`scale(${axisWidth / GENOMIC_PLOT.width} 1)`}>
         <CoordinateOverlay
           view={view}
           position={position}
@@ -323,12 +336,13 @@ export function GenomicAxis({
           brush={brush}
           height={112}
         />
+        </g>
         {within && current !== null && (
           <text
             className="agx-hover-coordinate"
-            x={Math.max(55, Math.min(965, projectX(current - 1, view)))}
+            x={Math.max(8, Math.min(axisWidth - 8, xFor(current - 1)))}
             y="106"
-            textAnchor={projectX(current - 1, view) > 720 ? 'end' : 'start'}
+            textAnchor={xFor(current - 1) > axisWidth * .65 ? 'end' : 'start'}
           >
             {chromosome}:{current.toLocaleString()}
             {hoverLabel}
@@ -337,7 +351,7 @@ export function GenomicAxis({
         {brush && (
           <text
             className="agx-hover-coordinate"
-            x="510"
+            x={axisWidth / 2}
             y="73"
             textAnchor="middle"
           >

@@ -22,6 +22,8 @@ export type Tile = {
   tile_id: string;
   window_start_0based: number;
   window_end_0based: number;
+  retention_start_0based?: number;
+  retention_end_0based?: number;
   chromosome: string;
 };
 export type Gene = {

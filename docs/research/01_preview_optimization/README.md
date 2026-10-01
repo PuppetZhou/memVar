@@ -10,6 +10,8 @@
 
 ## 按问题进入
 
+后端减容：2026-09-30确认[DuckDB＋Parquet迁移计划](../../plan/01_preview_optimization/04_duckdb_parquet_migration.md)，2026-10-01已完成存储、网站验收与预览切换。保持全部信息、关联与前端行为，原PostgreSQL保留不动，AlphaGenome大型资源未优化；当前证据见[迁移记录](../../record/01_preview_optimization/duckdb_storage_migration.md)。历史容量与技术比较见[存储审查](alphagenome_storage.md#2026-09-30数据库减容审查建议尚未实施)。
+
 新增数据接入：[AlphaGenome新版、AVI归因与存储分析](alphagenome_storage.md)（2026-09-29，含实测容量与上云建议）；已按后续授权形成[轨道设计](../../plan/01_preview_optimization/alphagenome_atlas.md)并接入新版参考与AVI总分，归因原包损坏的依赖见[交付记录](../../record/01_preview_optimization/20260929_alphagenome_avi.md)。
 
 | 工作范围 | 清单ID |

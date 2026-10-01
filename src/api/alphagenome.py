@@ -1,4 +1,4 @@
-"""Current HGNC identities and PostgreSQL catalog, with native reference HDF5 reads."""
+"""Current HGNC identities and reference catalog, with native retained HDF5 reads."""
 from __future__ import annotations
 from collections import defaultdict
 from functools import lru_cache
@@ -20,11 +20,13 @@ COORDINATES = '0-based half-open; UI labels are 1-based closed'
 
 @lru_cache(maxsize=1)
 def configuration():
-    return yaml.safe_load((WEB / 'config/alphagenome.yaml').read_text())
+    path = Path(os.environ.get('MEMVAR_ALPHAGENOME_CONFIG', WEB / 'config/alphagenome.yaml')).expanduser()
+    return yaml.safe_load((path if path.is_absolute() else WEB / path).read_text())
 
 
 def asset_root():
-    return Path(os.environ.get('MEMVAR_ALPHAGENOME_REFERENCE_ROOT', configuration()['reference_root'])).resolve()
+    path = Path(os.environ.get('MEMVAR_ALPHAGENOME_REFERENCE_ROOT', configuration()['reference_root'])).expanduser()
+    return (path if path.is_absolute() else WEB / path).resolve()
 
 
 def manifest():
@@ -35,6 +37,10 @@ def manifest():
     if (data['source_run_id'] != configuration()['source_run_id'] or
             data['checkpoint_revision'] != configuration()['checkpoint_revision']):
         raise HTTPException(503, 'AlphaGenome catalog and configured reference snapshot differ.')
+    if data.get('crop_run_id') != configuration().get('crop_run_id'):
+        raise HTTPException(503, 'AlphaGenome retained storage and configured snapshot differ.')
+    if data.get('crop_run_id') and data.get('retention_flank_bp') != configuration().get('retention_flank_bp'):
+        raise HTTPException(503, 'AlphaGenome retained range policy and configuration differ.')
     return data
 
 
@@ -64,15 +70,23 @@ def get_context(accession: str, gene: str, tile: str) -> tuple[dict, dict]:
         WHERE hgnc_id=:hgnc AND tile_id=:tile''', {'hgnc': selected['hgnc_id'], 'tile': tile})
     if not window:
         raise HTTPException(404, 'Prediction window is unavailable for this gene.')
-    return selected, window
+    return selected, retained_window(window)
+
+
+def retained_window(window):
+    window = dict(window)
+    window['retention_start_0based'] = window.get('retention_start', window['window_start_0based'])
+    window['retention_end_0based'] = window.get('retention_end', window['window_end_0based'])
+    return window
 
 
 def viewport(window, start, end):
-    low, high = window['window_start_0based'], window['window_end_0based']
+    window = retained_window(window)
+    low, high = window['retention_start_0based'], window['retention_end_0based']
     start = low if start is None else start
     end = high if end is None else end
     if start < low or end > high or start >= end:
-        raise HTTPException(422, 'Viewport must be a nonempty interval within the selected model window.')
+        raise HTTPException(422, 'Viewport must be a nonempty interval within the retained range; positions outside it are not stored.')
     return start, end
 
 
@@ -149,13 +163,48 @@ def read_junctions(group, index, start, end, offset, limit):
     # Reading one complete track avoids thousands of random HDF5 point selections.
     values = group['values'][:, index]
     strands = group['strand'][:]
-    items = [dict(source_event_index=int(i), rank=offset + j + 1,
+    source_indices = group['source_event_index'][:] if 'source_event_index' in group else np.arange(len(starts))
+    items = [dict(source_event_index=int(source_indices[i]), rank=offset + j + 1,
                   chromosome=str(group.attrs['chromosome']), start_0based=int(starts[i]),
                   end_0based=int(ends[i]), strand=strands[i].decode(),
                   value=float(values[i]) if np.isfinite(values[i]) else None) for j, i in enumerate(indices)]
     return dict(kind='junctions', items=items, total=len(matched), offset=offset, limit=limit,
                 has_more=offset + len(items) < len(matched), source_resolution_bp=None,
                 retention='All overlapping source events, including zero values, in original event order; paginated without score filtering.')
+
+
+def validate_retained_group(handle, group, window, modality, info):
+    low, high = window['retention_start_0based'], window['retention_end_0based']
+    model_low, model_high = window['window_start_0based'], window['window_end_0based']
+    if not model_low <= low < high <= model_high:
+        raise ValueError('Invalid retained range')
+    if (int(handle.attrs.get('retention_start', model_low)) != low or
+            int(handle.attrs.get('retention_end', model_high)) != high or
+            handle.attrs.get('crop_run_id') != info.get('crop_run_id')):
+        raise ValueError('Retained storage identity mismatch')
+    if info.get('crop_run_id') and (
+            handle.attrs.get('source_run_id') != info['source_run_id'] or
+            int(handle.attrs.get('retention_flank_bp', -1)) != info.get('retention_flank_bp') or
+            window.get('crop_run_id') != info['crop_run_id'] or
+            window.get('source_run_id') != info['source_run_id']):
+        raise ValueError('Retained model source identity mismatch')
+    if group.attrs['chromosome'] != window['chromosome']:
+        raise ValueError('Reference chromosome mismatch')
+    if modality == 'splice_junctions':
+        if info.get('crop_run_id') and 'source_event_index' not in group:
+            raise ValueError('Original junction indices unavailable')
+        if info.get('crop_run_id') and (int(group.attrs['interval_start']) != low or int(group.attrs['interval_end']) != high):
+            raise ValueError('Retained junction interval mismatch')
+        return
+    resolution = int(group.attrs['resolution'])
+    expected_low = model_low + ((low - model_low) // resolution) * resolution
+    expected_high = min(model_high, model_low + ((high - model_low + resolution - 1) // resolution) * resolution)
+    if (int(group.attrs['interval_start']) != expected_low or
+            int(group.attrs['interval_end']) != expected_high or
+            group['values'].shape[0] != (expected_high - expected_low) // resolution):
+        raise ValueError('Reference retained native bins mismatch')
+    if modality == 'contact_maps' and group['values'].shape[1] != group['values'].shape[0]:
+        raise ValueError('Reference retained contact axes mismatch')
 
 
 @router.get('/{accession}/expression/alphagenome')
@@ -165,7 +214,7 @@ def summary(accession: str):
     for gene in genes:
         windows = query(f'SELECT {WINDOW_COLUMNS} FROM web_alphagenome.windows WHERE hgnc_id=:hgnc ORDER BY tile_index',
                         {'hgnc': gene['hgnc_id']})
-        gene['tiles'] = [{k: v for k, v in row.items() if k != 'relative_path'} for row in windows]
+        gene['tiles'] = [{k: v for k, v in retained_window(row).items() if k != 'relative_path'} for row in windows]
         gene['available'] = bool(windows)
     tracks = [track_public(t) for t in query('SELECT * FROM web_alphagenome.tracks ORDER BY modality,source_column_index')]
     by_sample = defaultdict(list)
@@ -182,6 +231,8 @@ def summary(accession: str):
     return dict(genes=genes, tracks=tracks, biosamples=biosamples,
                 shared_modalities=sorted({t['modality'] for t in tracks if t['shared']}),
                 available=any(g['available'] for g in genes), snapshot=info['source_run_id'],
+                storage_snapshot=info.get('crop_run_id', info['source_run_id']),
+                retention_scope=info.get('retention_policy', 'complete_model_window'),
                 source_finished_at=info['source_finished_at'], assembly=info['assembly'],
                 prediction_kind=info['prediction_kind'], model_version=info['model_version'],
                 checkpoint_revision=info['checkpoint_revision'], levels=[256, 1024, 4096],
@@ -218,21 +269,26 @@ def track(accession: str, gene: str = Query(pattern=r'^ENSG[0-9]{11}$'),
         raise HTTPException(404, 'Prediction track is unavailable.')
     path = safe_asset(window['relative_path'])
     result = dict(track=track_public(selected), gene=gene, tile=tile, assembly=info['assembly'],
-                  snapshot=info['source_run_id'], chromosome=window['chromosome'], start=start, end=end,
+                  snapshot=info['source_run_id'],
+                  storage_snapshot=info.get('crop_run_id', info['source_run_id']),
+                  model_window_start_0based=window['window_start_0based'],
+                  model_window_end_0based=window['window_end_0based'],
+                  retention_start_0based=window['retention_start_0based'],
+                  retention_end_0based=window['retention_end_0based'], chromosome=window['chromosome'], start=start, end=end,
                   requested_start=start, requested_end=end, coordinate_system=COORDINATES,
                   model_version=info['model_version'], checkpoint_revision=info['checkpoint_revision'])
     try:
         with h5py.File(path, 'r') as handle:
+            source_tile = json.loads(handle.attrs['tile'])
             if (not handle.attrs.get('complete') or
                     handle.attrs.get('checkpoint_revision') != info['checkpoint_revision'] or
                     handle.attrs.get('prediction_backend') != info['backend'] or
-                    json.loads(handle.attrs['tile'])['tile_id'] != tile):
+                    source_tile['tile_id'] != tile or
+                    source_tile['window_start'] != window['window_start_0based'] or
+                    source_tile['window_end'] != window['window_end_0based']):
                 raise ValueError('Reference snapshot identity mismatch')
             group = handle[selected['modality']]
-            if (group.attrs['chromosome'] != window['chromosome'] or
-                    int(group.attrs['interval_start']) != window['window_start_0based'] or
-                    int(group.attrs['interval_end']) != window['window_end_0based']):
-                raise ValueError('Reference interval mismatch')
+            validate_retained_group(handle, group, window, selected['modality'], info)
             index = selected['source_column_index']
             if selected['modality'] == 'splice_junctions':
                 payload = read_junctions(group, index, start, end, offset, limit)

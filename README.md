@@ -38,10 +38,11 @@ memVar 汇集 UniProt、GO、Reactome、Pfam、ClinVar、gnomAD、dbSNP、COSMIC
 
 ## 关于本仓库
 
-本仓库提供 memVar 网站的前端、查询 API、服务数据构建与导入代码。前端使用 React 和 TypeScript，API 使用 FastAPI，服务数据库使用 PostgreSQL。
+本仓库提供 memVar 网站的前端、查询 API、服务数据构建与迁移代码。前端使用 React 和 TypeScript，API 使用 FastAPI；2026-10-01 已完成 [DuckDB＋Parquet 后端迁移](docs/plan/01_preview_optimization/04_duckdb_parquet_migration.md)，保留完整服务数据与现有前端展示。当前 8000／ngrok 已使用新只读后端，结构化部署数据约 27.33 GB；[迁移与验收记录](docs/record/01_preview_optimization/duckdb_storage_migration.md)维护完整性、查询表现及限制。原 PostgreSQL、旧 Parquet 与外部资源保留，等待用户审查后再决定清理。
 
 - [本地部署与开发](docs/development.md)
 - [服务数据说明](data/README.md)
 - [技术文档索引](docs/README.md)
+- [AlphaGenome 完整 gene＋10 kb 裁剪来源与进度](docs/record/01_preview_optimization/alphagenome_reference_crop.md)
 
 科研数据集、数据库文件及访问凭据不随源码发布；完整运行需要准备相应服务数据。仓库目前未声明统一开源许可证，第三方代码、素材及原始数据仍适用各自的许可和使用条款。

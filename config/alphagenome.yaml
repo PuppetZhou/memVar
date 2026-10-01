@@ -1,5 +1,6 @@
-# PostgreSQL stores the curated catalog; native signals stay on Newsmy.
-catalog_path: ../modules/Alphagenome/data/curated/20260929_reference_catalog_01
-reference_root: /media/xuyzh/Newsmy_6T/Alphagenome/reference_tracks/20260928_reference_local_01
-source_run_id: 20260928_reference_local_01
+catalog_path: ../modules/Alphagenome/data/curated/20261001_reference_crop_01
 checkpoint_revision: a8f293a76ee73d5b57f3bf2ae146510589fcf187
+crop_run_id: 20261001_reference_crop_01
+reference_root: ../modules/Alphagenome/data/curated/20261001_reference_crop_01/assets
+retention_flank_bp: 10000
+source_run_id: 20260928_reference_local_01

@@ -9,14 +9,13 @@ import gzip
 from pathlib import Path
 
 import pyarrow.parquet as pq
-import yaml
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import Response
 
 from .db import query
+from .resources import resource_path
 
 router = APIRouter(prefix="/api")
-PROJECT = Path(__file__).resolve().parents[3]
 AA = dict(zip(
     "ALA ARG ASN ASP CYS GLN GLU GLY HIS ILE LEU LYS MET PHE PRO SER THR TRP TYR VAL".split(),
     "ARNDCQEGHILKMFPSTWYV",
@@ -26,9 +25,8 @@ AA = dict(zip(
 @lru_cache(maxsize=1)
 def source_root() -> Path:
     try:
-        config = yaml.safe_load((PROJECT / "config/sources.yaml").read_text())
-        return Path(config["Site-Region"]["collections"]["rSASA"]["structure_directory"]).resolve()
-    except (OSError, KeyError, TypeError, yaml.YAMLError):
+        return resource_path('structure_root', 'MEMVAR_STRUCTURE_ROOT')
+    except (OSError, ValueError, TypeError):
         raise HTTPException(503, "Local structure source is not configured") from None
 
 

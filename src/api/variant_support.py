@@ -4,7 +4,7 @@ import math
 import re
 from urllib.parse import unquote
 from fastapi import HTTPException
-from .db import query, one
+from .db import query, one, backend, engine
 from .evidence_common import clean
 
 AA3 = {'Ala':'A','Arg':'R','Asn':'N','Asp':'D','Cys':'C','Gln':'Q','Glu':'E','Gly':'G','His':'H','Ile':'I','Leu':'L','Lys':'K','Met':'M','Phe':'F','Pro':'P','Ser':'S','Thr':'T','Trp':'W','Tyr':'Y','Val':'V','Ter':'*','Sec':'U','Pyl':'O'}
@@ -147,8 +147,55 @@ def canonical_rows(ids,sequence_id):
         WHERE l.variant_id=ANY(:ids) AND d.sequence_id=:sequence_id ORDER BY d.position,d.ref_aa,d.alt_aa''',{'ids':ids,'sequence_id':sequence_id})
 
 
+def duckdb_source_rows(ids, projection, sources):
+    """Resolve exact source record keys before projecting any wide JSON.
+
+    Preserve every link row (including alt_index multiplicity); deduplicate
+    only the keys used for physical lookup, then restore the original join.
+    """
+    links = query('SELECT variant_id,record_id,alt_index FROM web_variant.variant_source_link WHERE variant_id=ANY(:ids)', {'ids':ids})
+    record_ids = list(dict.fromkeys(link['record_id'] for link in links))
+    if not record_ids:
+        return []
+    source_keys = ','.join(f':source_{i}' for i in range(len(sources)))
+    params = {f'source_{i}': value for i,value in enumerate(sources)}
+    sql = f"SELECT r.record_id,d.source,{projection} FROM web_variant.variant_source_record r JOIN web_variant.variant_dataset d USING(dataset_id) WHERE r.record_id=:record_id AND d.source IN ({source_keys})"
+    # A multi-prefix IN set becomes a very broad Parquet min/max dynamic filter.
+    # Exact equality keeps each wide-column read within its real record range.
+    groups = defaultdict(list)
+    for record_id in record_ids:
+        files = engine().source_record_files(record_id)
+        groups[tuple(files) if files else None].append(record_id)
+    records = []
+    for files, group_ids in groups.items():
+        if files:
+            # Batch only keys with the same exact candidate files. This avoids
+            # reading a wide compressed row group again for adjacent records.
+            keys = ','.join(f':record_{i}' for i in range(len(group_ids)))
+            arguments = {**params, 'source_files':list(files), **{f'record_{i}':value for i,value in enumerate(group_ids)}}
+            relation = f'(SELECT record_id,dataset_id,native_id,CAST(details_json AS JSON) AS details_json FROM read_parquet(:source_files) WHERE record_id IN ({keys}))'
+            point_sql = f"SELECT r.record_id,d.source,{projection} FROM {relation} r JOIN web_variant.variant_dataset d USING(dataset_id) WHERE d.source IN ({source_keys})"
+            records.extend(query(point_sql, arguments))
+        else:
+            # A missing locator or unknown / orphan key keeps the full original
+            # relation available; exact equality remains safe for wide columns.
+            for record_id in group_ids:
+                records.extend(query(sql, {**params,'record_id':record_id}))
+    lookup = {record['record_id']:record for record in records}
+    rows = [{**link, **lookup[link['record_id']]} for link in links if link['record_id'] in lookup]
+    # Match the original source / record ORDER BY. Equal record keys retain
+    # all association rows; callers may project out internal link fields.
+    from .duckdb_collation import text_key
+    rows.sort(key=lambda row:(text_key(row['source']),text_key(row['record_id'])))
+    return rows
+
+
 def page_source_evidence(ids):
     if not ids:return []
+    if backend() == 'duckdb':
+        projection = "r.native_id," + ','.join("CASE WHEN d.source='ClinVar' THEN r.details_json->>'"+key+"' END "+alias for key,alias in [('ClinicalSignificance','classification'),('ReviewStatus','review_status'),('Origin','origin'),('Oncogenicity','oncogenicity'),('SomaticClinicalImpact','somatic_clinical_impact')])
+        rows = duckdb_source_rows(ids,projection,['ClinVar','COSMIC','gnomAD'])
+        return [{key:value for key,value in row.items() if key != 'alt_index'} for row in rows]
     return query('''SELECT l.variant_id,r.record_id,d.source,r.native_id,
         CASE WHEN d.source='ClinVar' THEN r.details_json->>'ClinicalSignificance' END classification,
         CASE WHEN d.source='ClinVar' THEN r.details_json->>'ReviewStatus' END review_status,
@@ -169,9 +216,12 @@ def raw_predictions_for_rows(rows,selected_fields):
     # Field names come exclusively from the validated published predictor dictionary.
     keys=','.join("'"+key.replace("'","''")+"'" for key in sorted(requested))
     values=','.join("r.details_json->>'"+key.replace("'","''")+"'" for key in sorted(requested))
-    raw=query(f'''SELECT l.variant_id,r.record_id,jsonb_object(ARRAY[{keys}]::text[],ARRAY[{values}]::text[]) AS data
-        FROM web_variant.variant_source_link l JOIN web_variant.variant_source_record r USING(record_id)
-        JOIN web_variant.variant_dataset d USING(dataset_id) WHERE l.variant_id=ANY(:ids) AND d.source='dbNSFP' ''',{'ids':ids})
+    if backend() == 'duckdb':
+        raw = duckdb_source_rows(ids,f'jsonb_object(ARRAY[{keys}]::text[],ARRAY[{values}]::text[]) AS data',['dbNSFP'])
+    else:
+        raw=query(f'''SELECT l.variant_id,r.record_id,jsonb_object(ARRAY[{keys}]::text[],ARRAY[{values}]::text[]) AS data
+            FROM web_variant.variant_source_link l JOIN web_variant.variant_source_record r USING(record_id)
+            JOIN web_variant.variant_dataset d USING(dataset_id) WHERE l.variant_id=ANY(:ids) AND d.source='dbNSFP' ''',{'ids':ids})
     by_variant=defaultdict(list)
     for item in raw:by_variant[item['variant_id']].append(item)
     for row in rows:

@@ -32,7 +32,7 @@ export default function ConservationPlot({scores,sequence,range,onSelect,compact
 
    </svg>
    <div className="jsd-axis-labels" aria-hidden="true">{[1,.5,0].map(tick=><span key={tick} style={{top:`${y(tick)/108*100}%`}}>{tick}</span>)}</div>
-   {position!=null&&<div className="jsd-tooltip" style={{left:`clamp(140px, ${x(position)/10}%, calc(100% - 140px))`}}><strong>{readout}</strong>{difference!=null&&<span>{difference>0?'↑':difference<0?'↓':'→'} {Math.abs(difference).toFixed(4)} vs previous residue</span>}{score?.status&&<span>Source support: {score.status.replaceAll('_',' ')}</span>}{value==null&&!score?.status&&<span>No score at this position</span>}</div>}
+   {position!=null&&<div className="jsd-tooltip" style={{left:`clamp(140px, ${x(position)/10}%, calc(100% - 140px))`}}><strong>{readout}</strong>{difference!=null&&<span>{difference>0?'↑':difference<0?'↓':'→'} {Math.abs(difference).toFixed(4)} vs previous residue</span>}{value==null&&<span>No score at this position</span>}</div>}
   </div>
   <div className="jsd-readout" aria-live="polite"><span>{readout}</span>{position!=null&&<button className="text-button" onClick={()=>onSelect(position)}>Select residue {position}</button>}{!compact&&<small>Grey = no score · 0.5 = reference, not a threshold · ← / → inspect</small>}</div>
  </div>;

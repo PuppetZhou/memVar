@@ -78,20 +78,44 @@ export function CompactAnnotationTrack({track,range,onFeature,source='all',colou
     ? `${isDomain(feature) ? 'Domain' : isDomainRegion(feature) ? 'Region' : 'Processing / context'} · ${sourceLabel(feature)}`
     : track.id === 'membrane' ? String(feature.topology_label??sourceLabel(feature))
     : track.id === 'ptm' ? sourceLabel(feature) : 'Annotations';
-  const laneKeys = ['domains','membrane','ptm'].includes(track.id)
+  let laneKeys = ['domains','membrane','ptm'].includes(track.id)
     ? [...new Set(features.map(laneKey))].sort((a,b) => {if(track.id!=='domains')return a.localeCompare(b);const rank=(key:string)=>key.startsWith('Domain')?0:key.startsWith('Region')?1:2;return rank(a)-rank(b)||a.localeCompare(b);})
     : ['Annotations'];
-  const laneCount = Math.max(1,laneKeys.length);
-  const plotHeight = ['domains','membrane'].includes(track.id) ? Math.max(38,laneCount * 18 + 4)
-    : track.id === 'secondary' ? 42 : track.id === 'ptm' ? Math.max(56,laneCount * 30 + 4) : 32;
-  const laneHeight = (plotHeight - 4) / laneCount;
-  const markHeight = track.id === 'secondary' ? 22 : track.id === 'domains' ? 14 : 12;
   const unitPerPixel = 1000 / width;
   const items:Item[] = features.map(feature => {
     const left = (Math.max(feature.start,range[0]) - range[0]) / span * 1000;
     const extent = (Math.min(feature.end,range[1]) - Math.max(feature.start,range[0]) + 1) / span * 1000;
     return {feature,x:left,width:extent,center:left + extent / 2,point:feature.start === feature.end,lane:Math.max(0,laneKeys.indexOf(laneKey(feature)))};
   });
+  const independentAnnotations = track.id === 'domains' || track.id === 'membrane';
+  if (independentAnnotations) {
+    // Keep original feature order and residue extents. Separate overlapping hit
+    // targets vertically so each original annotation is independently reachable.
+    const sourceLanes = laneKeys;
+    const grouped = sourceLanes.map((_, lane) => items.filter(item => item.lane === lane));
+    const expandedLanes:string[] = [];
+    grouped.forEach((group, baseLane) => {
+      const rows:Array<Array<[number,number]>> = [];
+      const assignments:number[] = [];
+      for (const item of group) {
+        const left = Math.max(0,Math.min(item.x,item.center - 4 * unitPerPixel));
+        const right = Math.min(1000,Math.max(item.x + item.width,item.center + 4 * unitPerPixel));
+        let row = rows.findIndex(intervals => intervals.every(([a,b]) => right <= a || left >= b));
+        if (row < 0) {row = rows.length;rows.push([]);}
+        rows[row].push([left,right]);
+        assignments.push(row);
+      }
+      const offset = expandedLanes.length;
+      rows.forEach((_, row) => expandedLanes.push(sourceLanes[baseLane] + (rows.length > 1 ? ` · row ${row + 1}` : '')));
+      group.forEach((item, index) => {item.lane = offset + assignments[index];});
+    });
+    laneKeys = expandedLanes;
+  }
+  const laneCount = Math.max(1,laneKeys.length);
+  const plotHeight = ['domains','membrane'].includes(track.id) ? Math.max(38,laneCount * 18 + 4)
+    : track.id === 'secondary' ? 42 : track.id === 'ptm' ? Math.max(56,laneCount * 30 + 4) : 32;
+  const laneHeight = (plotHeight - 4) / laneCount;
+  const markHeight = track.id === 'secondary' ? 22 : track.id === 'domains' ? 14 : 12;
   const marks:Mark[] = [];
   if (track.id === 'ptm') {
     // Bins are only a display aid. All features, source record IDs and positions survive selection.
@@ -125,8 +149,14 @@ export function CompactAnnotationTrack({track,range,onFeature,source='all',colou
         marks.splice(index,1);
       } else index++;
     }
+  } else if (independentAnnotations) {
+    for (const item of items) {
+      const left = Math.max(0,Math.min(item.x,item.center - 4 * unitPerPixel));
+      const right = Math.min(1000,Math.max(item.x + item.width,item.center + 4 * unitPerPixel));
+      marks.push({items:[item],left,right,center:item.center,lane:item.lane});
+    }
   } else {
-    // Overlapping hit targets share a selector, not a biological merged annotation.
+    // Other compact tracks retain their existing aggregate annotation selector.
     for (let lane = 0; lane < laneCount; lane++) {
       const ordered = items.filter(item => item.lane === lane).sort((a,b) => a.x - b.x || a.width - b.width);
       let previous:Mark|undefined;
@@ -161,7 +191,7 @@ export function CompactAnnotationTrack({track,range,onFeature,source='all',colou
         const label = originals.length === 1 ? featureDescription(originals[0]) : `${recordSummary(originals)}${mark.bin ? ` · display bin ${mark.bin[0]}–${mark.bin[1]}` : ''} · ${[...new Set(originals.map(sourceLabel))].join(', ')}`;
         const y = 2 + laneHeight * (mark.lane + .5) + (track.id === 'ptm' ? 5 : 0);
         const colors = [...new Set(originals.map(feature => tone(feature).color))];
-        return <g key={`${mark.lane}:${index}`} className="compact-feature-mark" role="button" tabIndex={0} aria-label={`${label}. Open source annotation${originals.length > 1 ? ' selector' : ''}`} aria-describedby={hover?.items[0].feature === mark.items[0].feature ? tooltipId : undefined} onMouseEnter={() => setHover(mark)} onMouseLeave={event => {if(document.activeElement !== event.currentTarget)setHover(null);}} onFocus={() => setHover(mark)} onBlur={() => setHover(null)} onClick={() => open(mark)} onKeyDown={event => {if(event.key === 'Enter' || event.key === ' '){event.preventDefault();open(mark);}else if(event.key==='Escape'){setHover(null);}}}>
+        return <g key={`${mark.lane}:${index}`} className="compact-feature-mark" data-annotation-count={originals.length} data-annotation-start={originals[0]?.start} data-annotation-end={originals[0]?.end} data-annotation-source={originals[0]?.source} role="button" tabIndex={0} aria-label={`${label}. Open source annotation${originals.length > 1 ? ' selector' : ''}`} aria-describedby={hover?.items[0].feature === mark.items[0].feature ? tooltipId : undefined} onMouseEnter={() => setHover(mark)} onMouseLeave={event => {if(document.activeElement !== event.currentTarget)setHover(null);}} onFocus={() => setHover(mark)} onBlur={() => setHover(null)} onClick={() => open(mark)} onKeyDown={event => {if(event.key === 'Enter' || event.key === ' '){event.preventDefault();open(mark);}else if(event.key==='Escape'){setHover(null);}}}>
           <title>{label}</title>
           {track.id === 'ptm' ? <>
             {colors.map((color,colorIndex) => <rect key={color} x={mark.center - (originals.length > 1 ? 7 : 5) * unitPerPixel} y={y - 11 + colorIndex * 22 / colors.length} width={(originals.length > 1 ? 14 : 10) * unitPerPixel} height={22 / colors.length} fill={color} rx={colors.length === 1 ? 3 : 0}/>)}

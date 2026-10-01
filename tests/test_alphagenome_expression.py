@@ -10,12 +10,75 @@ import h5py
 import numpy as np
 from fastapi.testclient import TestClient
 from Web.src.api.alphagenome import (aggregate_signal, asset_root, finite, read_contacts,
-    read_junctions, read_signal, viewport)
+    read_junctions, read_signal, viewport, retained_window, validate_retained_group, manifest)
 from Web.src.api.db import one
 from Web.src.api.main import app
 
 
 class NativeArrayTests(unittest.TestCase):
+    def test_manifest_binds_model_and_retained_storage_configuration(self):
+        source={'schema_version':2,'source_run_id':'original','checkpoint_revision':'checkpoint'}
+        config={'source_run_id':'original','checkpoint_revision':'checkpoint'}
+        with patch('Web.src.api.alphagenome.one',return_value={'data':source}), patch('Web.src.api.alphagenome.configuration',return_value=config):
+            self.assertEqual(manifest(),source)
+            source.update(crop_run_id='crop',retention_flank_bp=10000)
+            with self.assertRaises(Exception) as error:
+                manifest()
+            self.assertEqual(error.exception.status_code,503)
+            config.update(crop_run_id='crop',retention_flank_bp=10000)
+            self.assertEqual(manifest(),source)
+            config['retention_flank_bp']=1000
+            with self.assertRaises(Exception) as error:
+                manifest()
+            self.assertEqual(error.exception.status_code,503)
+
+    def test_retained_native_alignment_offsets_and_original_event_indices(self):
+        window=retained_window({'window_start_0based':1000,'window_end_0based':2024,
+                                'retention_start':1130,'retention_end':1510,'chromosome':'chr1',
+                                'source_run_id':'original','crop_run_id':'crop'})
+        self.assertEqual(viewport(window,None,None),(1130,1510))
+        with self.assertRaises(Exception) as error:
+            viewport(window,1129,1510)
+        self.assertEqual(error.exception.status_code,422)
+        with tempfile.TemporaryDirectory() as folder, h5py.File(Path(folder)/'crop.h5','w') as handle:
+            handle.attrs.update(retention_start=1130,retention_end=1510,crop_run_id='crop',source_run_id='original',retention_flank_bp=10000)
+            group=handle.create_group('signal')
+            group.attrs.update(chromosome='chr1',resolution=128,interval_start=1128,interval_end=1512)
+            group.create_dataset('values',data=np.array([1.,0.,3.])[:,None])
+            validate_retained_group(handle,group,window,'rna_seq',{'crop_run_id':'crop','source_run_id':'original','retention_flank_bp':10000})
+            result=read_signal(group,0,1130,1510,100)
+            self.assertEqual(result['mean'],[1.,0.,3.])
+            self.assertEqual(result['bin_edges'],[1128,1256,1384,1512])
+            full=handle.create_group('full')
+            full.attrs.update(resolution=128,interval_start=1000)
+            full.create_dataset('values',data=np.array([99.,1.,0.,3.,99.,99.,99.,99.])[:,None])
+            self.assertEqual(read_signal(full,0,1130,1510,100),result)
+            matrix=np.arange(64).reshape(8,8)
+            contacts=handle.create_group('contacts')
+            contacts.attrs.update(chromosome='chr1',resolution=128,interval_start=1128,interval_end=1512)
+            contacts.create_dataset('values',data=matrix[1:4,1:4,None])
+            full_contacts=handle.create_group('full_contacts')
+            full_contacts.attrs.update(resolution=128,interval_start=1000)
+            full_contacts.create_dataset('values',data=matrix[...,None])
+            validate_retained_group(handle,contacts,window,'contact_maps',{'crop_run_id':'crop','source_run_id':'original','retention_flank_bp':10000})
+            self.assertEqual(read_contacts(contacts,0,1130,1510,2),read_contacts(full_contacts,0,1130,1510,2))
+            with self.assertRaises(ValueError):
+                validate_retained_group(handle,group,window,'rna_seq',{'crop_run_id':'different','source_run_id':'original','retention_flank_bp':10000})
+            group.attrs['interval_start']=1000
+            with self.assertRaises(ValueError):
+                validate_retained_group(handle,group,window,'rna_seq',{'crop_run_id':'crop','source_run_id':'original','retention_flank_bp':10000})
+            junctions=handle.create_group('junctions')
+            junctions.attrs.update(chromosome='chr1',interval_start=1130,interval_end=1510)
+            for name,data in [('start',[1100,1400]),('end',[1200,1600]),
+                              ('strand',np.array(['+','-'],dtype='S1')),
+                              ('source_event_index',[17,93]),('values',np.array([0.,-1.])[:,None])]:
+                junctions.create_dataset(name,data=data)
+            validate_retained_group(handle,junctions,window,'splice_junctions',{'crop_run_id':'crop','source_run_id':'original','retention_flank_bp':10000})
+            events=read_junctions(junctions,0,1130,1510,0,100)['items']
+            self.assertEqual([e['source_event_index'] for e in events],[17,93])
+            self.assertEqual([e['value'] for e in events],[0.,-1.])
+            self.assertEqual(events[0]['start_0based'],1100)
+
     def test_unequal_bins_preserve_every_value_and_peak(self):
         edges, mean, maximum = aggregate_signal(np.array([0., 1., 2., 3., 10.]), 2)
         self.assertEqual(edges.tolist(), [0, 2, 5])

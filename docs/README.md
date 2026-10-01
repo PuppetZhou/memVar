@@ -1,10 +1,10 @@
 # Web文档总索引
 
-更新：2026-09-22。**当前阶段为01：公网预览后优化。** 先按阶段找问题和结果，再按主题查现行方案。
+更新：2026-10-01。**当前阶段为01：公网预览后优化。** DuckDB 后端迁移与现有预览切换已完成，详细证据见 01 record。先按阶段找问题和结果，再按主题查现行方案。
 
 | 阶段 | 范围与状态 | 研究/问题入口 | 计划与方案 | 实际执行记录 |
 | --- | --- | --- | --- | --- |
-| 01 公网预览后优化 | 2026-09-22开始；膜分类、多批页面/数据及原位UI已本地发布；限定桌面验证持续，未关闭全部55项 | [阶段入口](research/01_preview_optimization/README.md) · [文字/信息审查](research/01_preview_optimization/02_typography_information_audit.md) · [数据决定](research/01_preview_optimization/01_data_decisions.md) | [01计划](plan/01_preview_optimization/README.md) · [逐项方案](plan/01_preview_optimization/01_solutions.md) | [01记录](record/01_preview_optimization/README.md) |
+| 01 公网预览后优化 | 2026-09-22开始；膜分类、多批页面/数据及原位UI已本地发布；限定桌面验证持续，未关闭全部55项 | [阶段入口](research/01_preview_optimization/README.md) · [文字/信息审查](research/01_preview_optimization/02_typography_information_audit.md) · [数据决定](research/01_preview_optimization/01_data_decisions.md) | [01计划](plan/01_preview_optimization/README.md) · [逐项方案](plan/01_preview_optimization/01_solutions.md) · [后端减容迁移](plan/01_preview_optimization/04_duckdb_parquet_migration.md) | [01记录](record/01_preview_optimization/README.md) |
 | 00 首版构建与公网预览 | 截至2026-09-21的服务数据、入库、页面与首轮迭代；旧研究和方案归档 | [归档入口](archive/00_initial_preview/README.md) | [00方案基线](archive/00_initial_preview/plan/README.md) | [00记录](record/00_initial_preview/README.md) |
 
 ## 按用途阅读

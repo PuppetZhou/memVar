@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode, type CSSProperties } from 'react';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useSearchParams, Link } from 'react-router-dom';
-import { Activity, ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, HeartPulse, Network, SlidersHorizontal, Layers, Search, Atom, Dna, Globe2, CircleDashed, Building2, AlertTriangle, GitFork } from 'lucide-react';
+import { Activity, ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, HeartPulse, Network, SlidersHorizontal, Layers, Search, Building2, AlertTriangle, GitFork } from 'lucide-react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { api, display, label, number, params, type Page, type RecordData } from '../api';
 import { Badge, DataTable, DetailFields, Disclosure, Fields, LinkOut, Modal, Pager, SelectFilter, Status } from './ui';
@@ -36,9 +36,9 @@ function ContextFields({items}:{items:{label:string;value:unknown}[]}){
 
 function participantName(value:unknown){return (value===null||value===undefined||value===''?'Identity not supplied':display(value)).replace(/^chebi:\"(CHEBI:\d+)\"$/i,'$1');}
 function Participant({participant}:{participant:RecordData}){
- const p=participant,type=optionalLabel(p.object_type),Icon=type==='protein'?Network:type==='small molecule'?Atom:type==='peptide'?Dna:CircleDashed;
+ const p=participant,type=optionalLabel(p.object_type);
  const taxon=String(optionalLabel(p.taxon)??'').split(' / ').filter((text,index,parts)=>parts.findIndex(part=>part.toLowerCase()===text.toLowerCase())===index).join(' / ');
- return <div className="cx-participant"><div className="cx-participant-name"><Icon size={17} aria-hidden="true"/>{p.accession?p.project_entry?<Link to={`/protein/${p.accession}`}>{participantName(p.name??p.accession)}</Link>:<LinkOut href={`https://www.uniprot.org/uniprotkb/${p.accession}`}>{participantName(p.name??p.accession)}</LinkOut>:<strong>{participantName(p.name??p.identifier)}</strong>}</div><div className="cx-participant-properties">{type&&<span>{type}</span>}{Boolean(p.accession)&&<span className="cx-participant-id">{display(p.accession)}</span>}</div>{taxon&&<div className="cx-participant-taxon"><Globe2 size={14} aria-hidden="true"/>{taxon}</div>}</div>;
+ return <div className="cx-participant"><div className="cx-participant-name">{p.accession?p.project_entry?<Link to={`/protein/${p.accession}`}>{participantName(p.name??p.accession)}</Link>:<a className="external-link" href={`https://www.uniprot.org/uniprotkb/${p.accession}`} target="_blank" rel="noreferrer">{participantName(p.name??p.accession)}</a>:<strong>{participantName(p.name??p.identifier)}</strong>}</div><div className="cx-participant-properties">{type&&<span>{type}</span>}{Boolean(p.accession)&&<span className="cx-participant-id">{display(p.accession)}</span>}</div>{taxon&&<div className="cx-participant-taxon">{taxon}</div>}</div>;
 }
 
 function PpiDetail({id,accession,onClose}:{id:string;accession:string;onClose:()=>void}){
@@ -174,7 +174,7 @@ export function Interactions({accession}:{accession:string}){
  const collections=sortPpiCollections(summary.data?.collections??[]);const activeCollection=collections.find(c=>c.dataset_id===filters.dataset);const isMutation=activeCollection?.kind==='intact_mutation';
  const chooseCollection=(filter:Record<string,string>)=>{setSelected(null);listing.open(filter);};
  const mutation=(row:RecordData)=>(row.mutation??{}) as RecordData;
- const evidence:ColumnDef<RecordData>={id:'details',header:'Source evidence',cell:({row})=><div className="cx-evidence-actions">{row.original.negative?<span className="cx-negative"><AlertTriangle size={15}/>Negative evidence</span>:null}<button className="text-button" onClick={()=>setSelected(String(row.original.record_id))}>View evidence<ArrowUpRight size={13}/></button></div>};
+ const evidence:ColumnDef<RecordData>={id:'details',header:'Source evidence',cell:({row})=><div className="cx-evidence-actions">{row.original.negative?<span className="cx-negative">Negative evidence</span>:null}<button className="text-button" onClick={()=>setSelected(String(row.original.record_id))}>View evidence</button></div>};
  const columns:ColumnDef<RecordData>[]=isMutation?[
   {id:'mutation',header:'Mutation / feature',cell:({row})=><><strong>{mutationName(mutation(row.original))}</strong><small>{display(mutation(row.original).feature_id)}</small></>},
   {accessorKey:'interaction_type',header:'Effect on interaction',cell:({getValue})=><MutationEffect value={getValue()}/>},

@@ -1,5 +1,19 @@
 # AlphaGenome 与 AVI 共轴轨道设计
 
+2026-10-02：保存范围与 MANE 结构采用不同标注；裁剪来源默认/复位取完整保存区间，短基因不再仅按 8% 留白。实现已发布，定向浏览器验证通过，见[四项批注记录](../../record/01_preview_optimization/20260922_browser_feedback_01.md#2026-10-02互作图标保存范围jsd与逐条注释)。
+
+## 2026-10-01 悬停重绘定位与局部优化（已实现并验证）
+
+用户反馈仍不够流畅并询问是否由 DuckDB 读取引起。CFTR 稳定页面的同一 32 步 axis hover 在无已完成 API 请求的情况下出现 30 个约 52–56ms 主线程长任务，纯页面滚动无长任务；载入等待与稳定悬停分别分析。诊断证据见 [performance_diagnosis](../../../data/ui_axis_validation/performance_diagnosis/summary.json)。
+
+已按数据／尺度变化缓存 AVI 完整统计，静态 Canvas 底图只随真实绘图输入更新，悬停、选择及 brush 复制底图后更新动态标记。全部 ALT、原始分数、贡献、缺失／零、图形比例和选择语义保留。相同 CFTR 稳定悬停手势复验的长任务由 30 降至 0，帧间隔 p95 由 83.3 降至 16.8 ms；tooltip、点击详情、Raw/PHRED、类别切换与 Pan 通过。结果为本地定向浏览器样本，不代表所有设备帧率；后续加载性能优化按用户要求暂停。[复验结果](../../../data/ui_axis_validation/performance_diagnosis/after_summary.json)。
+
+## 2026-10-01 区间导航与坐标轴局部优化（已实现并验证）
+
+用户根据 CFTR 截图要求改善拖动卡顿和坐标轴挤压。导航拖动采用局部目标区间预览，完成手势后提交给共轴轨道，减少重复请求；已展示的坐标轴和轨道始终使用同一已提交区间。轴按实际可用宽度绘制文本与刻度，控件在窄屏换行，保留真实基因组比例、MANE 内容及裁剪边界。仅修改前端，不修改后端数据、运行配置或正在执行的裁剪任务。
+
+完成标准为前端构建与已有坐标测试通过，以及 CFTR 宽／窄屏真实拖动、请求次数、最终坐标、exon 定位和 reset 的定向浏览器验收。前端 TypeScript／Vite 构建及 6 项已有坐标测试已通过，22:11 更新预览静态文件，旧 hashed assets 保留。CFTR 宽／窄屏真实 Pan 拖动均由 24 请求降至松手后 1 请求，拖动期间主轴与旧轨道保持同区间；exon、reset、键盘提交、取消及主轴／AVI／ATAC 对齐检查通过。结果维护于既有 [AlphaGenome 交付记录](../../record/01_preview_optimization/20260929_alphagenome_avi.md)。
+
 2026-09-29。状态：用户已授权 AVI mapping、后端接入及依据调研优化前端；本设计先于实现形成。当前科学范围沿用 [AlphaGenome 生效规则](../../../../modules/Alphagenome/docs/rules.md)，数据状态及存储依据见[存储分析](../../research/01_preview_optimization/alphagenome_storage.md)。本文替代旧前端的 modality-first 选择流程和旧展示快照限制，不改变科研收录规则。
 
 ## 1. 用户确定项与设计目标
@@ -58,7 +72,7 @@
 ## 5. 共享坐标与图形
 
 - 内部、API 的 `start/end` 为 GRCh38 0-based half-open；页面显示 1-based inclusive。所有轨道请求同一 viewport，并按 API 返回的真实 `bin_edges` 绘制；固定左标签宽度和图内 margin 保证 X 位置相同。
-- 单 gene 默认 gene 范围加上下文；可切换完整预测窗口、居中缩放、左右平移。负链只显示方向，基因组坐标保持递增。
+- 已裁剪来源默认及复位展示该窗口保存的完整 Ensembl gene＋两侧各 10 kb 范围；平移、缩放和 Full saved range 均限制于保存区间。多窗口长基因仍按所选窗口独立展示。未裁剪历史来源沿用 gene 范围加上下文。负链只显示方向，基因组坐标保持递增。
 - 信号按照可见区间读取，随缩放细化到原生分辨率，禁止把粗 bin 插值伪装成逐碱基数据。每条图显示实际 bp/bin 或源分辨率；不继续声称新快照只有 4096 个全窗 bins。
 - Mean/Maximum 是明确标注的显示统计，非新科学分数；各模态保留独立 Y 轴，不声称跨 assay 绝对高度可比。没有数据时留空，真实零画在零线上。
 - 剪接事件以弧线及可检索坐标表显示，按来源顺序分页；展示当前页/总数，并提供翻页，不保留旧 top 200 正值筛选。
