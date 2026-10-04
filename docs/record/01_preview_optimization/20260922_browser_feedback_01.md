@@ -31,17 +31,35 @@
 验证状态：00:40 四项实际浏览器验收通过。CFTR 默认/复位/Full saved range 均为 `chr7:117,277,120–117,725,971`；短基因 SSR4/P51571 均为 `chrX:153,783,516–153,808,510`，包含两侧各 10 kb。互作记录表 SVG 数为 0，内外链接保留；EGFR JSD 图及 L606=0.467264 原值保留，Source support 文本为 0。不同 Pfam domain、UniProt region 及膜注释可独立悬停、点击/Enter 打开对应单条详情；来源选择仍为原 UniProt/Pfam。控制台 0 错误、0 警告。本轮未扩大为全站或数据扫描。[验收结果](../../../data/ui_axis_validation/annotation_gene_ui/summary.json)、[CFTR 截图](../../../data/ui_axis_validation/annotation_gene_ui/cftr_saved_range.png)、[注释交互截图](../../../data/ui_axis_validation/annotation_gene_ui/egfr_annotation.png)。
 
 
-## 2026-10-04：预测器字体与 ThermoMPNN 接入；结构上色待确认
+## 2026-10-04：预测器字体与 ThermoMPNN 接入
 
-用户三项页面批注的前两项已实现，第三项仅完成原始记录查询准备，未发布结构着色 UI。
+首次发布完成三项页面批注的前两项，以及第三项的原始记录查询；用户随后确认极值规则，结构着色也已交付，见下节。本节保留首次交付范围。
 
 - Prediction toolkit 主标题 19px／650，分组标题 14px／600，AlphaMissense 卡片重点文字 15px；说明与计数维持次级层次。
 - 新增 Protein stability 分组和 `ThermoMPNN_ddg` 选择项，可显示变异表列并进入 Predictions 详情。保留 Stability 专页；仅投影当前入库 `variant_ddg_detail` 中 ThermoMPNN 默认 checkpoint，按 variant／annotation／gene／accession 关联，不由 gene 推断位点。单值保持原值，多记录逐条展示，不求平均或最大值。零值、正负、缺失和多记录分别保留；单位和符号沿用已确认规则。
 - 当前选择器 62 个字段、44 个工具标签；全库总览按当前服务字典投影这部分计数，原快照 Parquet 和统计 sidecar 不改写。覆盖仍按完整当前筛选计算，EGFR 有 2,773 个带 ThermoMPNN 的唯一变异；CFTR 为 3,827，低覆盖案例 A0A075B6H7 为 0。
-- 新增 `/api/proteins/{accession}/structure/predictor-records` 只读分页查询：AlphaMissense、ESM1b、ThermoMPNN、AlphaGenome AVI raw／PHRED／merged splicing。每条保留原始变异、注释、替换和分数，仅使用已发布 current canonical ddG links，无逐残基汇总。结构上色涉及同残基多替换、多 DNA 变异的选择，已询问用户，待确认后继续 UI 与规则；不把此接口准备算作第 3 项完成。
+- 新增 `/api/proteins/{accession}/structure/predictor-records` 只读分页查询：AlphaMissense、ESM1b、ThermoMPNN、AlphaGenome AVI raw／PHRED／merged splicing。每条保留原始变异、注释、替换和分数，仅使用已发布 current canonical ddG links，无逐残基汇总。当时结构上色的同残基多替换规则待确认，仅为接口准备；后续已获用户确认，以下节已交付状态为准。
 
 验证：`MEMVAR_QUERY_BACKEND=duckdb python -m unittest Web.tests.test_stability_predictors Web.tests.test_predictor_selection -q` 共 7 项通过，包括与现用库原 Stability 数值一致、关联身份不串接、真零／缺失／多记录、选项与总览一致及结构原记录分页。EGFR／CFTR／低覆盖蛋白定向覆盖查询成功；TypeScript／Vite 候选构建通过。独立 Playwright 在 1414×827 下点击 Protein stability、勾选 ThermoMPNN、应用列、打开 R2Q 的 Predictions 并筛选该分组成功；实际显示 +0.0892 kcal/mol，与原始 0.08915859460830688 一致。主标题／分组 computed style 为 19px／14px。截图与发布信息在 `output/playwright/prediction-toolkit-20261004.png`、`thermompnn-detail-20261004.png`、`predictor-publication.json`。
 
 候选初次启动误用历史 PostgreSQL 默认，AlphaGenome 裁剪元数据检查返回 503；候选已改为显式 DuckDB，正式发布使用 `start-local.sh` 与 `MEMVAR_QUERY_BACKEND=duckdb`，本地 AlphaGenome 查询成功。初次候选日志不作为正式服务错误。原 ngrok 地址保留，当前后端健康检查为 DuckDB／read_only。未做移动端或整站扩展验收。
 
 发布后公网浏览器已复核新静态版本，显示 62 selectable fields／44 source tool labels，ThermoMPNN URL 选列生效；页面控制台 0 errors，浏览器警告另见本地日志。8001 候选服务已停止，8000／ngrok 继续运行。
+
+
+## 2026-10-04：结构 Predictor 按模型极值上色
+
+用户确认采用位点极值，完成之前暂缓的第 3 项。现行科学展示规则主要维护于 [variant 规则](../../../../modules/variant/docs/rules.md#结构预测器逐残基极值展示2026-10-04)，不再等待分数汇总确认；原始入库表与逐变异预测不改写。
+
+- Structure coloring 新增 **Predictor**，可独立切换 AlphaMissense、ESM1b (ESM)、ThermoMPNN 和 AlphaGenome；选择 AlphaGenome 后显示 AVI raw／AVI PHRED／Merged splicing 选项。
+- `/structure/predictor-extrema` 对本蛋白完整已映射项目变异集合计算逐残基极值，复用已确认 canonical links。保留原始 `/structure/predictor-records` 分页接口；新的汇总不从已分页列表取值，也不受变异表临时筛选影响。
+- AlphaMissense／AlphaGenome 取最大；ESM1b 取最小；ThermoMPNN 取绝对值最大并保留符号。保留全部并列来源记录，正负等幅并列显式标识。零保留、非有限值不参与、无值不填零。
+- 上色与原生量尺同步，未评分位置灰色；ThermoMPNN 以零为中心展示稳定化与去稳定化，AlphaMissense 固定 0–1，其余用本蛋白极值及零构成量尺。悬停残基显示极值、模型、覆盖数量、所有产生极值的具体替换和原始变异链接；保留原 ClinVar 证据区。
+
+实现：`src/api/structure_predictors.py`；`StructurePredictor.tsx`、`structure-predictor.css`、`StructureViewer.tsx`、`StructureSiteInspector.tsx`。统一服务查询，不重新推理、重建数据或修改位点映射。ESM 采用现用数据的 ESM1b，未引入其他 ESM 版本。
+
+验证：`MEMVAR_QUERY_BACKEND=duckdb python -m unittest Web.tests.test_structure_predictor_extrema Web.tests.test_stability_predictors -q` **8 项通过**；覆盖极值方向、并列来源、正负绝对值并列、真零／缺失／NaN／Infinity、注释重复、六字段全部 EGFR 位点与原始记录一致、无覆盖与非法输入。TypeScript／Vite 构建通过。独立 Playwright 1414×827 实测四模型切换及 AlphaGenome 三字段选择，三维渲染更新，L858 悬停随模型切换为：AlphaMissense 0.9968（L858R）、ESM1b −11.7751（L858R）、ThermoMPNN 0.0524 kcal/mol（L858M）、AVI raw 1.47（L858R）、AVI PHRED 28.4759（L858R）、Merged splicing 0.0553（L858R）。切换保持选中位点与原始变异身份；连续图例实测宽度 200px。
+
+本机 EGFR 六种字段首次单次查询约 0.09–0.30 s，均有 1,120 个有分 canonical 位点；这是一次定向观测，不是并发性能保证。A0A075B6H7 无映射分数且无本地结构，保持原无结构提示。无分数据不显示虚构量尺。截图见 `output/playwright/structure-alphamissense-20261004.png`（早期图例样式）、`structure-thermompnn-extrema-20261004.png`（最终色条修订）。未扩展为手机端或整站验收。
+
+发布：候选构建已同步到 8000，原 ngrok 地址保持；本地与公网健康检查均为 DuckDB／read_only，公网 ESM1b 极值接口复核 L858=−11.775072。公网真实页面已复核 Predictor → AlphaGenome → AVI PHRED，模型选择、子字段、色条和渲染更新正常。发布信息见 `output/playwright/structure-predictor-publication.json`；旧 hashed assets 保留，候选 8001 停止。

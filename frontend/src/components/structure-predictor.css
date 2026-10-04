@@ -1,0 +1,27 @@
+.structure-predictor-controls{padding:12px 15px;margin:10px 0 14px;border:1px solid var(--slate-6);border-radius:9px;background:var(--slate-2);font-size:13px}
+.structure-predictor-choice{display:flex;align-items:center;flex-wrap:wrap;gap:12px}
+.structure-predictor-choice>strong{font-size:14px}
+.structure-predictor-choice label{display:flex;align-items:center;gap:8px}
+.structure-predictor-controls p{margin:9px 0 0;line-height:1.5}
+.structure-predictor-controls p>span{display:block;color:var(--slate-11);margin-top:4px}
+.structure-predictor-controls summary{cursor:pointer;color:var(--blue-11);font-size:12px;margin-top:8px}
+.structure-predictor-legend{flex-basis:100%;display:grid;gap:9px;font-size:12px;max-width:650px}
+.structure-predictor-scale{display:flex;align-items:center;flex-wrap:wrap;gap:9px}
+.structure-predictor-scale>i{height:10px;width:min(200px,35vw);border-radius:3px;flex:none}
+.structure-predictor-scale>span{font-variant-numeric:tabular-nums}
+.structure-predictor-scale small{display:block;color:var(--slate-11);font-size:11px}
+.structure-predictor-legend p{margin:0;color:var(--slate-11);line-height:1.5}
+.structure-predictor-legend b{display:inline-block;width:10px;height:10px;margin-right:5px;border-radius:2px}
+.structure-predictor-site{padding:10px;margin-bottom:12px;border:1px solid var(--slate-6);border-radius:7px;background:var(--slate-2)}
+.structure-predictor-site header{margin:0;align-items:center}
+.structure-predictor-site header strong{font-size:14px}
+.structure-predictor-site header span{font-size:11px}
+.structure-predictor-site p{margin:7px 0;font-size:12px}
+.structure-predictor-site .structure-predictor-value{font-size:20px;font-weight:650;font-variant-numeric:tabular-nums}
+.structure-predictor-value small{font-size:12px;font-weight:400}
+.structure-predictor-site summary{font-size:12px;cursor:pointer}
+.structure-predictor-records{max-height:150px;overflow:auto;margin-top:6px}
+.structure-predictor-records article{padding:5px 0;border-top:1px solid var(--slate-5)}
+.structure-predictor-records small{display:block;overflow-wrap:anywhere;font-size:10px;color:var(--slate-11);margin-top:3px}
+/* Keep the continuous scale wider than the generic categorical legend swatches. */
+#structure .structure-predictor-scale>i{width:min(200px,35vw);height:10px;flex:0 0 min(200px,35vw);border-radius:3px}
