@@ -41,6 +41,9 @@ from .disease_classification import router as classification_router
 app.include_router(classification_router)
 app.include_router(structures_router)
 
+from .structure_predictors import router as structure_predictors_router
+app.include_router(structure_predictors_router)
+
 from .interface_predictions import router as interface_router
 app.include_router(interface_router)
 

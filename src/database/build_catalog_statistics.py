@@ -177,7 +177,7 @@ def build():
                     breakdown('scope','Score association level','score fields',[dict(label=k.replace('_',' '),value=v) for k,v in scopes.items()],
                               'Variant-level and transcript-consequence scores retain their original association level.')],
         notes=['Field availability does not imply a value is present for every variant. No global score-coverage percentage is inferred.',
-               'ThermoMPNN ddG and protein-interface predictions are separate evidence modules and are not included in this selector count.']),
+               'ThermoMPNN ΔΔG is selectable under Protein stability; protein-interface predictions remain separate.']),
         dict(id='diseases', title='Disease evidence', description='Source-separated gene–disease assertions and phenotype annotations.',
         metrics=[metric('evidence','Gene–disease evidence records',disease['gene_disease_evidence'],'source evidence IDs'),
                  metric('diseases','Linked disease IDs',disease_links['diseases'],'source disease IDs linked to project proteins','Live small disease relations'),

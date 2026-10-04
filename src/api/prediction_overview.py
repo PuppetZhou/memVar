@@ -2,6 +2,7 @@
 from .db import one
 
 DESCRIPTIONS={
+    'Protein stability':'Linked ThermoMPNN ΔΔG predictions in kcal/mol; negative is stabilizing, positive destabilizing. Not clinical pathogenicity.',
     'AlphaGenome':'Variant-level AlphaGenome source summaries for sequence-function and splicing effects; not a selected-transcript-specific clinical classification.',
     'Loss of function':'ALoFT loss-of-function source outputs, including inheritance-mode probabilities and affected-transcript fraction.',
     'Conservation and background':'Evolutionary conservation or genomic background measures on their original scales; not probabilities of pathogenicity.',
@@ -13,6 +14,8 @@ DESCRIPTIONS={
 def prediction_overview(where,params,definitions):
     expressions=[]
     for i,p in enumerate(definitions):
+        if p['scope']=='protein_substitution':
+            continue
         field=p['field'];alias='c' if p['scope']=='transcript_consequence' else 'v'
         value=f'{alias}."{field}"'
         valid=f"{value} > '-Infinity'::double precision AND {value} < 'Infinity'::double precision"
@@ -20,8 +23,18 @@ def prediction_overview(where,params,definitions):
         if p['scope']=='transcript_consequence':expressions.append(f'count(*) FILTER(WHERE {valid}) AS annotations_{i}')
     coverage=one('''WITH selected AS MATERIALIZED (SELECT c.* FROM web_variant.variant_consequence c WHERE '''+where+''')
         SELECT '''+','.join(expressions)+''' FROM selected c JOIN web_variant.variant v USING(variant_id)''',params)
+    stability=one('''SELECT count(DISTINCT c.variant_id) variants,
+        count(DISTINCT (c.variant_id,c.annotation_id,c.gene_id)) annotations
+        FROM web_variant.variant_consequence c WHERE '''+where+''' AND EXISTS (
+        SELECT 1 FROM web_variant.variant_ddg_detail d
+        WHERE d.variant_id=c.variant_id AND d.annotation_id=c.annotation_id AND d.gene_id=c.gene_id
+        AND d.accession=:accession AND d.model='ThermoMPNN' AND d.checkpoint='thermoMPNN_default.pt'
+        AND d.ddg_pred > '-Infinity'::double precision AND d.ddg_pred < 'Infinity'::double precision)''',params)
     fields=[]
     for i,p in enumerate(definitions):
+        if p['scope']=='protein_substitution':
+            fields.append({**p,'covered_variants':stability['variants'],'covered_annotations':stability['annotations']})
+            continue
         fields.append({**p,'covered_variants':coverage[f'variants_{i}'],
                        'covered_annotations':coverage.get(f'annotations_{i}') if p['scope']=='transcript_consequence' else None})
     groups=[]
@@ -32,5 +45,5 @@ def prediction_overview(where,params,definitions):
                        'tool_label_count':len(labels),'tool_labels':labels,'fields':members})
     return {'field_count':len(fields),'tool_label_count':len({p['tool'] for p in fields}),
             'source_count':len({p['source'] for p in fields}),'groups':groups,
-            'coverage_scope':'Complete current variant query; finite source values only. covered_variants is distinct genomic variants; covered_annotations applies only to selected transcript-consequence fields.',
+            'coverage_scope':'Complete current variant query; finite source values only. covered_variants is distinct genomic variants; covered_annotations counts selected consequence identities for transcript and linked protein-substitution fields.',
             'tool_count_note':'tool_label_count counts distinct published tool labels, not independent methods or evidence. Multiple fields, model versions and related models can belong to one method family.'}

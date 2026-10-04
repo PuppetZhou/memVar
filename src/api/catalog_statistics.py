@@ -1,6 +1,8 @@
 """Compact prebuilt statistics, guarded against a different active data snapshot."""
 from functools import lru_cache
 import json
+from copy import deepcopy
+from collections import Counter
 from pathlib import Path
 from fastapi import APIRouter, HTTPException
 from .db import backend, engine, query
@@ -33,4 +35,28 @@ def catalog_statistics():
     active = {v['module']: v['version'] for v in query(VERSION_SQL)}
     if active != expected:
         raise HTTPException(503, 'Catalog statistics need to be refreshed for the current data snapshot.')
+    # Selector definitions are an API projection; keep their counts current without
+    # rewriting or rescanning the immutable scientific data snapshot.
+    from .evidence import prediction_dictionary, prediction_group
+    definitions = prediction_dictionary()
+    result = deepcopy(result)
+    for section in result['sections']:
+        if section['id'] != 'predictors':
+            continue
+        counts = {'tools':len({p['tool'] for p in definitions}), 'fields':len(definitions)}
+        for metric in section['metrics']:
+            if metric['key'] in counts:
+                metric['value'] = counts[metric['key']]
+        distributions = {
+            'groups':Counter(prediction_group(p['field']) for p in definitions),
+            'tools':Counter(p['tool'] for p in definitions),
+            'scope':Counter(p['scope'].replace('_',' ') for p in definitions),
+        }
+        for breakdown in section['breakdowns']:
+            if breakdown['key'] in distributions:
+                breakdown['rows'] = [dict(label=label,value=value) for label,value in distributions[breakdown['key']].items()]
+            if breakdown['key'] == 'scope':
+                breakdown['note'] = 'Variant, transcript-consequence and protein-substitution scores retain their original association level.'
+        section['notes'] = [note for note in section['notes'] if not note.startswith('ThermoMPNN ddG')]
+        section['notes'].append('ThermoMPNN ΔΔG is selectable under Protein stability; linked substitution records retain their identities. Protein-interface predictions remain separate.')
     return result

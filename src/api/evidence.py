@@ -11,7 +11,12 @@ from .evidence_common import require_protein, cursor_read, cursor_write, fields,
 from .variant_support import variant_conditions, FREQUENCIES, FREQUENCY_LABELS, TRANSCRIPT_LABELS,transcript_status as classify_transcript, amino_change, canonical_rows, page_source_evidence, raw_predictions_for_rows
 
 
+from .stability_predictions import FIELD as STABILITY_FIELD, DEFINITION as STABILITY_DEFINITION, attach_stability
+
+
 def prediction_group(field):
+    if field == STABILITY_FIELD:
+        return "Protein stability"
     if field.startswith("alphagenome_"):
         return "AlphaGenome"
     if field.startswith("Aloft_"):
@@ -31,6 +36,7 @@ def prediction_dictionary():
     for field, label in [("alphagenome_avi_raw", "AVI raw"), ("alphagenome_avi_phred", "AVI PHRED"), ("alphagenome_splicing", "Merged splicing")]:
         if not any(r["field"] == field for r in result):
             result.append({"field": field, "source": "AlphaGenome", "scope": "variant", "tool": "AlphaGenome", "label":label})
+    result.append(dict(STABILITY_DEFINITION))
     return result
 
 
@@ -83,6 +89,8 @@ def variants(accession: str, source: str = "", consequence: str = "", position: 
         params.update(vid=after[0],aid=after[1],gid=after[2])
     score_columns=[]
     for field in selected:
+        if field == STABILITY_FIELD:
+            continue
         alias='c' if definitions[field]['scope']=='transcript_consequence' else 'v'
         status='splicing_status' if field=='alphagenome_splicing' else 'avi_status' if field.startswith('alphagenome_') else field+'_status'
         score_columns.extend([alias+'."'+field+'"',alias+'."'+status+'"'])
@@ -125,6 +133,7 @@ def variants(accession: str, source: str = "", consequence: str = "", position: 
         row['cosmic']={'present':'COSMIC' in row['source_names'],'source_ids':list(dict.fromkeys(r['native_id'] for r in source_evidence if r['variant_id']==row['variant_id'] and r['source']=='COSMIC'))}
         row['canonical_positions']=[{k:r[k] for k in ('sequence_id','position','ref_aa','alt_aa')} for r in canonical
                                     if r['variant_id']==row['variant_id'] and r['annotation_id']==row['annotation_id'] and r['gene_id']==row['gene_id']]
+    attach_stability(page, accession)
     raw_predictions_for_rows(page,selected)
     for row in page:
         row.pop('matches_json',None)
@@ -158,13 +167,14 @@ def variant_detail(variant_id: str, accession: str = ""):
         exact_targets.setdefault(r.pop('gene_id'), []).append(r)
     groups = {}
     score_rows=[{**c,'predictions':predictions(variant,c)} for c in consequences]
+    attach_stability(score_rows, accession)
     raw_predictions_for_rows(score_rows,[p['field'] for p in prediction_dictionary()])
     for c,score_row in zip(consequences,score_rows):
         for p in score_row['predictions']:
             # Variant scores appear once; transcript scores retain their exact annotation identity.
-            if p["scope"] != "transcript_consequence" and c is not consequences[0]:
+            if p["scope"] == "variant" and c is not consequences[0]:
                 continue
-            if p["scope"] == "transcript_consequence":
+            if p["scope"] in ("transcript_consequence", "protein_substitution"):
                 p.update(annotation_id=c["annotation_id"], transcript_id=c["Feature"], gene_id=c["gene_id"])
             groups.setdefault(p["group"], []).append(p)
     frequency = one("SELECT * FROM web_variant.variant_frequency WHERE variant_id=:id", params) or {}

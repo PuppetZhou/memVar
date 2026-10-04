@@ -2,6 +2,7 @@
 // Reviewed 2026-09-21 against the pinned dbNSFP 5.4a dictionary and official AlphaGenome docs.
 export interface PredictorGuide {name:string;meaning:string;scale:string;direction:string;criterion:string;url:string;source:string;}
 export const PREDICTOR_GUIDES:Record<string,PredictorGuide> = {
+  ThermoMPNN_ddg: {name:'ThermoMPNN',meaning:'Predicted stability change for an identity-linked amino-acid substitution.',scale:'kcal/mol',direction:'Negative: stabilizing · Positive: destabilizing',criterion:'Original signed ΔΔG; no pathogenicity classification or aggregation across substitutions.',url:'https://github.com/Kuhlman-Lab/ThermoMPNN',source:'Published ThermoMPNN default checkpoint'},
   "Aloft_Fraction_transcripts_affected": {
     "name": "ALoFT fraction",
     "meaning": "Fraction of protein-coding transcripts affected by the variant.",
@@ -557,6 +558,7 @@ export const PREDICTOR_GUIDES:Record<string,PredictorGuide> = {
 // Keep these separate from field dictionaries and method publications.
 export interface PredictorProject { url:string; label:string; }
 const PREDICTOR_PROJECTS:Record<string,PredictorProject> = {
+  ThermoMPNN:{url:'https://github.com/Kuhlman-Lab/ThermoMPNN',label:'Official repository'},
   Aloft:{url:'https://github.com/gersteinlab/aloft',label:'Official repository'},
   AlphaMissense:{url:'https://github.com/google-deepmind/alphamissense',label:'Official repository'},
   CADD:{url:'https://cadd.gs.washington.edu/',label:'Tool website'},

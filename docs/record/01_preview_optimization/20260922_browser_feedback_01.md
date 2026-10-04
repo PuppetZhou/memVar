@@ -29,3 +29,19 @@
 修改为 `ContextPanels.tsx`、`ConservationPlot.tsx`、`AlphaGenomeExpression.tsx` 与 `CompactAnnotationTracks.tsx`。TypeScript/Vite 构建和 6 项已有坐标测试通过；00:36 更新静态文件，入口 `index-DfBbJfEF.js`，保留旧 hashed assets。8000 与 ngrok 持续运行。
 
 验证状态：00:40 四项实际浏览器验收通过。CFTR 默认/复位/Full saved range 均为 `chr7:117,277,120–117,725,971`；短基因 SSR4/P51571 均为 `chrX:153,783,516–153,808,510`，包含两侧各 10 kb。互作记录表 SVG 数为 0，内外链接保留；EGFR JSD 图及 L606=0.467264 原值保留，Source support 文本为 0。不同 Pfam domain、UniProt region 及膜注释可独立悬停、点击/Enter 打开对应单条详情；来源选择仍为原 UniProt/Pfam。控制台 0 错误、0 警告。本轮未扩大为全站或数据扫描。[验收结果](../../../data/ui_axis_validation/annotation_gene_ui/summary.json)、[CFTR 截图](../../../data/ui_axis_validation/annotation_gene_ui/cftr_saved_range.png)、[注释交互截图](../../../data/ui_axis_validation/annotation_gene_ui/egfr_annotation.png)。
+
+
+## 2026-10-04：预测器字体与 ThermoMPNN 接入；结构上色待确认
+
+用户三项页面批注的前两项已实现，第三项仅完成原始记录查询准备，未发布结构着色 UI。
+
+- Prediction toolkit 主标题 19px／650，分组标题 14px／600，AlphaMissense 卡片重点文字 15px；说明与计数维持次级层次。
+- 新增 Protein stability 分组和 `ThermoMPNN_ddg` 选择项，可显示变异表列并进入 Predictions 详情。保留 Stability 专页；仅投影当前入库 `variant_ddg_detail` 中 ThermoMPNN 默认 checkpoint，按 variant／annotation／gene／accession 关联，不由 gene 推断位点。单值保持原值，多记录逐条展示，不求平均或最大值。零值、正负、缺失和多记录分别保留；单位和符号沿用已确认规则。
+- 当前选择器 62 个字段、44 个工具标签；全库总览按当前服务字典投影这部分计数，原快照 Parquet 和统计 sidecar 不改写。覆盖仍按完整当前筛选计算，EGFR 有 2,773 个带 ThermoMPNN 的唯一变异；CFTR 为 3,827，低覆盖案例 A0A075B6H7 为 0。
+- 新增 `/api/proteins/{accession}/structure/predictor-records` 只读分页查询：AlphaMissense、ESM1b、ThermoMPNN、AlphaGenome AVI raw／PHRED／merged splicing。每条保留原始变异、注释、替换和分数，仅使用已发布 current canonical ddG links，无逐残基汇总。结构上色涉及同残基多替换、多 DNA 变异的选择，已询问用户，待确认后继续 UI 与规则；不把此接口准备算作第 3 项完成。
+
+验证：`MEMVAR_QUERY_BACKEND=duckdb python -m unittest Web.tests.test_stability_predictors Web.tests.test_predictor_selection -q` 共 7 项通过，包括与现用库原 Stability 数值一致、关联身份不串接、真零／缺失／多记录、选项与总览一致及结构原记录分页。EGFR／CFTR／低覆盖蛋白定向覆盖查询成功；TypeScript／Vite 候选构建通过。独立 Playwright 在 1414×827 下点击 Protein stability、勾选 ThermoMPNN、应用列、打开 R2Q 的 Predictions 并筛选该分组成功；实际显示 +0.0892 kcal/mol，与原始 0.08915859460830688 一致。主标题／分组 computed style 为 19px／14px。截图与发布信息在 `output/playwright/prediction-toolkit-20261004.png`、`thermompnn-detail-20261004.png`、`predictor-publication.json`。
+
+候选初次启动误用历史 PostgreSQL 默认，AlphaGenome 裁剪元数据检查返回 503；候选已改为显式 DuckDB，正式发布使用 `start-local.sh` 与 `MEMVAR_QUERY_BACKEND=duckdb`，本地 AlphaGenome 查询成功。初次候选日志不作为正式服务错误。原 ngrok 地址保留，当前后端健康检查为 DuckDB／read_only。未做移动端或整站扩展验收。
+
+发布后公网浏览器已复核新静态版本，显示 62 selectable fields／44 source tool labels，ThermoMPNN URL 选列生效；页面控制台 0 errors，浏览器警告另见本地日志。8001 候选服务已停止，8000／ngrok 继续运行。

@@ -1,5 +1,14 @@
 # 01 公网预览后优化：当前计划
 
+## 2026-10-04：预测器面板已交付，结构上色待确认
+
+- 用户授权微调 Prediction toolkit 字体层级、将 ThermoMPNN 加入预测器系列，以及结构新增 Predictor 着色入口（AlphaMissense、ESM、ThermoMPNN、AlphaGenome 子选项）。
+- 字体与 ThermoMPNN 接入已实现并发布：独立 Protein stability 分组、可选表列与 Predictions 详情，保留原 Stability 入口、原始 ΔΔG 及完整关联身份；现用 DuckDB 快照不改写。
+- ESM 对应当前实际入库 ESM1b；AlphaGenome 可用字段为 AVI raw、AVI PHRED、merged splicing。残基坐标沿用现有 verified canonical ddG links，不能由 gene 关联推断。
+- 待确认：同一残基多个替换／基因组变异如何着色。已提出“选定替换／变异原值”“逐残基最强效应”“逐残基平均分”供用户决定；确认前不发布新的汇总规则。原始逐记录查询和其余独立 UI 工作继续。
+- 已通过 7 项定向测试、候选构建和 EGFR 桌面交互；[交付记录](../../record/01_preview_optimization/20260922_browser_feedback_01.md#2026-10-04预测器字体与-thermompnn-接入结构上色待确认)。上色待选择后验证位点映射、颜色方向、无分数状态和模型切换。
+
+
 2026-10-02 当前批注：互作记录去除装饰图标、JSD 删除 Source support 提示、domain/region 与膜注释逐条命中、AlphaGenome 裁剪来源默认完整保存区间并明确 MANE 结构。实现已发布，定向浏览器验收通过；[行为与验证](../../record/01_preview_optimization/20260922_browser_feedback_01.md#2026-10-02互作图标保存范围jsd与逐条注释)。
 
 ## 膜拓扑来源选择（2026-09-30，已完成）
