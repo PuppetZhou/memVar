@@ -1,6 +1,9 @@
 """Publish compact catalog statistics from validated reports and small live dimensions.
 
-Run: python -m Web.src.database.build_catalog_statistics
+Offline historical build: python -m src.build.catalog_statistics (from Web/).
+Requires matching scientific build manifests and historical import reports.
+Deployment copies the already validated catalog_statistics.json; it never calls
+this builder or reads its scientific inputs.
 Large table row counts are reused from the matching imported manifest/report.
 No variant, QTL, expression or residue-level fact table is scanned.
 """
@@ -10,9 +13,9 @@ import json
 from pathlib import Path
 import re
 
-from Web.src.api.db import query, one
-from Web.src.api.evidence import prediction_dictionary, prediction_group
-from Web.src.api.core import MEMBRANE_CLASSES
+from ..api.db import query, one
+from ..api.evidence import prediction_dictionary, prediction_group
+from ..api.core import MEMBRANE_CLASSES
 
 ROOT = Path(__file__).resolve().parents[3]
 DATA = ROOT / 'Web/data'

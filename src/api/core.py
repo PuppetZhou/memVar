@@ -7,7 +7,7 @@ from typing import Any, Literal
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
-from .db import one, query, backend
+from .db import one, query
 from .overview_summary import go_summary_data,pathway_summary_data
 
 router = APIRouter(prefix='/api', tags=['proteins'])
@@ -66,12 +66,8 @@ def get_protein(accession: str) -> dict:
 
 @router.get('/health')
 def health():
-    if backend() == 'duckdb':
-        ready = one('SELECT EXISTS(SELECT 1 FROM web.protein LIMIT 1) AS available')
-        return {'status': 'ok' if ready['available'] else 'empty', 'database': 'DuckDB', 'read_only': True}
-    ready = one("SELECT EXISTS(SELECT 1 FROM web.protein LIMIT 1) AS available, "
-                "current_setting('transaction_read_only')='on' AS read_only")
-    return {'status': 'ok' if ready['available'] else 'empty', 'database': 'PostgreSQL', 'read_only': ready['read_only']}
+    ready = one('SELECT EXISTS(SELECT 1 FROM web.protein LIMIT 1) AS available')
+    return {'status': 'ok' if ready['available'] else 'empty', 'database': 'DuckDB', 'read_only': True}
 
 
 MEMBRANE_CLASSES = {

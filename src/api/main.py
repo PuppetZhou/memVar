@@ -3,17 +3,18 @@ from __future__ import annotations
 
 from contextlib import asynccontextmanager
 import logging
+import os
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.gzip import GZipMiddleware
-from sqlalchemy.exc import SQLAlchemyError
 from duckdb import Error as DuckDBError
 from sqlglot.errors import SqlglotError
 
-from .db import DatabaseConfigurationError, engine
+from .db import engine
+from ..runtime import RuntimeConfigurationError
 from .core import router as core_router
 from .sequence import router as sequence_router
 
@@ -62,18 +63,19 @@ app.include_router(sequence_prediction_router)
 
 @app.exception_handler(DuckDBError)
 @app.exception_handler(SqlglotError)
-@app.exception_handler(SQLAlchemyError)
-async def database_error(request: Request, exc: SQLAlchemyError):
+async def database_error(request: Request, exc: Exception):
     logging.getLogger('memvar.api').error('Database request failed: %s', type(exc).__name__)
     return JSONResponse(status_code=503, content={'detail': 'Database query is temporarily unavailable. Please retry or narrow the filter.'})
 
 
-@app.exception_handler(DatabaseConfigurationError)
-async def database_configuration_error(request: Request, exc: DatabaseConfigurationError):
+@app.exception_handler(RuntimeConfigurationError)
+async def database_configuration_error(request: Request, exc: RuntimeConfigurationError):
     return JSONResponse(status_code=503, content={'detail': str(exc)})
 
 
-DIST = Path(__file__).resolve().parents[2] / 'frontend/dist'
+WEB = Path(__file__).resolve().parents[2]
+DIST_CONFIG = Path(os.environ.get('MEMVAR_FRONTEND_DIST', 'frontend/dist')).expanduser()
+DIST = (DIST_CONFIG if DIST_CONFIG.is_absolute() else WEB / DIST_CONFIG).resolve()
 if (DIST / 'assets').is_dir():
     app.mount('/assets', StaticFiles(directory=DIST / 'assets'), name='assets')
 

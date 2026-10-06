@@ -13,7 +13,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import Response
 
 from .db import query
-from .resources import resource_path
+from ..runtime import RuntimeConfigurationError, structure_root
 
 router = APIRouter(prefix="/api")
 AA = dict(zip(
@@ -25,8 +25,8 @@ AA = dict(zip(
 @lru_cache(maxsize=1)
 def source_root() -> Path:
     try:
-        return resource_path('structure_root', 'MEMVAR_STRUCTURE_ROOT')
-    except (OSError, ValueError, TypeError):
+        return structure_root()
+    except RuntimeConfigurationError:
         raise HTTPException(503, "Local structure source is not configured") from None
 
 

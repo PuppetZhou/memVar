@@ -12,6 +12,7 @@ from fastapi import APIRouter, HTTPException, Query
 import yaml
 from .core import get_protein
 from .db import one, query
+from ..runtime import alphagenome_root
 
 router = APIRouter(prefix='/api/proteins', tags=['expression predictions'])
 WEB = Path(__file__).resolve().parents[2]
@@ -25,8 +26,7 @@ def configuration():
 
 
 def asset_root():
-    path = Path(os.environ.get('MEMVAR_ALPHAGENOME_REFERENCE_ROOT', configuration()['reference_root'])).expanduser()
-    return (path if path.is_absolute() else WEB / path).resolve()
+    return alphagenome_root()
 
 
 def manifest():

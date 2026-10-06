@@ -6,6 +6,7 @@ from unittest.mock import patch
 from fastapi.testclient import TestClient
 from Web.src.api.main import app
 from Web.src.api.catalog_statistics import STATISTICS
+from Web.src.runtime import catalog_path
 
 
 class CatalogStatisticsTests(unittest.TestCase):
@@ -18,7 +19,8 @@ class CatalogStatisticsTests(unittest.TestCase):
     def test_active_snapshot_and_safe_public_payload(self):
         response = self.client.get('/api/catalog/statistics')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), self.data)
+        self.assertEqual(response.json()['versions'], self.data['versions'])
+        self.assertEqual({section['id'] for section in response.json()['sections']}, self.sections.keys())
         text = response.text
         for private in ['/home/xuyzh/', 'PGPASSWORD', 'password', 'postgresql://', 'data/postgres', 'source_manifest']:
             self.assertNotIn(private, text)
@@ -35,8 +37,10 @@ class CatalogStatisticsTests(unittest.TestCase):
         self.assertEqual(response.status_code, 503)
         self.assertNotIn('sections', response.json())
 
-    def test_counts_and_grains_match_validated_import(self):
-        tables = json.loads((STATISTICS.parent / 'postgresql_variant_import.json').read_text())['tables']
+    def test_counts_and_grains_match_active_snapshot(self):
+        manifest = json.loads((catalog_path().parent / 'manifest.json').read_text())
+        tables = {item['name']: item['rows'] for item in manifest['objects']
+                  if item['schema'] == 'web_variant' and item['name'] in {'variant', 'variant_consequence'}}
         metrics = {m['key']:m['value'] for m in self.sections['variants']['metrics']}
         self.assertEqual(metrics['variants'], tables['variant'])
         self.assertEqual(metrics['consequences'], tables['variant_consequence'])

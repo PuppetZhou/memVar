@@ -166,14 +166,15 @@ class AlphaGenomeExpressionTests(unittest.TestCase):
         self.assertEqual(invalid.status_code,404)
 
     def test_all_modalities_are_readable_at_native_source_resolution(self):
-        origin = self.window['window_start_0based']
+        start = self.window['retention_start_0based'] + 1001
+        end = self.window['retention_start_0based'] + 11002
         for modality in sorted({t['modality'] for t in self.catalog['tracks']}):
             with self.subTest(modality=modality):
                 track = next(t for t in self.catalog['tracks'] if t['modality'] == modality)
                 started = time.monotonic()
                 response = self.client.get(self.base + '/track', params={
                     'gene': self.gene, 'tile': self.tile, 'track_id': track['track_id'],
-                    'start': origin + 1001, 'end': origin + 11002, 'bins': 1024, 'limit': 25})
+                    'start': start, 'end': end, 'bins': 1024, 'limit': 25})
                 self.performance[modality] = round(time.monotonic() - started, 4)
                 self.assertEqual(response.status_code, 200, response.text[:300])
                 data = response.json()
@@ -181,34 +182,43 @@ class AlphaGenomeExpressionTests(unittest.TestCase):
                     self.assertLessEqual(len(data['mean']), 1024)
                     self.assertEqual(len(data['bin_edges']), len(data['mean']) + 1)
                     self.assertTrue(all(a <= b for a, b in zip(data['mean'], data['maximum'])))
-                    self.assertLessEqual(data['start'], origin + 1001)
-                    self.assertGreaterEqual(data['end'], origin + 11002)
+                    self.assertLessEqual(data['start'], start)
+                    self.assertGreaterEqual(data['end'], end)
                 elif data['kind'] == 'contacts':
                     self.assertEqual(len(data['values']), data['size'] ** 2)
                     self.assertEqual(data['source_resolution_bp'], 2048)
-                    self.assertEqual(data['bin_edges'][0], origin)
+                    self.assertLessEqual(data['bin_edges'][0], start)
+                    self.assertGreaterEqual(data['bin_edges'][-1], end)
                 else:
                     self.assertLessEqual(len(data['items']), 25)
                     self.assertEqual(data['has_more'], data['total'] > 25)
 
     def test_exact_native_values_and_junction_pagination(self):
-        origin = self.window['window_start_0based']
+        origin = self.window['retention_start_0based']
         params = {'gene': self.gene, 'tile': self.tile, 'track_id': 'rna_seq:000',
                   'start': origin + 11111, 'end': origin + 11119, 'bins': 1024}
         response = self.client.get(self.base + '/track', params=params)
         self.assertEqual(response.status_code, 200)
         with h5py.File(asset_root() / 'tiles' / f'{self.tile}.h5') as handle:
-            source = handle['rna_seq']['values'][11111:11119, 0].astype(float).tolist()
+            signal = handle['rna_seq']
+            first = params['start'] - int(signal.attrs['interval_start'])
+            source = signal['values'][first:first + 8, 0].astype(float).tolist()
             self.assertEqual(response.json()['mean'], source)
             self.assertEqual(response.json()['maximum'], source)
+            contact_start, contact_end = origin + 1000, origin + 3000
             contacts = self.client.get(self.base + '/track', params={**params,
-                'track_id': 'contact_maps:000', 'start': origin + 1000, 'end': origin + 3000}).json()
-            self.assertEqual(contacts['values'], handle['contact_maps']['values'][:2, :2, 0].astype(float).ravel().tolist())
+                'track_id': 'contact_maps:000', 'start': contact_start, 'end': contact_end}).json()
+            group = handle['contact_maps']
+            resolution = int(group.attrs['resolution'])
+            first = (contact_start - int(group.attrs['interval_start'])) // resolution
+            last = (contact_end - int(group.attrs['interval_start']) + resolution - 1) // resolution
+            self.assertEqual(contacts['values'], group['values'][first:last, first:last, 0].astype(float).ravel().tolist())
             for offset in (0, 3):
                 result = self.client.get(self.base + '/track', params={
                     'gene': self.gene, 'tile': self.tile, 'track_id': 'splice_junctions:000',
                     'offset': offset, 'limit': 3}).json()
-                self.assertEqual([x['source_event_index'] for x in result['items']], list(range(offset, offset + 3)))
+                self.assertEqual([x['source_event_index'] for x in result['items']],
+                                 handle['splice_junctions']['source_event_index'][offset:offset + 3].tolist())
                 self.assertEqual([x['value'] for x in result['items']],
                                  handle['splice_junctions']['values'][offset:offset + 3, 0].astype(float).tolist())
 
@@ -218,7 +228,8 @@ class AlphaGenomeExpressionTests(unittest.TestCase):
                                 ({'tile': 'HGNC_0_tile999'}, 404),
                                 ({'track_id': "rna_seq:000' OR 1=1"}, 404),
                                 ({'bins': 4097}, 422), ({'tile': '../../secret'}, 422),
-                                ({'start': self.window['window_start_0based'] - 1}, 422)]:
+                                ({'start': self.window['retention_start_0based'] - 1}, 422),
+                                ({'end': self.window['retention_end_0based'] + 1}, 422)]:
             response = self.client.get(self.base + '/track', params={**defaults, **changed})
             self.assertEqual(response.status_code, status, response.text[:200])
         with patch('Web.src.api.alphagenome.get_protein', return_value={'accession': 'P00533', 'hgnc_ids': ['HGNC:other']}):

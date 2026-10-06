@@ -20,7 +20,7 @@ class DuckDBQueryTests(unittest.TestCase):
         with duckdb.connect(str(self.path)) as conn:
             conn.execute('CREATE TABLE t (id INTEGER, payload JSON, scores DOUBLE[])')
             conn.execute("INSERT INTO t VALUES (1, '{\"names\":[\"A\",\"B\"],\"contexts\":[{\"accession\":\"P1\",\"extra\":0}],\"values\":[\"0\",null,\"NA\"]}', [0,NULL,-2]), (2, NULL, [])")
-        with patch.dict(os.environ, {'MEMVAR_DUCKDB_PATH': str(self.path)}):
+        with patch.dict(os.environ, {'MEMVAR_DATA_ROOT': self.tmp.name}):
             self.engine = DuckDBEngine()
 
     def tearDown(self):

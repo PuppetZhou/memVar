@@ -10,3 +10,6 @@
 - **AVI record（AVI 记录）**：项目 SNV 对应的来源总分及特征贡献；同坐标不同等位基因保持独立，不以贡献和重建总分。
 - **GTEx QTL track（GTEx QTL 轨道）**：指定基因、组织和 QTL 类型的来源关联记录；独立于 AlphaGenome biosample 选择，保留 phenotype、原始 P 值和效应，不按 AVI 或 CDS 匹配过滤。
 - **Scientific color（科研语义色）**：表达来源分类、分数方向或类别的颜色，与按钮、背景等 UI 状态色分开维护。
+
+- **Website data package（网站数据包）**：网站运行所需的完整冻结数据集合，包含Parquet实体／关系、DuckDB视图目录、当前AlphaGenome裁剪目录与HDF5、结构文件及版本溯源；包内文件相对定位，部署准备将视图绑定到实际根目录。
+- **Deployment preparation（部署准备）**：从已确认来源组装或为既有网站数据包重绑定目录的离线操作；不执行新科学筛选，普通只读启动不调用科研构建。

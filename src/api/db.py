@@ -1,38 +1,14 @@
-"""Read-only PostgreSQL compatibility and DuckDB / Parquet query connections.
-
-Select the candidate with MEMVAR_QUERY_BACKEND=duckdb and MEMVAR_DUCKDB_PATH.
-The historical --setup-reader command is manual PostgreSQL provisioning only;
-normal API startup never invokes it or reads administrator credentials.
-"""
+"""Read-only DuckDB / Parquet query connection for the published website data."""
 from __future__ import annotations
 
-import argparse
 from functools import lru_cache
 import os
-from pathlib import Path
-import secrets
 from threading import Lock
 
-from sqlalchemy import create_engine, text
-from sqlalchemy.engine import URL, make_url
+from ..runtime import RuntimeConfigurationError, catalog_path
 
-WEB = Path(__file__).resolve().parents[2]
-
-
-class DatabaseConfigurationError(RuntimeError):
+class DatabaseConfigurationError(RuntimeConfigurationError):
     """A local deployment configuration issue with no credential detail."""
-
-
-def read_env(path: Path) -> dict[str, str]:
-    return dict(line.split('=', 1) for line in path.read_text().splitlines()
-                if '=' in line and not line.lstrip().startswith('#'))
-
-
-def backend() -> str:
-    value = os.environ.get('MEMVAR_QUERY_BACKEND', 'postgresql').lower()
-    if value not in {'postgresql', 'duckdb'}:
-        raise DatabaseConfigurationError('MEMVAR_QUERY_BACKEND must be postgresql or duckdb.')
-    return value
 
 
 @lru_cache(maxsize=512)
@@ -67,25 +43,15 @@ class DuckDBEngine:
     def __init__(self):
         import duckdb
         import locale
-        path_value = os.environ.get('MEMVAR_DUCKDB_PATH')
-        if not path_value:
-            import yaml
-            try:
-                path_value = yaml.safe_load((WEB / 'config/duckdb.yaml').read_text())['catalog']
-            except (OSError, KeyError, TypeError, yaml.YAMLError):
-                raise DatabaseConfigurationError('The DuckDB service snapshot is not configured.') from None
-        path = Path(path_value).expanduser()
-        if not path.is_absolute():
-            path = WEB / path
-        self.path = path.resolve()
-        if not path.is_file():
+        self.path = catalog_path()
+        if not self.path.is_file():
             raise DatabaseConfigurationError('The DuckDB service snapshot is not configured.')
         from .duckdb_collation import initialize, text_key, text_list, json_distinct_list
         try:
             initialize()
         except locale.Error:
             raise DatabaseConfigurationError('The PostgreSQL-compatible en_US.utf8 collation is unavailable.') from None
-        self.connection = duckdb.connect(str(path), read_only=True, config={
+        self.connection = duckdb.connect(str(self.path), read_only=True, config={
             'threads': os.environ.get('MEMVAR_DUCKDB_THREADS', '4'),
             'memory_limit': os.environ.get('MEMVAR_DUCKDB_MEMORY_LIMIT', '4GB'),
         })
@@ -138,26 +104,7 @@ class DuckDBEngine:
 
 @lru_cache(maxsize=1)
 def _cached_engine():
-    if backend() == 'duckdb':
-        return DuckDBEngine()
-    url = os.environ.get('MEMVAR_DATABASE_URL')
-    try:
-        if url:
-            url = make_url(url)
-            if url.get_backend_name() not in {'postgresql', 'postgres'}:
-                raise DatabaseConfigurationError('A PostgreSQL connection is required.')
-            url = url.set(drivername='postgresql+psycopg')
-        else:
-            cfg = read_env(WEB / 'data/.api.env')
-            url = URL.create('postgresql+psycopg', username=cfg['PGUSER'],
-                             password=cfg['PGPASSWORD'], host=cfg['PGHOST'],
-                             port=int(cfg['PGPORT']), database=cfg['PGDATABASE'])
-    except (OSError, KeyError, ValueError):
-        raise DatabaseConfigurationError('The read-only database connection is not configured.') from None
-    return create_engine(url, pool_size=5, max_overflow=2, pool_timeout=10,
-                         pool_pre_ping=True, hide_parameters=True,
-                         connect_args={'connect_timeout': 5,
-                           'options': '-c default_transaction_read_only=on -c statement_timeout=15000 -c application_name=memvar_api'})
+    return DuckDBEngine()
 
 
 _engine_lock = Lock()
@@ -174,60 +121,9 @@ engine.cache_clear = _cached_engine.cache_clear
 
 
 def query(sql: str, params: dict | None = None) -> list[dict]:
-    current = engine()
-    if isinstance(current, DuckDBEngine):
-        return current.query(sql, params or {})
-    with current.connect() as conn:
-        return [dict(row) for row in conn.execute(text(sql), params or {}).mappings()]
+    return engine().query(sql, params or {})
 
 
 def one(sql: str, params: dict | None = None) -> dict | None:
     rows = query(sql, params)
     return rows[0] if rows else None
-
-
-def setup_reader():
-    import psycopg
-    from psycopg import sql
-    import yaml
-
-    config = yaml.safe_load((WEB / 'config/database.yaml').read_text())
-    admin = read_env(WEB / config['credentials_file'])
-    secret_path = WEB / 'data/.api.env'
-    if secret_path.exists():
-        reader = read_env(secret_path)
-        password = reader['PGPASSWORD']
-    else:
-        password = secrets.token_urlsafe(32)
-    role = 'memvar_api'
-    with psycopg.connect(host=config['host'], port=config['port'], dbname=config['database'],
-                        user=admin['POSTGRES_USER'], password=admin['POSTGRES_PASSWORD']) as conn:
-        # The unlocated-PTM detail query exposes existing candidate associations.
-        # This small partial index avoids scanning all mapped PTM records.
-        conn.execute('CREATE INDEX IF NOT EXISTS ptm_record_candidate_accessions_gin '
-                     'ON web.ptm_record USING gin(candidate_accessions) WHERE accession IS NULL')
-        if not conn.execute('SELECT 1 FROM pg_roles WHERE rolname=%s', (role,)).fetchone():
-            conn.execute(sql.SQL('CREATE ROLE {} LOGIN PASSWORD {}').format(sql.Identifier(role), sql.Literal(password)))
-        else:
-            conn.execute(sql.SQL('ALTER ROLE {} LOGIN PASSWORD {}').format(sql.Identifier(role), sql.Literal(password)))
-        conn.execute(sql.SQL('ALTER ROLE {} SET default_transaction_read_only=on').format(sql.Identifier(role)))
-        conn.execute(sql.SQL('GRANT CONNECT ON DATABASE {} TO {}').format(sql.Identifier(config['database']), sql.Identifier(role)))
-        for schema in ['web', 'web_variant', 'web_variant_sequence', 'web_clinvar_snv', 'web_classification', 'web_context', 'web_disease', 'web_paxdb', 'web_alphagenome', 'web_avi', 'web_mane']:
-            if not conn.execute('SELECT 1 FROM pg_namespace WHERE nspname=%s', (schema,)).fetchone():
-                continue
-            conn.execute(sql.SQL('GRANT USAGE ON SCHEMA {} TO {}').format(sql.Identifier(schema), sql.Identifier(role)))
-            conn.execute(sql.SQL('GRANT SELECT ON ALL TABLES IN SCHEMA {} TO {}').format(sql.Identifier(schema), sql.Identifier(role)))
-            conn.execute(sql.SQL('ALTER DEFAULT PRIVILEGES IN SCHEMA {} GRANT SELECT ON TABLES TO {}').format(sql.Identifier(schema), sql.Identifier(role)))
-    if not secret_path.exists():
-        fd = os.open(secret_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
-        with os.fdopen(fd, 'w') as fh:
-            fh.write(f"PGHOST={config['host']}\nPGPORT={config['port']}\nPGDATABASE={config['database']}\nPGUSER={role}\nPGPASSWORD={password}\n")
-    secret_path.chmod(0o600)
-    print('Read-only API role configured; credentials saved with mode 0600.')
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--setup-reader', action='store_true', required=True)
-    parser.parse_args()
-    setup_reader()

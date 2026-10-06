@@ -2,7 +2,7 @@
 from functools import lru_cache
 from collections import defaultdict,Counter
 from fastapi import APIRouter, Query
-from .db import query, one, backend
+from .db import query, one
 from .variant_support import variant_conditions,base_cte,FREQUENCIES,FREQUENCY_LABELS,CLINICAL_GROUPS,clinical_display_group,TRANSCRIPT_LABELS,TRANSCRIPT_STATUS_SQL
 from .prediction_overview import prediction_overview
 
@@ -35,34 +35,23 @@ def _summary(accession,source,consequence,position,search,canonical_start,canoni
     from .evidence import prediction_dictionary,prediction_group
     predictor_summary=prediction_overview(where,params,[{**p,'group':prediction_group(p['field'])} for p in prediction_dictionary()])
     # Distinguish grouping NULL from a missing source category with an explicit grouping flag.
-    if backend() == 'duckdb':
-        # The original grouping sets calculate discarded non-ClinVar JSON
-        # groups as well. Separate metadata totals from ClinVar-only labels so
-        # the huge gnomAD payload never needs reading for a source count.
-        source_rows = query(cte+'''SELECT d.source,NULL::text classification,1 is_source_total,
+    # Separate metadata totals from ClinVar labels so the large gnomAD payload
+    # is not read for a source count.
+    source_rows = query(cte+'''SELECT d.source,NULL::text classification,1 is_source_total,
             count(DISTINCT ids.variant_id) count FROM ids
             JOIN web_variant.variant_source_link l USING(variant_id)
             JOIN web_variant.variant_source_record r USING(record_id)
             JOIN web_variant.variant_dataset d USING(dataset_id)
             WHERE d.source IN ('ClinVar','COSMIC','gnomAD') GROUP BY d.source''',params)
-        source_rows += query(cte+'''SELECT d.source,r.details_json->>'ClinicalSignificance' classification,
+    source_rows += query(cte+'''SELECT d.source,r.details_json->>'ClinicalSignificance' classification,
             0 is_source_total,count(DISTINCT ids.variant_id) count FROM ids
             JOIN web_variant.variant_source_link l USING(variant_id)
             JOIN web_variant.variant_source_record r USING(record_id)
             JOIN web_variant.variant_dataset d USING(dataset_id)
             WHERE d.source='ClinVar' GROUP BY d.source,r.details_json->>'ClinicalSignificance' ''',params)
-        from .duckdb_collation import text_key
-        source_rows.sort(key=lambda row:(text_key(row['source']),row['classification'] is None,
-            text_key(row['classification']) if row['classification'] is not None else b''))
-    else:
-        source_rows=query(cte+'''SELECT d.source,r.details_json->>'ClinicalSignificance' classification,
-            grouping(r.details_json->>'ClinicalSignificance') is_source_total,count(DISTINCT ids.variant_id) count
-            FROM ids JOIN web_variant.variant_source_link l USING(variant_id)
-            JOIN web_variant.variant_source_record r USING(record_id) JOIN web_variant.variant_dataset d USING(dataset_id)
-            WHERE d.source IN ('ClinVar','COSMIC','gnomAD')
-            GROUP BY GROUPING SETS ((d.source),(d.source,r.details_json->>'ClinicalSignificance'))
-            HAVING grouping(r.details_json->>'ClinicalSignificance')=1 OR d.source='ClinVar'
-            ORDER BY d.source,classification''',params)
+    from .duckdb_collation import text_key
+    source_rows.sort(key=lambda row:(text_key(row['source']),row['classification'] is None,
+        text_key(row['classification']) if row['classification'] is not None else b''))
     dbsnp=one(cte+'''SELECT count(*) count FROM ids WHERE EXISTS (SELECT 1 FROM web_variant.variant_dbsnp s WHERE s.variant_id=ids.variant_id LIMIT 1 OFFSET 0)''',params)['count']
     clinical_rows=query(cte+'''SELECT DISTINCT ids.variant_id,r.details_json->>'ClinicalSignificance' classification
         FROM ids JOIN web_variant.variant_source_link l USING(variant_id)

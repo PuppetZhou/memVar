@@ -3,19 +3,23 @@ set -euo pipefail
 WEB_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 cd "$WEB_DIR"
 
-if [[ "${1:-}" == "--build" ]]; then
-  (cd "$WEB_DIR/frontend" && npm ci --no-audit --no-fund && npm run build)
+if [[ -n "${MEMVAR_PYTHON:-}" ]]; then
+  PYTHON="$MEMVAR_PYTHON"
+elif [[ -x "$WEB_DIR/.venv/bin/python" ]]; then
+  PYTHON="$WEB_DIR/.venv/bin/python"
+else
+  PYTHON=python3
 fi
-if [[ ! -f "$WEB_DIR/frontend/dist/index.html" ]]; then
-  echo "Frontend build missing. Run: Web/start-local.sh --build" >&2
+if ! command -v "$PYTHON" >/dev/null 2>&1; then
+  echo "Python executable is unavailable: $PYTHON" >&2
   exit 1
 fi
-export MEMVAR_QUERY_BACKEND="${MEMVAR_QUERY_BACKEND:-${MEMVAR_DATABASE_URL:+postgresql}}"
-export MEMVAR_QUERY_BACKEND="${MEMVAR_QUERY_BACKEND:-duckdb}"
-if [[ "$MEMVAR_QUERY_BACKEND" == "postgresql" ]]; then
-  if [[ ! -f "$WEB_DIR/data/.api.env" && -z "${MEMVAR_DATABASE_URL:-}" ]]; then
-    echo "Configure a read-only PostgreSQL connection before starting the API." >&2
-    exit 1
-  fi
+
+export MEMVAR_FRONTEND_DIST="${MEMVAR_FRONTEND_DIST:-$WEB_DIR/frontend/dist-portable}"
+if [[ ! -f "$MEMVAR_FRONTEND_DIST/index.html" ]]; then
+  echo "Frontend build missing: $MEMVAR_FRONTEND_DIST. Run prepare-local.sh first." >&2
+  exit 1
 fi
-exec python -m uvicorn src.api.main:app --host "${MEMVAR_HOST:-127.0.0.1}" --port "${MEMVAR_PORT:-8000}"
+
+"$PYTHON" -m src.runtime check
+exec "$PYTHON" -m uvicorn src.api.main:app --host "${MEMVAR_HOST:-127.0.0.1}" --port "${MEMVAR_PORT:-8000}"

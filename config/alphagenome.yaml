@@ -1,6 +1,4 @@
-catalog_path: ../modules/Alphagenome/data/curated/20261001_reference_crop_01
 checkpoint_revision: a8f293a76ee73d5b57f3bf2ae146510589fcf187
 crop_run_id: 20261001_reference_crop_01
-reference_root: ../modules/Alphagenome/data/curated/20261001_reference_crop_01/assets
 retention_flank_bp: 10000
 source_run_id: 20260928_reference_local_01

@@ -4,7 +4,7 @@ import math
 import re
 from urllib.parse import unquote
 from fastapi import HTTPException
-from .db import query, one, backend, engine
+from .db import query, one, engine
 from .evidence_common import clean
 
 AA3 = {'Ala':'A','Arg':'R','Asn':'N','Asp':'D','Cys':'C','Gln':'Q','Glu':'E','Gly':'G','His':'H','Ile':'I','Leu':'L','Lys':'K','Met':'M','Phe':'F','Pro':'P','Ser':'S','Thr':'T','Trp':'W','Tyr':'Y','Val':'V','Ter':'*','Sec':'U','Pyl':'O'}
@@ -192,19 +192,9 @@ def duckdb_source_rows(ids, projection, sources):
 
 def page_source_evidence(ids):
     if not ids:return []
-    if backend() == 'duckdb':
-        projection = "r.native_id," + ','.join("CASE WHEN d.source='ClinVar' THEN r.details_json->>'"+key+"' END "+alias for key,alias in [('ClinicalSignificance','classification'),('ReviewStatus','review_status'),('Origin','origin'),('Oncogenicity','oncogenicity'),('SomaticClinicalImpact','somatic_clinical_impact')])
-        rows = duckdb_source_rows(ids,projection,['ClinVar','COSMIC','gnomAD'])
-        return [{key:value for key,value in row.items() if key != 'alt_index'} for row in rows]
-    return query('''SELECT l.variant_id,r.record_id,d.source,r.native_id,
-        CASE WHEN d.source='ClinVar' THEN r.details_json->>'ClinicalSignificance' END classification,
-        CASE WHEN d.source='ClinVar' THEN r.details_json->>'ReviewStatus' END review_status,
-        CASE WHEN d.source='ClinVar' THEN r.details_json->>'Origin' END origin,
-        CASE WHEN d.source='ClinVar' THEN r.details_json->>'Oncogenicity' END oncogenicity,
-        CASE WHEN d.source='ClinVar' THEN r.details_json->>'SomaticClinicalImpact' END somatic_clinical_impact
-        FROM web_variant.variant_source_link l JOIN web_variant.variant_source_record r USING(record_id)
-        JOIN web_variant.variant_dataset d USING(dataset_id) WHERE l.variant_id=ANY(:ids)
-        AND d.source IN ('ClinVar','COSMIC','gnomAD') ORDER BY d.source,r.record_id''',{'ids':ids})
+    projection = "r.native_id," + ','.join("CASE WHEN d.source='ClinVar' THEN r.details_json->>'"+key+"' END "+alias for key,alias in [('ClinicalSignificance','classification'),('ReviewStatus','review_status'),('Origin','origin'),('Oncogenicity','oncogenicity'),('SomaticClinicalImpact','somatic_clinical_impact')])
+    rows = duckdb_source_rows(ids,projection,['ClinVar','COSMIC','gnomAD'])
+    return [{key:value for key,value in row.items() if key != 'alt_index'} for row in rows]
 
 
 def raw_predictions_for_rows(rows,selected_fields):
@@ -216,12 +206,7 @@ def raw_predictions_for_rows(rows,selected_fields):
     # Field names come exclusively from the validated published predictor dictionary.
     keys=','.join("'"+key.replace("'","''")+"'" for key in sorted(requested))
     values=','.join("r.details_json->>'"+key.replace("'","''")+"'" for key in sorted(requested))
-    if backend() == 'duckdb':
-        raw = duckdb_source_rows(ids,f'jsonb_object(ARRAY[{keys}]::text[],ARRAY[{values}]::text[]) AS data',['dbNSFP'])
-    else:
-        raw=query(f'''SELECT l.variant_id,r.record_id,jsonb_object(ARRAY[{keys}]::text[],ARRAY[{values}]::text[]) AS data
-            FROM web_variant.variant_source_link l JOIN web_variant.variant_source_record r USING(record_id)
-            JOIN web_variant.variant_dataset d USING(dataset_id) WHERE l.variant_id=ANY(:ids) AND d.source='dbNSFP' ''',{'ids':ids})
+    raw = duckdb_source_rows(ids,f'jsonb_object(ARRAY[{keys}]::text[],ARRAY[{values}]::text[]) AS data',['dbNSFP'])
     by_variant=defaultdict(list)
     for item in raw:by_variant[item['variant_id']].append(item)
     for row in rows:

@@ -5,11 +5,11 @@ from copy import deepcopy
 from collections import Counter
 from pathlib import Path
 from fastapi import APIRouter, HTTPException
-from .db import backend, engine, query
-from .resources import resource_path
+from .db import engine, query
+from ..runtime import catalog_path, statistics_path
 
 router = APIRouter(prefix='/api', tags=['catalog'])
-STATISTICS = resource_path('catalog_statistics', 'MEMVAR_CATALOG_STATISTICS', 'data/catalog_statistics.json')
+STATISTICS = statistics_path(catalog_path())
 VERSION_SQL = """SELECT 'proteins' module,manifest->>'data_version' version FROM web._build_manifest
 UNION ALL SELECT 'variants',data_version FROM web_variant._build_manifest
 UNION ALL SELECT 'context',data_version FROM web_context._build_manifest
@@ -24,9 +24,7 @@ def load_statistics(path: str, modified_ns: int):
 
 @router.get('/catalog/statistics')
 def catalog_statistics():
-    path = (resource_path('catalog_statistics', 'MEMVAR_CATALOG_STATISTICS',
-                          str(engine().path.parent / 'catalog_statistics.json'))
-            if backend() == 'duckdb' else STATISTICS)
+    path = statistics_path(engine().path)
     try:
         result = load_statistics(str(path), path.stat().st_mtime_ns)
     except (OSError, ValueError):

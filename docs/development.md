@@ -1,132 +1,90 @@
 # 本地部署与开发
 
-本文介绍 memVar 网站源码的安装、运行及服务数据准备。数据库功能介绍见[项目首页](../README.md)。
+更新：2026-10-06。本轮本地代码与数据包整理及独立验收已完成；T7搬迁、云端发布及现用8000切换不在本轮执行范围。实际结果见[本地整理记录](record/01_preview_optimization/portable_deployment.md)。
 
-## 技术栈
+## 职责与环境
 
-| 层次 | 实现 |
+| 位置 | 职责 |
 | --- | --- |
-| 前端 | React 19、TypeScript、Vite、TanStack Query/Table |
-| 界面与可视化 | Radix、Motion、Lucide/Tabler、Nightingale、PDBe Molstar |
-| API | Python、FastAPI、DuckDB；SQLAlchemy／psycopg 用于旧库对照和只读迁移 |
-| 服务数据 | 一致快照中的完整 Parquet、DuckDB 查询目录及原生外部资源 |
+| `src/runtime.py` | 统一数据根目录、资源位置与启动检查 |
+| `src/api/` | DuckDB只读查询；保留JSON、float4与排序兼容处理 |
+| `src/database/portable.py` | 从确认来源准备完整包、离线重绑定视图 |
+| `src/build/` | 科研正式结果到网站表的离线投影；日常部署和启动不调用 |
+| `config/packaging.yaml` | 本机已确认的离线打包输入；可能含科研来源路径 |
+| `config/duckdb.yaml` | 默认网站包位置；环境变量 `MEMVAR_DATA_ROOT` 可覆盖 |
+| `frontend/` | React/TypeScript前端；`package-lock.json`锁定依赖 |
+| `tests/portable_acceptance.py` | 保存与比较有界HTTP响应基线 |
 
-## 仓库内容与数据边界
+使用Python 3.12和Node.js 22（见 `.python-version`、`.nvmrc`）。`requirements-web.txt`列运行依赖，`requirements-lock.txt`锁定依赖版本；离线投影另用 `requirements-build.txt`，测试另用 `requirements-test.txt`。运行环境不需要PostgreSQL、SQLAlchemy或psycopg。
 
-```text
-frontend/           前端源码、静态资源和依赖锁文件
-src/api/            只读查询 API
-src/build/          服务表构建代码
-src/database/       DuckDB迁移／重绑定与历史PostgreSQL导入代码
-config/             表、来源和部署配置（不含凭据）
-tests/              定向验证
-docs/               当前方案、研究依据与实现记录
-data/README.md      服务数据说明；数据本身不随代码发布
-start-local.sh      本地启动入口
-requirements-web.txt
-```
+Linux须具备 `en_US.utf8` locale；当前文本排序使用libc兼容现有基线，不用二进制顺序替代。不同系统的libc版本仍需在后续实际部署时核对。本轮没有重写排序规则，也没有重新锁定上游科研计算环境。
 
-**仓库不包含科研数据集、数据库文件、凭据、调研导出表、运行缓存和前端构建产物。** 克隆仓库可以安装依赖并构建前端，但完整查询功能需要另行准备服务数据库及结构等资源；不提供模拟数据代替真实结果。
+## 准备代码与环境
 
-本仓库对应科研工作区中的 `Web/` 子项目，上游 `modules/` 不在本仓库内。部分构建配置、历史文档引用了该工作区的路径；这些引用用于说明来源，独立克隆后不会自动获得上游文件。数据构建前须按实际环境配置输入路径，不能直接照搬维护者的绝对路径。
-
-## 本地运行
-
-建议使用 Node.js 22、Python 3.11+ 和 Linux `en_US.utf8` locale。文本排序兼容 PostgreSQL 基线的 libc 规则，不使用 DuckDB 默认二进制顺序或 ICU 近似替代；部署前用 `locale -a` 确认可用，数据验收记录注明源与服务端 libc 版本。启动脚本从自身目录加载 API，克隆目录可以自行命名：
+仓库可独立克隆，不要求文件夹名为 `Web`；服务数据另行提供，不随Git发布。
 
 ```bash
-git clone https://github.com/PuppetZhou/memVar.git Web
-cd Web
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements-web.txt
-cd frontend
-npm ci
-npm run build
-cd ..
+git clone https://github.com/PuppetZhou/memVar.git
+cd memVar
+bash prepare-local.sh
 ```
 
-准备已经验证的 DuckDB 服务快照及外部资源。`config/duckdb.yaml` 维护默认查询目录，也可通过环境变量指定；相对目录从 `Web/` 解析。启动入口默认选择 DuckDB，运行时不读取 PostgreSQL 凭据：
+准备脚本创建仓库内 `.venv`，安装运行依赖并用 `npm ci` 构建前端至 `frontend/dist-portable`。本轮验证保留旧 `frontend/dist`；新启动入口默认读取独立构建产物。可用 `--python /path/to/python3.12` 选择创建环境的解释器；已有有效前端依赖时用 `--skip-npm-install`，只准备Python环境时用 `--skip-frontend`。
+
+## 网站数据包
+
+包内布局、粒度及关联见[数据说明](../data/README.md)。已有完整网站包时，无需读取科研目录；首次从本机确认来源组装包时，检查 `config/packaging.yaml`：
 
 ```bash
-# 示例：替换为实际部署文件和资源目录。
-export MEMVAR_DUCKDB_PATH='/srv/memvar/snapshot/catalog.duckdb'
-export MEMVAR_STRUCTURE_ROOT='/srv/memvar/structures'
-export MEMVAR_ALPHAGENOME_REFERENCE_ROOT='/srv/memvar/reference_tracks'
+.venv/bin/python -m src.database.portable plan
+.venv/bin/python -m src.database.portable build --output /absolute/new/data-package
+```
+
+`plan`核对文件存在、来源身份和容量；`build`只复制清单文件，保留字节内容及科学字段。输出目录必须全新，复制使用旁边的 `.building` 目录，目录就位后才生成绑定最终路径的catalog，验收完成后写入包清单。失败不覆盖现用数据；未完成目录留供诊断，不作为可用包。原来源和溯源绝对路径不全局替换。
+
+也可合并环境准备与打包：`bash prepare-local.sh --data-output /absolute/new/data-package`。该命令会复制完整网站资产，运行前先确认 `plan` 输出；本次约312.38 GB。已有包不能作为新构建输出覆盖。
+
+后续真正改变数据包位置时，在新位置、所有读进程启动前执行：
+
+```bash
+.venv/bin/python -m src.database.portable rebind --output /absolute/moved/data-package --replace-offline
+```
+
+重绑定只重建DuckDB目录，不重写Parquet、HDF5或结构。不带 `--replace-offline` 时创建 `catalog.rebound.duckdb` 供检查，保留原catalog。当前包内历史 `manifest.json`记录原快照，`package.json`记录200个实际有效视图及AlphaGenome覆盖目录；普通启动不自动重绑定。
+
+## 只读启动
+
+```bash
+export MEMVAR_DATA_ROOT=/absolute/data-package
 bash start-local.sh
 ```
 
-默认访问 `http://127.0.0.1:8000`，API 文档位于 `/docs`。启动不会构建、导入数据或创建旧库账号。当前快照已完成迁移与网站验收，现有预览使用新后端，证据与限制见[迁移记录](record/01_preview_optimization/duckdb_storage_migration.md)；快照不存在时，API 返回配置不可用，不使用模拟记录。
+默认访问 `http://127.0.0.1:8000`，接口文档 `/docs`。本机并行检验请指定 `MEMVAR_PORT=8001`，不重启或占用现用8000。脚本优先用仓库 `.venv/bin/python`，可由 `MEMVAR_PYTHON`覆盖。`MEMVAR_HOST`、`MEMVAR_PORT`和 `MEMVAR_FRONTEND_DIST`控制监听及前端位置。
 
-原 PostgreSQL 保留供对照，可明确回退：`MEMVAR_QUERY_BACKEND=postgresql bash start-local.sh`。该模式使用既有 `data/.api.env` 或 `MEMVAR_DATABASE_URL` 中的只读连接，不修改角色、权限或索引；不要在迁移过程中运行历史 `--setup-reader` 或导入命令。
+数据包缺失或不完整时启动检查失败，不自动回读科研目录或旧库。DuckDB保持只读，每个请求使用独立cursor；默认4线程、4GB内存，可由 `MEMVAR_DUCKDB_THREADS`、`MEMVAR_DUCKDB_MEMORY_LIMIT`调整。多进程资源按实际部署并发重新评估。
 
-默认 DuckDB 查询线程数为 4、共享连接内存限制为 4 GB，可用 `MEMVAR_DUCKDB_THREADS`、`MEMVAR_DUCKDB_MEMORY_LIMIT` 调整。每个请求使用独立 cursor；部署以只读进程运行，更新构建使用独立目录，禁止原地改写正在提供查询的文件。多进程各有资源限制，须按实际部署并发复核。
+前端开发另开终端执行 `cd frontend && npm run dev`，Vite默认在5173，`/api`转发本地8000。前端界面及数据科学规则本轮不调整。
 
-`config/resources.yaml` 和上述资源环境变量控制结构与统计文件位置；AlphaGenome 配置仍校验参考快照与 checkpoint。DuckDB 默认读取与目录同位置的 `catalog_statistics.json`，可用 `MEMVAR_CATALOG_STATISTICS` 显式覆盖。迁移后将快照搬到另一目录，在本仓库内执行 `python -m src.database.migrate_duckdb catalog /srv/memvar/snapshot` 重绑定 Parquet 路径，该操作不连接原 PostgreSQL。原生结构和 HDF5 内容保持原状，需随部署挂载；对象存储 URL 尚不能直接代替本地文件根目录。
+## 验收
 
-前端开发在另一个终端运行：
-
-```bash
-cd Web/frontend
-npm run dev
-```
-
-默认开发地址为 `http://127.0.0.1:5173`，`/api` 转发到本地 8000 端口。实际端口以 Vite 输出为准。`MEMVAR_HOST`、`MEMVAR_PORT` 可调整后端监听配置。
-
-## 数据维护与验证
-
-完整迁移入口是项目根目录的 `python -m Web.src.database.migrate_duckdb build --workers 3`，使用 `config/database.yaml` 的旧库连接读取一个 `REPEATABLE READ READ ONLY` 逻辑快照；各导出 worker 导入同一快照，保留物理表全部字段、JSON／数组和关联元数据。目标目录必须不存在，候选写完并验证后再发布；具体存储、发布入口及全量验证证据以[迁移计划](plan/01_preview_optimization/04_duckdb_parquet_migration.md)与构建代码为准。
-
-完整快照的 `manifest.json` 管表／字段／文件映射与行数，`source-metadata.json` 管原主外键、索引和排序规则；原索引不机械复制到 Parquet。逻辑视图通过等价定义重建，特殊 JSON 视图保留完整物化结果。QTL 的原 `ctid` 排序以内部 `_source_ctid` 保存，用于保持同排序键记录的分页顺序，不加入科学字段。`source-record-files.json` 仅读取 Parquet footer 建立相对路径定位；可在仓库内用 `python -m src.database.migrate_duckdb record-locator /srv/memvar/snapshot` 重建，不连接 PostgreSQL、不重新筛选原记录。
-
-搬迁或重新生成目录使用离线 `catalog` 子命令；原库内容更新后用新的输出目录构建一致快照并对照验证，避免混入旧版本。当前迁移不改科研模块 raw／cleaned／curated 及其科学构建入口；现有科学服务表投影与旧导入脚本保留作为维护依据，不由日常启动自动调用。源旧库未来是否清理、清理后新科学版本的逐表更新接入，须按届时来源变更明确执行。
-
-日常界面开发无需重跑数据构建。需要重新构建服务表时，先阅读 [数据说明](../data/README.md)、[当前方案入口](plan/README.md) 和 `config/` 中的输入配置，再准备对应上游正式产物。构建脚本还依赖 Polars 等数据处理组件；完整运行依赖随具体模块确认，不将 API 依赖清单视为科研环境的完整锁定文件。
-
-常用前端检查：
+在替换当前运行来源前保存有界真实响应：
 
 ```bash
-cd frontend
-npm run test:genomic
-npm run build
+.venv/bin/python tests/portable_acceptance.py capture \
+  --source-url http://127.0.0.1:8000 \
+  --baseline data/portable-validation/baseline.json
+.venv/bin/python tests/portable_acceptance.py compare \
+  --candidate-url http://127.0.0.1:8001 \
+  --baseline data/portable-validation/baseline.json \
+  --report data/portable-validation/comparison.json
 ```
 
-`test:genomic` 使用 Node.js 22.6+ 的类型剥离执行坐标契约测试，无需数据库；覆盖半开区间、SVG/Canvas 对齐、指针定位和双向刷选。AlphaGenome 前端职责与坐标约定见 [CONTEXT.md](../CONTEXT.md)。
+比较完整HTTP状态、字段、类型、值和数组顺序，含真实结构文件、RNA/contact轨道及越界响应；不把容差或删除字段当作“等价”。已有基线默认拒绝覆盖，只有明确重新采集时才用 `--replace`。这组有界案例用于本轮变更，不替代所有蛋白与全部科学记录的验证。
 
-后端定向检查位于 `tests/`；部分检查需要本地数据库或上游数据，纯代码构建通过不代表完整数据链路已验证。修改影响科学含义的筛选、映射或阈值时，应先确认数据规则，再修改实现。
+前端检查为 `npm run test:genomic` 和 `npm run build -- --outDir dist-portable`。后端测试依赖用 `.venv/bin/python -m pip install -r requirements-test.txt` 安装。部分历史测试依赖科研工作区，本轮可独立运行的配置/打包测试从仓库根执行 `.venv/bin/python -m unittest discover -s tests -p 'test_runtime.py'` 和 `.venv/bin/python -m unittest discover -s tests -p 'test_portable_package.py'`；实际验证范围以交付记录为准。
 
-在 `Web` 的父目录运行基因轨道的后端回归检查：`python -m unittest Web.tests.test_avi Web.tests.test_alphagenome_expression Web.tests.test_qtl_significance Web.tests.test_qtl_tracks`。这些检查需要已安装的服务数据库和参考预测文件，包含来源数值、身份关联、区间边界及分页。
+## 后续数据更新
 
-## AlphaGenome与AVI服务数据
+`src/build/`保留既有投影和科学处理依据，输入路径由各主题配置维护。部分上游文件已在10-05清理；本轮未重跑或修复raw到网站全流程。更新来源或规则须从负责科研模块确认结果，再按依赖更新网站表、清单、相关视图与统计，形成新包并对照验收。
 
-AlphaGenome运行时从当前查询引擎读取gene/window/track目录，从配置指定的文件系统读取原生HDF5区间。`config/alphagenome.yaml`中的`reference_root`须指向已验收的预测快照；`source_run_id`和`checkpoint_revision`必须与快照manifest一致。科学目录投影来源由`catalog_path`指定；网站运行不回读科研模块。读取依赖h5py和NumPy，已列入`requirements-web.txt`。
-
-下列 PostgreSQL 导入是旧服务基线的构建方法，迁移和普通启动均不执行；DuckDB 快照已经包含相同目录、AVI 与 MANE 结构化内容。
-
-在`Web`的父目录执行参考目录导入（需要配置本地数据库管理员连接）：
-
-```bash
-python -m Web.src.database.import_alphagenome_reference
-```
-
-AVI总分沿用`web_variant`现有列。18列特征贡献独立于总分，由`config/avi.yaml`指定正式科研输入和Web服务目录；2026-09-30已从`20260930_avi_attribution_01`完成以下构建/导入，全部10,866,094行可用（后续重建仍须绑定已发布科研快照）：
-
-```bash
-python -m Web.src.build.build_avi
-python -m Web.src.database.import_avi
-```
-
-归因导入使用独立`web_avi`schema，检查主键、行数、当前variant关联和样本原值后在事务内替换；失败回滚。尚无贡献库时已有AVI总分和参考轨道仍可查询，详情返回不可用状态。定向检查为`python -m unittest Web.tests.test_alphagenome_expression Web.tests.test_avi -v`；真实参考测试需要现有服务数据库和预测文件。
-
-迁云需同时准备完整快照和HDF5资源，并按实际挂载位置调整配置。当前后端使用本地文件随机读取；对象存储URL不能直接替换`reference_root`，需要另行适配。已有本地部署和归因接入证据见[交付记录](record/01_preview_optimization/20260929_alphagenome_avi.md)。
-
-
-### MANE Select CDS服务模型
-
-配置 `config/mane_cds.yaml` 绑定已发布科研快照和服务目录。科研入口为项目根 `python run.py foundation build_mane_cds`（已交付快照不重复覆盖）；Web投影与入库从科研工作区根执行：
-
-```bash
-python -m Web.src.database.import_mane_cds
-```
-
-该历史命令将正式Parquet复制到Web服务目录，按HGNC组装模型并事务导入 `web_mane.gene_cds`，不在Web重选代表或处理新的CDS规则。运行时API `/api/proteins/{accession}/expression/alphagenome/cds?gene=ENSG...` 查询当前引擎中完整保留的模型，校验当前蛋白的真实gene关联；提供完整版本ENST、来源状态、0-based half-open CDS/stop_codon片段。当前模型快照 `20260930_mane_cds_01`。旧基线核对证据见 `data/postgresql_mane_cds_import.json` 与 `data/mane_cds_live_validation.json`；部署快照须包含 `web_mane` schema。
+旧PostgreSQL导入、管理员账号创建及迁移命令已退役，不能按历史文档直接运行；历史源码可从Git基线 `dbb05a1` 查阅。`src/build/catalog_statistics.py`保留原统计构建依据，需要匹配的历史报告和科研manifest；网站部署直接使用已验证统计文件，不调用它。AlphaGenome的模型身份、完整gene＋10 kb保存范围、AVI总分与贡献区别，以及MANE代表选择保持原规则。

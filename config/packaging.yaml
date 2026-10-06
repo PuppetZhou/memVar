@@ -1,0 +1,7 @@
+# Frozen, verified input roots for an independent website package.
+# Relative paths resolve from Web/. These are offline build inputs only.
+snapshot: data/duckdb-candidate/snapshot-20260930T160803Z
+catalog: data/duckdb-candidate/snapshot-20260930T160803Z/catalog.alphagenome-gene10k.duckdb
+alphagenome: ../modules/Alphagenome/data/curated/20261001_reference_crop_01
+assets: ../modules/Alphagenome/data/curated/20261001_reference_crop_01/assets
+structures: ../modules/Site-Region/data/raw/AlphaFold/v6/models
