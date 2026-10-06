@@ -1,5 +1,7 @@
 # 01 公网预览后优化：当前计划
 
+2026-10-06当前方向：[网站架构整理与可搬迁部署计划](05_portable_deployment.md)。保持现有展示与接口，整理数据/view、去除旧后端、统一配置，本地检验后在T7搬迁验收；方向已确认，本次仅记录，尚未实施。
+
 ## 2026-10-04：预测器面板与结构极值上色已交付
 
 - 用户授权微调 Prediction toolkit 字体层级、将 ThermoMPNN 加入预测器系列，以及结构新增 Predictor 着色入口（AlphaMissense、ESM、ThermoMPNN、AlphaGenome 子选项）。

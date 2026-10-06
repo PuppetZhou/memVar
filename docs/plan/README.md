@@ -1,5 +1,7 @@
 # 按阶段查看方案
 
+2026-10-06当前方向：[网站架构整理与可搬迁部署计划](01_preview_optimization/05_portable_deployment.md)。保持现有展示与接口，整理数据/view、去除旧后端、统一配置，本地检验后在T7搬迁验收；方向已确认，本次仅记录，尚未实施。
+
 更新：2026-10-01。**当前为[01 公网预览后优化](01_preview_optimization/README.md)**。旧方案已按00阶段归档，本目录不再平铺首版、第二版和精修文件。
 
 | 阶段 | 方案位置 | 如何使用 |
@@ -14,7 +16,7 @@
 | 领域 | 00基线位置 | 01阶段对应事项 |
 | --- | --- | --- |
 | 整体架构与运行 | [overall](../archive/00_initial_preview/plan/overall.md)、[构建策划](../archive/00_initial_preview/plan/site_construction/README.md)（含架构/经验/流程） | 沿用未受影响技术方案；不继承旧轮次的执行状态 |
-| 服务数据与数据库 | [保存与入库](../archive/00_initial_preview/plan/service_data_storage.md)、[本地构建](../archive/00_initial_preview/plan/local_table_build.md)、[PostgreSQL](../archive/00_initial_preview/plan/postgresql.md) | [DuckDB＋Parquet迁移](01_preview_optimization/04_duckdb_parquet_migration.md)已完成，替代全量PostgreSQL入库方向；现有预览使用新后端，原数据保留等待审查 |
+| 服务数据与数据库 | [保存与入库](../archive/00_initial_preview/plan/service_data_storage.md)、[本地构建](../archive/00_initial_preview/plan/local_table_build.md)、[PostgreSQL](../archive/00_initial_preview/plan/postgresql.md) | [DuckDB＋Parquet迁移](01_preview_optimization/04_duckdb_parquet_migration.md)已完成，替代全量PostgreSQL入库方向；现有预览使用新后端；旧PG已于10-05删除，后续代码清理由最新部署计划维护 |
 | 首页、总览与帮助 | [homepage](../archive/00_initial_preview/plan/homepage.md)、[data_overview](../archive/00_initial_preview/plan/data_overview.md)、[全库统计与说明](../archive/00_initial_preview/plan/database_overview_documentation.md)、[ui_help](../archive/00_initial_preview/plan/ui_help.md) | UI；MEM变动后的分类与统计同步 |
 | 蛋白概况、定位与功能 | [protein_overview](../archive/00_initial_preview/plan/protein_overview.md)、[身份字段](../archive/00_initial_preview/plan/identity_function_tables.md)、[功能通路表](../archive/00_initial_preview/plan/function_pathway_tables.md) | MEM、LOC、GO、MF、PH、RE |
 | 序列、PTM与结构 | [sequence](../archive/00_initial_preview/plan/sequence.md)、[sequence_fields](../archive/00_initial_preview/plan/sequence_fields.md)、[sequence_ptm](../archive/00_initial_preview/plan/sequence_ptm.md)、[精修方案](../archive/00_initial_preview/plan/sequence_structure_refinement.md) | SQ、AT、ST；新选择方式、色阶、膜viewer与结构选区 |

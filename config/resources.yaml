@@ -1,6 +1,6 @@
 # Runtime resource locations. Relative paths are resolved from the Web directory.
 # Override these with environment variables when deploying on another machine.
 # The original files are preserved; deployment does not read scientific modules.
-structure_root: ../../memVar/website/data/generated/structure/alphafold/v6
+structure_root: ../modules/Site-Region/data/raw/AlphaFold/v6/models
 # DuckDB reads its frozen catalog_statistics.json beside catalog.duckdb.
 # An optional catalog_statistics path or MEMVAR_CATALOG_STATISTICS overrides it.

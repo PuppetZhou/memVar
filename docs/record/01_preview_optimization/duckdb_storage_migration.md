@@ -1,5 +1,7 @@
 # DuckDB＋Parquet 迁移与网站验收
 
+**2026-10-05更新：旧PostgreSQL已停用并移除，旧服务导入表、中断候选和旧宽表布局已清理。现用`config/duckdb.yaml`指定的快照及必要sidecar保留；结构源已迁到新项目`modules/Site-Region/data/raw/AlphaFold/v6/models`。此前“旧PG保留/可直接回退”等描述仅为历史状态；当前不能直接切回旧PG。清理结果见根项目`docs/storage_audit_20261005.md`及`runs/20261005_storage_cleanup/`。**
+
 更新：2026-10-01。本轮授权范围已完成：完整存储构建与核验、API 适配、桌面关键流程和现有预览切换。旧 PostgreSQL、旧网站 Parquet、科研数据及外部 HDF5／结构文件均原位保留，等待用户审查网页后再决定清理。
 
 ## 来源、布局与重建
