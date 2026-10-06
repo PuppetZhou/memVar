@@ -1,6 +1,6 @@
 # 本地部署与开发
 
-更新：2026-10-06。本轮本地代码与数据包整理及独立验收已完成；T7搬迁、云端发布及现用8000切换不在本轮执行范围。实际结果见[本地整理记录](record/01_preview_optimization/portable_deployment.md)。
+更新：2026-10-06。本轮本地代码与数据包整理及独立验收已完成；用户随后授权的T7搬迁验收也已完成；云端发布及现用8000切换未执行。实际结果见[本地整理记录](record/01_preview_optimization/portable_deployment.md)。
 
 ## 职责与环境
 
@@ -88,3 +88,21 @@ bash start-local.sh
 `src/build/`保留既有投影和科学处理依据，输入路径由各主题配置维护。部分上游文件已在10-05清理；本轮未重跑或修复raw到网站全流程。更新来源或规则须从负责科研模块确认结果，再按依赖更新网站表、清单、相关视图与统计，形成新包并对照验收。
 
 旧PostgreSQL导入、管理员账号创建及迁移命令已退役，不能按历史文档直接运行；历史源码可从Git基线 `dbb05a1` 查阅。`src/build/catalog_statistics.py`保留原统计构建依据，需要匹配的历史报告和科研manifest；网站部署直接使用已验证统计文件，不调用它。AlphaGenome的模型身份、完整gene＋10 kb保存范围、AVI总分与贡献区别，以及MANE代表选择保持原规则。
+
+## T7 / exFAT试运行
+
+本机T7位置为 `/media/xuyzh/T7_PuppetZ/memVar-website`。exFAT不适合承载依赖符号链接的虚拟环境；本次在主机独立环境目录安装Python依赖，网站代码、已构建前端和完整数据包仍全部从T7读取。该环境不是本机科研或Web目录的环境副本；依赖由T7源码仓库中的锁定清单重新安装。换主机后须在新主机重新准备环境。
+
+```bash
+python3.12 -m venv "$HOME/.local/share/memvar/venvs/t7"
+"$HOME/.local/share/memvar/venvs/t7/bin/python" -m pip install \
+  -r /media/xuyzh/T7_PuppetZ/memVar-website/requirements-web.txt
+cd /tmp
+MEMVAR_PYTHON="$HOME/.local/share/memvar/venvs/t7/bin/python" \
+MEMVAR_DATA_ROOT=data/portable \
+MEMVAR_FRONTEND_DIST=frontend/dist-portable \
+MEMVAR_PORT=8001 \
+bash /media/xuyzh/T7_PuppetZ/memVar-website/start-local.sh
+```
+
+相对数据和前端目录从源码仓库根解析；启动脚本先定位自身位置，不依赖调用时的工作目录。使用默认 `config/duckdb.yaml` 时可省略 `MEMVAR_DATA_ROOT`。数据库物理视图在部署准备时绑定实际绝对根目录，因此复制后仍须先执行 `portable rebind --replace-offline`；元数据中的历史来源路径不应全局替换。实际T7结果由[交付记录](record/01_preview_optimization/portable_deployment.md)维护。

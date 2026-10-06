@@ -38,7 +38,7 @@ memVar 汇集 UniProt、GO、Reactome、Pfam、ClinVar、gnomAD、dbSNP、COSMIC
 
 ## 关于本仓库
 
-本仓库提供 memVar 网站的前端、DuckDB只读查询、网站数据包准备与离线数据投影代码。前端使用 React 和 TypeScript，查询使用 FastAPI。2026-10-06 已完成[本地架构与独立数据包整理](docs/plan/01_preview_optimization/05_portable_deployment.md)：运行只依赖网站代码、完整数据包和统一环境，数据包保留Parquet实体／关系、AlphaGenome原生HDF5与结构文件；本轮暂不进行T7搬迁或搬迁试运行。旧PostgreSQL已于10-05删除，对应运行和导入入口已退役；科学字段、关联与现有页面保持。实际验证与限制见[本地整理记录](docs/record/01_preview_optimization/portable_deployment.md)，此前迁移依据见[DuckDB验收记录](docs/record/01_preview_optimization/duckdb_storage_migration.md)。
+本仓库提供 memVar 网站的前端、DuckDB只读查询、网站数据包准备与离线数据投影代码。前端使用 React 和 TypeScript，查询使用 FastAPI。2026-10-06 已完成[本地架构与独立数据包整理](docs/plan/01_preview_optimization/05_portable_deployment.md)：运行只依赖网站代码、完整数据包和统一环境，数据包保留Parquet实体／关系、AlphaGenome原生HDF5与结构文件；T7搬迁与路径验收已通过，8001保留试运行，原8000未切换。旧PostgreSQL已于10-05删除，对应运行和导入入口已退役；科学字段、关联与现有页面保持。实际验证与限制见[本地整理记录](docs/record/01_preview_optimization/portable_deployment.md)，此前迁移依据见[DuckDB验收记录](docs/record/01_preview_optimization/duckdb_storage_migration.md)。
 
 - [本地部署与开发](docs/development.md)
 - [服务数据说明](data/README.md)
